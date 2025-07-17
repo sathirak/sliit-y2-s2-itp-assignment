@@ -1,0 +1,36 @@
+services:
+  mongodb-atlas:
+    image: mongodb/mongodb-atlas-local
+    container_name: mongodb-atlas-local
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - "27017:27017"
+    volumes:
+      - atlas_data:/data/db
+    networks:
+      - mongo-network
+    restart: unless-stopped
+
+  mongodb-community:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    container_name: mongodb-community
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - "27018:27017"
+    volumes:
+      - community_data:/data/db
+    networks:
+      - mongo-network
+    restart: unless-stopped
+
+volumes:
+  atlas_data:
+  community_data:
+
+networks:
+  mongo-network:
+    driver: bridge
