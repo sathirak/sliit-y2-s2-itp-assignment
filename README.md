@@ -19,17 +19,13 @@ pnpm install
 Run both frontend and backend in development mode:
 
 ```sh
-pnpm dev
+pnpm dev:frontend #To develop only the frontend
+
+pnpm dev #To develop both
 ```
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - API: Usually [http://localhost:3001](http://localhost:3001) (check your API config)
-
-### 4. Build for Production
-
-```sh
-pnpm build
-```
 
 ## Project Structure
 
