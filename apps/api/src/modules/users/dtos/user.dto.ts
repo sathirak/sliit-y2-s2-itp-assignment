@@ -4,20 +4,23 @@ import {
   MinLength,
   IsDate,
   IsEnum,
+  IsUUID,
+  IsString,
+  IsBoolean,
 } from 'class-validator';
 import { UserRole } from '../interfaces/roles.enum';
 
 export class UserDto {
-  @IsNotEmpty()
-  userId: string;
+  @IsUUID()
+  id: string;
 
-  @IsNotEmpty()
+  @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsString()
   firstName: string;
 
-  @IsNotEmpty()
+  @IsString()
   lastName: string;
 
   @IsEmail()
@@ -33,6 +36,6 @@ export class UserDto {
   @IsDate()
   createdAt: Date;
 
-  @IsNotEmpty()
+  @IsBoolean()
   isDeleted: boolean;
 }

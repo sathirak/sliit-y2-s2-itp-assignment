@@ -2,7 +2,7 @@ import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { UserRole } from '../interfaces/roles.enum';
 
 export const usersTable = pgTable('users', {
-  userId: uuid('user_id').defaultRandom().primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
