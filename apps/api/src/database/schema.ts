@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
 
-import { cats } from 'src/modules/cats/models/cats.model';
-
-export {cats};
+import { tickets } from 'src/modules/tickets/models/ticket.model';
+export {tickets};
+ 

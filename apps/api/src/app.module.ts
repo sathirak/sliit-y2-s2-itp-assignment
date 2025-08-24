@@ -1,12 +1,12 @@
-import { CatsModule } from './modules/cats/cats.module';
 import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { DatabaseModule } from 'src/database/database.module';
+import { TicketModule } from './modules/tickets/ticket.module';
 
 @Module({
   imports: [
-    CatsModule,
+    TicketModule,
     LoggerModule.forRoot({
       pinoHttp: {
         level: 'info',
