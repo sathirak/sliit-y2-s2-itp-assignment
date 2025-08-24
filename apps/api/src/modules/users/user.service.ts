@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import type { Schema } from 'src/common/types/db';
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
 
