@@ -1,9 +1,55 @@
 {
-  "id": "abc66e13-2588-49f7-ba36-5a7a3850be4b",
+  "id": "dae17579-4de6-4fef-9a74-eb842d68c7d3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.tickets": {
+      "name": "tickets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted": {
+          "name": "deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
     "public.users": {
       "name": "users",
       "schema": "",
