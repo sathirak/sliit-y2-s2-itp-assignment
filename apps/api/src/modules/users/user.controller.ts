@@ -22,7 +22,6 @@ export class UserController {
   async create(@Body() data: CreateUserDto): Promise<UserDto> {
     return this.userService.create(data);
   }
-
    @Put(':id')
   async update(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(id, data);
@@ -32,10 +31,7 @@ export class UserController {
   async delete(@Param('id') id: string) {
     return this.userService.delete(id);
   }
-  
 }
-
-
 
 
 

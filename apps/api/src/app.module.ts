@@ -3,9 +3,13 @@ import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { DatabaseModule } from 'src/database/database.module';
+import { TicketModule } from './modules/tickets/ticket.module';
+import { OrderModule } from './modules/orders/order.module';
 
 @Module({
   imports: [
+    OrderModule,
+    TicketModule,
     UserModule,
     LoggerModule.forRoot({
       pinoHttp: {
@@ -57,4 +61,4 @@ import { DatabaseModule } from 'src/database/database.module';
     DatabaseModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
