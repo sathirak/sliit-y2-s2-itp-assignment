@@ -1,3 +1,4 @@
+import { UserModule } from './modules/users/user.module';
 import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino/LoggerModule';
@@ -7,6 +8,7 @@ import { TicketModule } from './modules/tickets/ticket.module';
 @Module({
   imports: [
     TicketModule,
+    UserModule,
     LoggerModule.forRoot({
       pinoHttp: {
         level: 'info',
@@ -54,7 +56,7 @@ import { TicketModule } from './modules/tickets/ticket.module';
       ],
     }),
     ConfigModule.forRoot({ isGlobal: true }),
-    DatabaseModule, 
+    DatabaseModule,
   ],
 })
 export class AppModule {}

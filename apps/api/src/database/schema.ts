@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-imports */
-
 import { tickets } from 'src/modules/tickets/models/ticket.model';
-export {tickets};
- 
+import { usersTable } from 'src/modules/users/models/user.model';
+
+export { usersTable, tickets };
