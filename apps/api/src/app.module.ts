@@ -1,3 +1,4 @@
+import { OrderModule } from './modules/orders/order.module';
 import { UserModule } from './modules/users/user.module';
 import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -7,6 +8,7 @@ import { TicketModule } from './modules/tickets/ticket.module';
 
 @Module({
   imports: [
+    OrderModule,
     TicketModule,
     UserModule,
     LoggerModule.forRoot({
@@ -59,4 +61,4 @@ import { TicketModule } from './modules/tickets/ticket.module';
     DatabaseModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
