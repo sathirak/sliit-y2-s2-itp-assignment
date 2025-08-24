@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-imports */
+import { usersTable } from 'src/modules/users/models/user.model';
 
-import { cats } from 'src/modules/cats/models/cats.model';
-
-export {cats};
+export { usersTable };

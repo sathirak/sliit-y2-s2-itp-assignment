@@ -1,4 +1,3 @@
-import { CatsModule } from './modules/cats/cats.module';
 import { UserModule } from './modules/users/user.module';
 import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -7,7 +6,6 @@ import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [
-    CatsModule,
     UserModule,
     LoggerModule.forRoot({
       pinoHttp: {
@@ -56,7 +54,7 @@ import { DatabaseModule } from 'src/database/database.module';
       ],
     }),
     ConfigModule.forRoot({ isGlobal: true }),
-    DatabaseModule, 
+    DatabaseModule,
   ],
 })
 export class AppModule {}
