@@ -1,13 +1,12 @@
 import {
- 
-  IsNotEmpty,
-  
-  IsDate,
- 
+ IsNotEmpty,
+ IsDate,
+ IsBoolean,
+ IsUUID,
 } from 'class-validator';
 
 export class TicketDto {
-  @IsNotEmpty()
+  @IsUUID()
   id: string;
 
   @IsNotEmpty()
@@ -19,6 +18,6 @@ export class TicketDto {
   @IsDate()
   createdAt: Date;
 
-  @IsNotEmpty()
+  @IsBoolean()
   isDeleted: boolean;
 }
