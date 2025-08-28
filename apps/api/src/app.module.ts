@@ -5,12 +5,14 @@ import { LoggerModule } from 'nestjs-pino/LoggerModule';
 import { DatabaseModule } from 'src/database/database.module';
 import { TicketModule } from './modules/tickets/ticket.module';
 import { OrderModule } from './modules/orders/order.module';
+import { ProductModule } from './modules/products/product.module';
 
 @Module({
   imports: [
     OrderModule,
     TicketModule,
     UserModule,
+    ProductModule,
     LoggerModule.forRoot({
       pinoHttp: {
         level: 'info',

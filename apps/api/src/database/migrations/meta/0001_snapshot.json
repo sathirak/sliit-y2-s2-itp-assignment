@@ -1,0 +1,99 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "id": "0001_create_products",
+  "prevId": "0000_create-user-ticket",
+  "tables": {
+    "products": {
+      "name": "products",
+      "schema": "",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "size",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "qty",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "price",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "product_image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        {
+          "name": "deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "products_name_idx",
+          "columns": ["name"]
+        },
+        {
+          "name": "products_category_idx",
+          "columns": ["category"]
+        },
+        {
+          "name": "products_deleted_idx",
+          "columns": ["deleted"]
+        }
+      ],
+      "foreignKeys": [],
+      "uniqueConstraints": []
+    }
+  }
+}

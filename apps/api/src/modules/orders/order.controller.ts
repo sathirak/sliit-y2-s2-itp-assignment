@@ -12,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { OrderDto } from './dtos/order.dto';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
-import type { OrderService } from 'src/modules/orders/order.service';
+import { OrderService } from './order.service';
 
 @Controller('order')
 @ApiTags('Order')
