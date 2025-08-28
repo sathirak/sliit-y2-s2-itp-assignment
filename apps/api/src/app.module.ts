@@ -6,6 +6,7 @@ import { DatabaseModule } from 'src/database/database.module';
 import { TicketModule } from './modules/tickets/ticket.module';
 import { OrderModule } from './modules/orders/order.module';
 import { ProductModule } from './modules/products/product.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ProductModule } from './modules/products/product.module';
     TicketModule,
     UserModule,
     ProductModule,
+    HealthModule,
     LoggerModule.forRoot({
       pinoHttp: {
         level: 'info',

@@ -9,9 +9,9 @@ export const products = pgTable('products', {
   color: text('color').notNull(),
   qty: integer('qty').notNull(),
   price: text('price').notNull(),
-  productImage: text('product_image').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true })
+  product_image: text('product_image').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
-  isDeleted: boolean('deleted').notNull().default(false),
+  deleted: boolean('deleted').notNull().default(false),
 }).enableRLS();

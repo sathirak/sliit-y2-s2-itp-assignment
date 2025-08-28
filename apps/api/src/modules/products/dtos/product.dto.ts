@@ -53,13 +53,13 @@ export class ProductDto {
   @ApiProperty({ description: 'Product image URL or path' })
   @IsString()
   @IsNotEmpty()
-  productImage: string;
+  product_image: string;
 
   @ApiProperty({ description: 'Product creation timestamp' })
   @IsDate()
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty({ description: 'Soft delete flag' })
   @IsBoolean()
-  isDeleted: boolean;
+  deleted: boolean;
 }

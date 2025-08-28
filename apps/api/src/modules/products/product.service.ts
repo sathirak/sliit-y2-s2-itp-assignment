@@ -21,28 +21,23 @@ export class ProductService {
   }
 
   async findAll() {
-    return await this.db.query.products.findMany({
-      where: (product, { eq }) => eq(product.isDeleted, false),
-    });
+    return await this.db.select().from(products).where(eq(products.deleted, false));
   }
 
   async findOne(id: string) {
-    const product = await this.db.query.products.findFirst({
-      where: (product, { eq, and }) =>
-        and(eq(product.id, id), eq(product.isDeleted, false)),
-    });
-
-    if (!product) {
+    const product = await this.db.select().from(products).where(and(eq(products.id, id), eq(products.deleted, false))).limit(1);
+    
+    if (!product.length) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-
-    return product;
+    
+    return product[0];
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     const [product] = await this.db.update(products)
       .set(updateProductDto)
-      .where(and(eq(products.id, id), eq(products.isDeleted, false)))
+      .where(and(eq(products.id, id), eq(products.deleted, false)))
       .returning();
 
     if (!product) {
@@ -54,7 +49,7 @@ export class ProductService {
 
   async remove(id: string) {
     const [product] = await this.db.update(products)
-      .set({ isDeleted: true })
+      .set({ deleted: true })
       .where(eq(products.id, id))
       .returning();
 

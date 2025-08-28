@@ -21,16 +21,40 @@ export const databaseProvider = [
     provide: DatabaseAsyncProvider,
     inject: [ConfigService],
     useFactory: async (configService: ConfigService) => {
+      const logger = new Logger('DatabaseProvider');
       const dbConnectionString = configService.get<string>('DATABASE_URL');
+      
+      if (!dbConnectionString) {
+        logger.error('DATABASE_URL is not configured');
+        throw new Error('DATABASE_URL is not configured');
+      }
+
+      logger.log('Attempting to connect to database...');
+      
       const pool = new Pool({
         connectionString: dbConnectionString,
-        ssl: { rejectUnauthorized: false },
+        ssl: process.env.NODE_ENV === 'production' 
+          ? { rejectUnauthorized: false }
+          : false,
       });
 
-      return drizzle(pool, {
+
+      try {
+        const client = await pool.connect();
+        logger.log('✅ Database connection successful');
+        client.release();
+      } catch (error) {
+        logger.error('❌ Database connection failed:', error.message);
+        throw new Error(`Database connection failed: ${error.message}`);
+      }
+
+      const db = drizzle(pool, {
         schema,
         logger: new DatabaseLogger(),
       }) as Schema;
+
+      logger.log('Database provider initialized successfully');
+      return db;
     },
   },
 ];
