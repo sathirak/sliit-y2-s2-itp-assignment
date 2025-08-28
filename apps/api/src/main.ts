@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger as AppLogger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { PORT } from 'src/consts';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 
@@ -14,11 +14,27 @@ async function bootstrap() {
 
   app.useLogger(app.get(AppLogger));
 
+  // Enable global validation pipes
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('ITP Assignment API')
+    .setDescription('API for ITP Assignment with Products, Users, Orders, and Tickets management')
     .setVersion('1.0')
-    .addTag('cats')
+    .addTag('products', 'Product management endpoints')
+    .addTag('users', 'User management endpoints')
+    .addTag('orders', 'Order management endpoints')
+    .addTag('tickets', 'Ticket management endpoints')
+    .addTag('health', 'Health check endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -32,7 +48,7 @@ async function bootstrap() {
         preferredSecurityScheme: 'bearer',
       },
       metaData: {
-        title: 'Cats | API Reference',
+        title: 'ITP Assignment | API Reference',
       },
       content: document,
       favicon: 'https://cats.com/favicon.ico',
