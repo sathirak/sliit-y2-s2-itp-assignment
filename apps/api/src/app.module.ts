@@ -6,6 +6,7 @@ import { DatabaseModule } from 'src/database/database.module';
 import { TicketModule } from './modules/tickets/ticket.module';
 import { OrderModule } from './modules/orders/order.module';
 import { ProductModule } from './modules/products/product.module';
+import { ContractModule } from './modules/contracts/contract.module';
 import { HealthModule } from './modules/health/health.module';
 import { UploadModule } from './modules/upload/upload.module';
 
@@ -15,6 +16,7 @@ import { UploadModule } from './modules/upload/upload.module';
     TicketModule,
     UserModule,
     ProductModule,
+    ContractModule,
     HealthModule,
     UploadModule,
     LoggerModule.forRoot({
