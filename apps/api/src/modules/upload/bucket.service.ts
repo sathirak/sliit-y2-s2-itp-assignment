@@ -26,9 +26,12 @@ export class BucketService {
       await this.s3Client.send(headCommand);
       this.logger.log(`Bucket ${bucketName} already exists`);
     } catch (error) {
+      this.logger.log(`Bucket check error: ${error.name} - ${error.message}`);
+      
       if (error.name === 'NotFound' || error.name === 'NoSuchBucket') {
         // Bucket doesn't exist, create it
         try {
+          this.logger.log(`Creating bucket ${bucketName}...`);
           const createCommand = new CreateBucketCommand({ 
             Bucket: bucketName,
             ACL: 'public-read',
@@ -40,8 +43,8 @@ export class BucketService {
           throw new Error(`Failed to create bucket: ${createError.message}`);
         }
       } else {
-        this.logger.error(`Error checking bucket ${bucketName}: ${error.message}`);
-        throw new Error(`Error checking bucket: ${error.message}`);
+        this.logger.error(`Error checking bucket ${bucketName}: ${error.name} - ${error.message}`);
+        throw new Error(`Error checking bucket: ${error.name} - ${error.message}`);
       }
     }
   }
