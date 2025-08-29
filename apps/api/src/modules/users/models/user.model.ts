@@ -15,4 +15,4 @@ export const usersTable = pgTable('users', {
     .notNull()
     .defaultNow(),
   isDeleted: boolean('deleted').notNull().default(false),
-});
+}).enableRLS();
