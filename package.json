@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:frontend": "turbo run dev --filter=frontend",
+
+    "d": "pnpm --filter nestjs-starter d",
     "build": "turbo run build",
     "check-types": "turbo run check-types",
     "lint": "turbo run lint"
