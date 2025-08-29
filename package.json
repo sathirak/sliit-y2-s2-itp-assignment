@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:frontend": "turbo run dev --filter=frontend",
-
+    "dev:api": "turbo run dev --filter=api",
     "d": "pnpm --filter nestjs-starter d",
     "build": "turbo run build",
     "check-types": "turbo run check-types",

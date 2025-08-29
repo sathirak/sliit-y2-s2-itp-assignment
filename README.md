@@ -29,5 +29,5 @@ pnpm dev #To develop both
 
 ## Project Structure
 
-- `apps/api` — Express + Mongoose backend
-- `apps/frontend` — React + Vite + Tailwind frontend
+- `apps/api` — NestJs
+- `apps/frontend` — NextJS
