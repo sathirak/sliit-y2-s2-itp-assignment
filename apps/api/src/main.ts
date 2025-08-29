@@ -46,6 +46,8 @@ async function bootstrap() {
     logger.log(
       `API Reference is available at http://localhost:${PORT}/reference`,
     );
+    logger.log(`Health check available at http://localhost:${PORT}/health`);
+    logger.log('✅ Application started successfully');
   });
 }
 bootstrap();
