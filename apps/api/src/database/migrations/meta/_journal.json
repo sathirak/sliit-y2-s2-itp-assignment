@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1756029736298,
-      "tag": "0000_create-user-ticket",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1756437662339,
-      "tag": "0001_add-rls",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1756437901778,
-      "tag": "0002_create-product",
+      "when": 1756440498880,
+      "tag": "0000_add-base-tables",
       "breakpoints": true
     }
   ]
