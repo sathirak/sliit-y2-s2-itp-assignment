@@ -34,6 +34,7 @@ export class OrderService {
       .insert(orders)
       .values({
         status: createOrderDto.status,
+        customerId: createOrderDto.customerId,
       })
       .returning();
     return newOrder;
