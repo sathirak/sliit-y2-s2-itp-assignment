@@ -15,5 +15,9 @@
   "devDependencies": {
     "turbo": "^2.5.4",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.1",
+    "jsonwebtoken": "^9.0.2"
   }
 }

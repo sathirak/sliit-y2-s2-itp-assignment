@@ -1,18 +1,22 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import type { Schema } from 'src/common/types/db';
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
-import { usersTable } from 'src/database/schema';
+import { userProviders, usersTable } from 'src/database/schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserDto } from './dtos/user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { and, eq } from 'drizzle-orm';
-
+import { verifyJwt } from 'src/common/utils/jwt';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { ConfigService } from '@nestjs/config';
+import * as schema from 'src/database/schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(DatabaseAsyncProvider)
     private readonly db: Schema,
+    private configService: ConfigService,
   ) {}
 
   async getAllUsers() {
@@ -28,6 +32,56 @@ export class UserService {
         and(eq(user.id, userId), eq(user.isDeleted, false)),
     });
     return user;
+  }
+
+    async getUserBySupabaseId(token: string): Promise<UserDto | null> {
+    let decodedToken;
+    try {
+      decodedToken = await verifyJwt<Omit<SupabaseUser, 'identities'>>(
+        token,
+        this.configService.get<string>('jwt.secret'),
+      );
+    } catch (error) {
+      console.log('error', error);
+      throw new UnauthorizedException();
+    }
+
+    const providerId = decodedToken.sub;
+    try {
+      const userProvider = await this.db.query.userProviders.findFirst({
+        where: and(
+          eq(schema.userProviders.providerId, providerId),
+          eq(schema.userProviders.provider, 'supabase'),
+        ),
+        with: {
+          user: {
+            with: {
+              settings: true,
+            },
+          },
+        },
+      });
+
+      if (!userProvider || !userProvider.user) {
+        const userMeta = decodedToken.user_metadata || {};
+        const fullName = userMeta.full_name || '';
+        const [firstName, ...lastNameParts] = fullName.split(' ');
+        const lastName = lastNameParts.join(' ');
+
+        const createdUser = await this.createUser({
+          id: providerId,
+          email: decodedToken.email,
+          firstName: firstName || '',
+          lastName: lastName || '',
+          rawUserMetaData: userMeta,
+        });
+        return new UserDto(createdUser);
+      }
+
+      return new UserDto(userProvider.user);
+    } catch (error) {
+      throw error;
+    }
   }
 
   async create(data: CreateUserDto): Promise<UserDto> {
@@ -65,4 +119,47 @@ export class UserService {
       .returning();
   }
 
+  async createUser(userData: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    rawUserMetaData: any;
+  }) {
+    try {
+      if (!userData.id || !userData.email) {
+        throw new Error('Missing required user data: id or email');
+      }
+
+      const firstName = userData.firstName;
+      const lastName = userData.lastName;
+
+      const user = await this.db.transaction(async (tx) => {
+        const [createdUser] = await tx
+          .insert(usersTable)
+          .values({
+            firstName: firstName,
+            lastName: lastName,
+            name: `${firstName} ${lastName}`,
+            email: userData.email,
+            password: '',
+            roleName: 'customer',
+            isDeleted: false
+          } as any)
+          .returning();
+
+        await tx.insert(userProviders).values({
+          providerId: userData.id,
+          userId: createdUser.id,
+          provider: 'supabase',
+        });
+
+        return createdUser;
+      });
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
