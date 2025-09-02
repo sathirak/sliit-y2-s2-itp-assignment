@@ -11,6 +11,9 @@ import {
 import { UserRole } from '../interfaces/roles.enum';
 
 export class UserDto {
+  constructor(partial: UserDto) {
+    Object.assign(this, partial);
+  }
   @IsUUID()
   id: string;
 

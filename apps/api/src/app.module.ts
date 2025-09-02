@@ -9,6 +9,8 @@ import { ProductModule } from './modules/products/product.module';
 import { ContractModule } from './modules/contracts/contract.module';
 import { HealthModule } from './modules/health/health.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtGuard } from './common/guards/jwt.guard';
 
 @Module({
   imports: [
@@ -67,6 +69,12 @@ import { UploadModule } from './modules/upload/upload.module';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
+  ],
+    providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
+    }
   ],
 })
 export class AppModule { }
