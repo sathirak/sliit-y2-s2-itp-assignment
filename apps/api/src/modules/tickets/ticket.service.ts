@@ -11,9 +11,9 @@ export class TicketService {
   constructor(
     @Inject(DatabaseAsyncProvider)
     private db: Schema,
-  ) {}
+  ) { }
 
-  async getTicket(): Promise <TicketDto[]> {
+  async getTicket(): Promise<TicketDto[]> {
     const ticket = await this.db.query.tickets.findMany({
       where: (tickets, { eq }) => eq(tickets.isDeleted, false),
     });
@@ -29,22 +29,23 @@ export class TicketService {
 
     return ticket;
   }
-    async create(data: CreateTicketDto): Promise<TicketDto> {
-       const [created] = await this.db.insert(tickets)
-         .values({
-           title: data.title,
-           description: data.description,
-          })
-         .returning();
-       return created;
-     }
+  
+  async create(data: CreateTicketDto): Promise<TicketDto> {
+    const [created] = await this.db.insert(tickets)
+      .values({
+        title: data.title,
+        description: data.description,
+      })
+      .returning();
+    return created;
+  }
 
-       async delete(id: string): Promise<boolean> {
-         const [deleted] = await this.db.update(tickets)
-           .set({ isDeleted: true })
-           .where(and(eq(tickets.id, id), eq(tickets.isDeleted, false)))
-           .returning();
-         if (!deleted) throw new NotFoundException('Cat not found');
-         return true;
-       }
+  async delete(id: string): Promise<boolean> {
+    const [deleted] = await this.db.update(tickets)
+      .set({ isDeleted: true })
+      .where(and(eq(tickets.id, id), eq(tickets.isDeleted, false)))
+      .returning();
+    if (!deleted) throw new NotFoundException('Cat not found');
+    return true;
+  }
 }
