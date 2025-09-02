@@ -8,6 +8,7 @@ import { products } from 'src/modules/products/models/product.model';
 import { contracts } from 'src/modules/contracts/models/contract.model';
 import { contractRequests } from 'src/modules/contracts/models/contract-request.model';
 import { contractRequestComments } from 'src/modules/contracts/models/contract-request-comment.model';
+import { userProviders, userProvidersRelations } from 'src/modules/users/models/user-providers.model';
 
 export { 
     usersTable, 
@@ -23,5 +24,7 @@ export {
     products, 
     contracts, 
     contractRequests, 
-    contractRequestComments 
+    contractRequestComments,
+    userProviders, 
+    userProvidersRelations
 };

@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { UserDto } from './dtos/user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { CurrentUser } from 'src/common/decorates/current-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -12,6 +13,13 @@ export class UserController {
   async getAllUsers(): Promise<UserDto[]> {
     return this.userService.getAllUsers();
   }
+
+  
+  @Get("me")
+  async me(@CurrentUser() currentUser: UserDto): Promise<UserDto> {
+    return currentUser;
+  }
+   
    
   @Get(":id")
   async getUserById(@Param('id') id: string): Promise<UserDto> {
