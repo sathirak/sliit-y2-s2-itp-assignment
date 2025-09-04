@@ -17,6 +17,7 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.56.1",
     "jsonwebtoken": "^9.0.2"
   }
