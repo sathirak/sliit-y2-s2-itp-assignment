@@ -74,6 +74,10 @@ import { JwtGuard } from './common/guards/jwt.guard';
     {
       provide: APP_GUARD,
       useClass: JwtGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: require('./common/guards/roles.guard').RolesGuard,
     }
   ],
 })
