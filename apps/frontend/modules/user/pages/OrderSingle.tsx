@@ -1,5 +1,5 @@
 import UserLayout from '@/modules/user/layouts/UserLayout';
-import { OrderDetailsResponseDto, OrderStatus, InvoiceStatus, PaymentMethod, PaymentStatus } from '@/lib/services/dtos/order';
+import { OrderDetailsResponseDto, OrderStatus, InvoiceStatus, PaymentMethod, PaymentStatus } from '@/lib/dtos/order';
 import { fakeOrders } from '@/modules/user/pages/Orders';
 
 
