@@ -121,3 +121,66 @@ export interface OrderDetailsResponseDto {
     orderProducts: OrderProductWithRelationsDto[];
     invoices: InvoiceWithRelationsDto[];
 }
+
+// Checkout DTO Interface
+export interface CheckoutDto {
+    customerId?: string;
+    items: CheckoutItemDto[];
+}
+
+// Checkout Item DTO Interface
+export interface CheckoutItemDto {
+    productId: string;
+    quantity: number;
+}
+
+// Checkout Response DTO Interface
+export interface CheckoutResponseDto {
+    order: OrderDto;
+    invoice: InvoiceDto;
+    totalAmount: string;
+}
+
+// Create DTOs
+export interface CreateOrderDto {
+    status: OrderStatus;
+    customerId?: string;
+}
+
+export interface CreateOrderProductDto {
+    orderId: string;
+    productId: string;
+    quantity: number;
+    price: string;
+}
+
+export interface CreateInvoiceDto {
+    orderId: string;
+    amount: string;
+    dueDate?: Date;
+    status: InvoiceStatus;
+}
+
+export interface CreatePaymentDto {
+    invoiceId: string;
+    amount: string;
+    method: PaymentMethod;
+    status: PaymentStatus;
+}
+
+// Update DTOs
+export interface UpdateOrderDto {
+    status?: OrderStatus;
+    customerId?: string;
+}
+
+// Payment with Relations Interface
+export interface PaymentWithRelationsDto {
+    id: string;
+    invoiceId: string;
+    amount: string;
+    paidAt: Date;
+    method: PaymentMethod;
+    status: PaymentStatus;
+    invoice?: InvoiceDto;
+}

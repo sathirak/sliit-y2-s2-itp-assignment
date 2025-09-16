@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductFilterDto } from "@/lib/services/dtos/product";
+import { ProductFilterDto } from "@/lib/dtos/product";
 import { Input } from "@/modules/ui/input";
 import { Button } from "@/modules/ui/button";
 import {

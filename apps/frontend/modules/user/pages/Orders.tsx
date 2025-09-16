@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import UserLayout from "../layouts/UserLayout";
-import { OrderDetailsResponseDto, OrderStatus, InvoiceStatus, PaymentMethod, PaymentStatus } from '@/lib/services/dtos/order';
+import { OrderDetailsResponseDto, OrderStatus, InvoiceStatus, PaymentMethod, PaymentStatus } from '@/lib/dtos/order';
 
 
 export const fakeOrders: OrderDetailsResponseDto[] = [
