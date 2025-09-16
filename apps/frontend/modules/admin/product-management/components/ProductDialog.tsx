@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Product, CreateProductDto, UpdateProductDto } from "@/lib/services/dtos/product";
+import { Product, CreateProductDto, UpdateProductDto } from "@/lib/dtos/product";
 import { productService } from "@/lib/services/product.service";
 import {
   Dialog,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/lib/services/dtos/product";
+import { Product } from "@/lib/dtos/product";
 import {
   Table,
   TableBody,

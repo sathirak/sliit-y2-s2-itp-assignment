@@ -1,4 +1,4 @@
-import { Product, CreateProductDto, UpdateProductDto, ProductFilterDto, PaginatedResponse } from './dtos/product';
+import { Product, CreateProductDto, UpdateProductDto, ProductFilterDto, PaginatedResponse } from '../dtos/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
