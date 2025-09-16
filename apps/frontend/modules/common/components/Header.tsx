@@ -51,7 +51,7 @@ export const Header = () => {
           </Link>
           <Link href="/admin/product-management">
             <Button variant="outline" size="sm">
-              <FileText size={16} /> Temp prodicts
+              <FileText size={16} /> Temp products
             </Button>
           </Link>
           <Link href="/supplier/contracts">
