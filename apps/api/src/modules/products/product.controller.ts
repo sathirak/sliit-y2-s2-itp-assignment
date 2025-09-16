@@ -31,6 +31,7 @@ export class ProductController {
     description: 'Product created successfully',
     type: ProductDto,
   })
+  @AllowGuests()
   @ApiResponse({ status: 400, description: 'Bad request' })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
