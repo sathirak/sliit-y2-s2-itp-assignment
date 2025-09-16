@@ -17,6 +17,7 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductDto } from './dtos/product.dto';
 import { ProductFilterDto } from './dtos/product-filter.dto';
 import { PaginatedResponseDto } from '../../common/dto/pagination.dto';
+import { AllowGuests } from '../../common/decorates/allow-guests.decorator';
 
 @ApiTags('products')
 @Controller('products')
@@ -30,12 +31,14 @@ export class ProductController {
     description: 'Product created successfully',
     type: ProductDto,
   })
+  @AllowGuests()
   @ApiResponse({ status: 400, description: 'Bad request' })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
   @Get()
+  @AllowGuests()
   @ApiOperation({ summary: 'Get all products with pagination, search, and filtering' })
   @ApiQuery({ name: 'page', required: false, description: 'Page number (1-based)', example: 1 })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page (1-100)', example: 10 })
@@ -58,6 +61,7 @@ export class ProductController {
   }
 
   @Get('all')
+  @AllowGuests()
   @ApiOperation({ summary: 'Get all products without pagination (for backward compatibility)' })
   @ApiResponse({
     status: 200,
@@ -69,6 +73,7 @@ export class ProductController {
   }
 
   @Get(':id')
+  @AllowGuests()
   @ApiOperation({ summary: 'Get a product by ID' })
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiResponse({

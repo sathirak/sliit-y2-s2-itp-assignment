@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -16,6 +17,14 @@ async function bootstrap() {
   const logger = new Logger('NestApplication');
 
   app.useLogger(app.get(AppLogger));
+
+  // Enable CORS
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
 
   // Enable global validation pipes
   app.useGlobalPipes(
@@ -60,7 +69,7 @@ async function bootstrap() {
     }),
   );
 
-  const configService = app.get('ConfigService');
+  const configService = app.get(ConfigService);
   const port = Number(configService.get('PORT')) || 3001;
   await app.listen(port, () => {
     logger.log(`Server is running on http://localhost:${port}`);
