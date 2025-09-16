@@ -59,7 +59,6 @@ export const Header = () => {
               <Users size={16} /> Temp Supplier
             </Button>
           </Link>
-          </Link>
         </div>
       </div>
     </header>
