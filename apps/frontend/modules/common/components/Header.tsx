@@ -1,7 +1,8 @@
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, Settings } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import Image from 'next/image';
+import Link from 'next/link';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 
 export const Header = () => {
@@ -42,9 +43,13 @@ export const Header = () => {
           <Button variant="outline" size="sm">
             <ShoppingBag size={16} /> CART
           </Button>
+          <Link href="/admin/product-management">
+            <Button variant="outline" size="sm">
+              <Settings size={16} /> Temp (Test) ADMIN
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
-    //
   );
 }
