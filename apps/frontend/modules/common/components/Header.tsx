@@ -1,4 +1,5 @@
-import { Heart, ShoppingBag, Settings } from "lucide-react";
+
+import { Heart, ShoppingBag, Settings, FileText, Users } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import Image from 'next/image';
@@ -43,9 +44,19 @@ export const Header = () => {
           <Button variant="outline" size="sm">
             <ShoppingBag size={16} /> CART
           </Button>
+        <Link href="/admin/contract-management">
+            <Button variant="outline" size="sm">
+              <FileText size={16} /> Temp Contracts
+            </Button>
+          </Link>
           <Link href="/admin/product-management">
             <Button variant="outline" size="sm">
-              <Settings size={16} /> Temp (Test) ADMIN
+              <FileText size={16} /> Temp products
+            </Button>
+          </Link>
+          <Link href="/supplier/contracts">
+            <Button variant="outline" size="sm">
+              <Users size={16} /> Temp Supplier
             </Button>
           </Link>
         </div>
