@@ -1,6 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const protectedRoutes: { [path: string]: string[] } = {
+  '/admin': ['admin'],
+  '/private': ['admin', 'owner'],
+};
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -27,11 +32,21 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+  const requiredRoles = Object.entries(protectedRoutes).find(([route]) => pathname.startsWith(route))?.[1];
+  const userRole = user?.user_metadata?.role;
+
+  if (requiredRoles && (!userRole || !requiredRoles.includes(userRole))) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/not-authorized';
+    return NextResponse.redirect(url);
+  }
+
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/error')
+    !pathname.startsWith('/login') &&
+    !pathname.startsWith('/auth') &&
+    !pathname.startsWith('/error')
   ) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
