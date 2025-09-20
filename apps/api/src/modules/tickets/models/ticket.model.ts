@@ -1,10 +1,16 @@
-import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { TicketStatus } from '../interfaces/tickets';
+
 export const tickets = pgTable('tickets', {
   id: uuid('id').defaultRandom().primaryKey(),
-  title: text('title').notNull(),
-description: text('description').notNull(),
-createdAt: timestamp('created_at', { withTimezone: true })
+
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  message: text('message').notNull(),
+  status: text('status').notNull().default('open').$type<TicketStatus>(),
+  createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
-  isDeleted: boolean('deleted').notNull().default(false),
+  deleted: boolean('deleted').notNull().default(false),
 }).enableRLS();

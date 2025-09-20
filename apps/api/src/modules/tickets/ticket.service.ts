@@ -1,3 +1,4 @@
+import { UpdateTicketDto } from "./dto.ts/update-ticket.dto";
 import { Inject, NotFoundException } from "@nestjs/common";
 import type { Schema } from "src/common/types/db";
 import { DatabaseAsyncProvider } from "src/database/database.provider";
@@ -15,7 +16,7 @@ export class TicketService {
 
   async getTicket(): Promise<TicketDto[]> {
     const ticket = await this.db.query.tickets.findMany({
-      where: (tickets, { eq }) => eq(tickets.isDeleted, false),
+      where: (tickets, { eq }) => eq(tickets.deleted, false),
     });
 
     return ticket;
@@ -24,7 +25,7 @@ export class TicketService {
   async getTicketById(ticketId: string): Promise<TicketDto> {
     const ticket = await this.db.query.tickets.findFirst({
       where: (tickets, { eq, and }) =>
-        and(eq(tickets.id, ticketId), eq(tickets.isDeleted, false)),
+        and(eq(tickets.id, ticketId), eq(tickets.deleted, false)),
     });
 
     return ticket;
@@ -33,19 +34,36 @@ export class TicketService {
   async create(data: CreateTicketDto): Promise<TicketDto> {
     const [created] = await this.db.insert(tickets)
       .values({
-        title: data.title,
-        description: data.description,
+        name: data.name,
+        message: data.message,
+        email: data.email,
+        phone: data.phone,
       })
       .returning();
     return created;
   }
 
+  async update(id: string, data: UpdateTicketDto): Promise<TicketDto> {
+    const [updated] = await this.db.update(tickets)
+      .set({
+        name: data.name,
+        message: data.message,
+        email: data.email,
+        phone: data.phone,
+        status: data.status,
+      })
+      .where(and(eq(tickets.id, id), eq(tickets.deleted, false)))
+      .returning();
+    if (!updated) throw new NotFoundException('Ticket not found');
+    return updated;
+  }
+
   async delete(id: string): Promise<boolean> {
     const [deleted] = await this.db.update(tickets)
-      .set({ isDeleted: true })
-      .where(and(eq(tickets.id, id), eq(tickets.isDeleted, false)))
+      .set({ deleted: true })
+      .where(and(eq(tickets.id, id), eq(tickets.deleted, false)))
       .returning();
-    if (!deleted) throw new NotFoundException('Cat not found');
+    if (!deleted) throw new NotFoundException('Ticket not found');
     return true;
   }
 }
