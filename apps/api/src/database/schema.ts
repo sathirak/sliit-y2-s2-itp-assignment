@@ -1,5 +1,5 @@
 import { tickets } from 'src/modules/tickets/models/ticket.model';
-import { usersTable } from 'src/modules/users/models/user.model';
+import { usersTable, usersRelations } from 'src/modules/users/models/user.model';
 import { orders, ordersRelations } from 'src/modules/orders/models/order.model';
 import { invoices, invoicesRelations } from 'src/modules/orders/models/invoice.model';
 import { orderProducts, orderProductsRelations } from 'src/modules/orders/models/order-product.model';
@@ -12,6 +12,7 @@ import { userProviders, userProvidersRelations } from 'src/modules/users/models/
 
 export { 
     usersTable, 
+    usersRelations,
     tickets, 
     orders, 
     ordersRelations,

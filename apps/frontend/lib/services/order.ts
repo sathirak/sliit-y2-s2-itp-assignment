@@ -1,5 +1,5 @@
-import { apiPrivateClient } from "@/lib/api/private";
-import { apiPublicClient } from "@/lib/api";
+import { apiPrivateClient } from "@/lib/private";
+import { apiPublicClient } from "@/lib/public";
 import type {
   OrderDto,
   OrderWithRelationsDto,

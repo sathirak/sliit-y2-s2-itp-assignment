@@ -7,30 +7,29 @@ import { CurrentUser } from 'src/common/decorates/current-user.decorator';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get()
   async getAllUsers(): Promise<UserDto[]> {
     return this.userService.getAllUsers();
   }
 
-  
   @Get("me")
   async me(@CurrentUser() currentUser: UserDto): Promise<UserDto> {
     return currentUser;
   }
-   
-   
+
   @Get(":id")
   async getUserById(@Param('id') id: string): Promise<UserDto> {
     return this.userService.getUserById(id);
   }
 
-   @Post()
+  @Post()
   async create(@Body() data: CreateUserDto): Promise<UserDto> {
     return this.userService.create(data);
   }
-   @Put(':id')
+
+  @Put(':id')
   async update(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return this.userService.update(id, data);
   }

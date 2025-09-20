@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 
 export function verifyJwt<T>(token: string, secret: string): Promise<T> {
   return new Promise((resolve, reject) => {
