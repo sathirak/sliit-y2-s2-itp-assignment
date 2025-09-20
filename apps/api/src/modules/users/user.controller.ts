@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dtos/user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -10,9 +10,13 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  async getAllUsers(): Promise<UserDto[]> {
+  async getAllUsers(currentUser: UserDto): Promise<UserDto[]> {
+    if(currentUser.roleName !== 'owner') {
     return this.userService.getAllUsers();
+  }else{
+    throw new NotFoundException();
   }
+}
 
   @Get("me")
   async me(@CurrentUser() currentUser: UserDto): Promise<UserDto> {
