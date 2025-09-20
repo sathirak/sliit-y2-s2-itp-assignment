@@ -1,13 +1,5 @@
-import Image from "next/image";
-import { NewArrivals } from "../modules/common/components/NewArrivals";
-import ChatBubble from "@/modules/chatbot/components/Chatbubble";
+import { Home } from '@/modules/home/components/pages/Home';
 
-export default function Home() {
-  return (
-    <>
-      <NewArrivals />
-      <ChatBubble />
-    </> 
-
-  );
+export default function Page() {
+  return <Home />;
 }

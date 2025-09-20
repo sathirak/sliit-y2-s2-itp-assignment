@@ -4,6 +4,7 @@ import {
   IsDate,
   IsBoolean,
   IsUUID,
+  IsOptional,
 } from 'class-validator';
 import { OrderStatus } from '../interfaces/order-status';
 
@@ -20,4 +21,8 @@ export class OrderDto {
 
   @IsBoolean()
   isDeleted: boolean;
+
+  @IsUUID()
+  @IsOptional()
+  customerId?: string;
 }

@@ -6,14 +6,20 @@
     "dev": "turbo run dev",
     "dev:frontend": "turbo run dev --filter=frontend",
     "dev:api": "turbo run dev --filter=api",
-    "d": "pnpm --filter nestjs-starter d",
+    "d": "pnpm --filter api d",
     "build": "turbo run build",
     "check-types": "turbo run check-types",
     "lint": "turbo run lint"
   },
   "packageManager": "pnpm@10.11.0",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "turbo": "^2.5.4",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.56.1",
+    "jsonwebtoken": "^9.0.2"
   }
 }
