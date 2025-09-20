@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 export async function SignIn(formData: FormData) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     { cookies: await cookies() }
   );
   const email = formData.get("email") as string;
@@ -23,7 +23,7 @@ export async function SignIn(formData: FormData) {
 export async function SignUp(formData: FormData) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     { cookies: await cookies() }
   );
   const email = formData.get("email") as string;

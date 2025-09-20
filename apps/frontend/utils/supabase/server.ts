@@ -1,21 +1,31 @@
-import { createServerClient } from '@supabase/ssr';
+"use server"
 
-import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-export function createSupabaseServerClient(request: NextRequest, response: NextResponse) {
+export async function createClient() {
+  const cookieStore = await cookies()
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    'https://fcwuatyclrkywpvycrji.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjd3VhdHljbHJreXdwdnljcmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMTU5OTcsImV4cCI6MjA2OTc5MTk5N30.hqapsaaBfkzUQONNiCRLcr4O7KdgjTKhhKVS1a7IGQQ',
     {
       cookies: {
-        get: (name) => request.cookies.get(name)?.value,
-        set: (name, value, options) => {
-          response.cookies.set(name, value, options);
+        getAll() {
+          return cookieStore.getAll()
         },
-        remove: (name, options) => {
-          response.cookies.set(name, '', { ...options, maxAge: 0 });
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
         },
       },
     }
-  );
+  )
 }

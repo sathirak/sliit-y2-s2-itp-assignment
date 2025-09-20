@@ -1,11 +1,13 @@
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { SignUp as signUpAction } from "./actions";
 
 export default function SignUp() {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-6">Create Account</h2>
-  <form className="space-y-4" action="/sign-up">
+  <form className="space-y-4" action={signUpAction}>
         <div>
           <label className="block mb-1 font-medium">First Name</label>
           <Input placeholder="First Name" name="firstName" />

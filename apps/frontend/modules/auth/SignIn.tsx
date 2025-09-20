@@ -1,11 +1,13 @@
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { SignIn as signInAction } from "./actions";
 
 export default function SignIn() {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-6">Sign In</h2>
-  <form className="space-y-4" action="/api/sign-in" method="POST">
+  <form className="space-y-4" action={signInAction}>
         <div>
           <label className="block mb-1 font-medium">Email</label>
           <Input type="email" placeholder="Email" name="email" />

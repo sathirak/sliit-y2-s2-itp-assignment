@@ -39,7 +39,7 @@ export class UserService {
     try {
       decodedToken = await verifyJwt<Omit<SupabaseUser, 'identities'>>(
         token,
-        this.configService.get<string>('jwt.secret'),
+        this.configService.get<string>('JWT_SECRET'),
       );
     } catch (error) {
       console.log('error', error);
