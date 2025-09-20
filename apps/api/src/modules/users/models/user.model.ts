@@ -1,4 +1,5 @@
 import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 import { UserRole } from '../interfaces/roles.enum';
 
 export const usersTable = pgTable('users', {
@@ -16,3 +17,10 @@ export const usersTable = pgTable('users', {
     .defaultNow(),
   isDeleted: boolean('deleted').notNull().default(false),
 }).enableRLS();
+
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  userProviders: many(userProviders),
+}));
+
+// Import moved to bottom to avoid circular dependency
+import { userProviders } from './user-providers.model';

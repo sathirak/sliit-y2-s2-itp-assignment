@@ -1,37 +1,58 @@
 "use server";
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
 
 export async function SignIn(formData: FormData) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    { cookies: await cookies() }
-  );
+  const supabase = await createClient();
+  
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  
+  const { error } = await supabase.auth.signInWithPassword({ 
+    email, 
+    password,
+  });
+  
   if (error) {
-    redirect("/error");
+    console.error("Sign in error:", error);
+    redirect("/sign-in?error=Could not authenticate user");
   }
+  
   revalidatePath("/", "layout");
   redirect("/");
 }
 
 export async function SignUp(formData: FormData) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    { cookies: await cookies() }
-  );
+  const supabase = await createClient();
+  
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const { error } = await supabase.auth.signUp({ email, password });
+  
+  const { error } = await supabase.auth.signUp({ 
+    email, 
+    password 
+  });
+  
   if (error) {
+    console.error("Sign up error:", error);
+    redirect("/sign-up?error=Could not create user");
+  }
+  
+  revalidatePath("/", "layout");
+  redirect("/auth/confirm");
+}
+
+export async function SignOut() {
+  const supabase = await createClient();
+  
+  const { error } = await supabase.auth.signOut();
+  
+  if (error) {
+    console.error("Sign out error:", error);
     redirect("/error");
   }
+  
   revalidatePath("/", "layout");
   redirect("/");
 }

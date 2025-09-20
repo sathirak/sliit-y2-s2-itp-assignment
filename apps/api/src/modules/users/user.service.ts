@@ -34,13 +34,14 @@ export class UserService {
     return user;
   }
 
-    async getUserBySupabaseId(token: string): Promise<UserDto | null> {
+  async getUserBySupabaseId(token: string): Promise<UserDto | null> {
     let decodedToken;
     try {
       decodedToken = await verifyJwt<Omit<SupabaseUser, 'identities'>>(
         token,
         this.configService.get<string>('JWT_SECRET'),
       );
+      console.log('decodedToken', decodedToken);
     } catch (error) {
       console.log('error', error);
       throw new UnauthorizedException();
@@ -54,16 +55,14 @@ export class UserService {
           eq(schema.userProviders.provider, 'supabase'),
         ),
         with: {
-          user: {
-            with: {
-              settings: true,
-            },
-          },
+          user: true,
         },
       });
 
       if (!userProvider || !userProvider.user) {
         const userMeta = decodedToken.user_metadata || {};
+
+        
         const fullName = userMeta.full_name || '';
         const [firstName, ...lastNameParts] = fullName.split(' ');
         const lastName = lastNameParts.join(' ');
