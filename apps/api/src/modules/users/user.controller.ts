@@ -10,13 +10,13 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  async getAllUsers(currentUser: UserDto): Promise<UserDto[]> {
-    if(currentUser.roleName !== 'owner') {
-    return this.userService.getAllUsers();
-  }else{
-    throw new NotFoundException();
+  async getAllUsers(@CurrentUser() currentUser: UserDto): Promise<UserDto[]> {
+    if (currentUser && currentUser.roleName !== 'owner') {
+      return this.userService.getAllUsers();
+    } else {
+      throw new NotFoundException();
+    }
   }
-}
 
   @Get("me")
   async me(@CurrentUser() currentUser: UserDto): Promise<UserDto> {
