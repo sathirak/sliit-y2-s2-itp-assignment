@@ -1,9 +1,8 @@
 "use server";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
-export async function SignIn(formData: FormData) {
+export async function signIn(formData: FormData) {
   const supabase = await createClient();
   
   const email = formData.get("email") as string;
@@ -16,14 +15,13 @@ export async function SignIn(formData: FormData) {
   
   if (error) {
     console.error("Sign in error:", error);
-    redirect("/sign-in?error=Could not authenticate user");
+    redirect("/sign-in");
   }
   
-  revalidatePath("/", "layout");
   redirect("/");
 }
 
-export async function SignUp(formData: FormData) {
+export async function signUp(formData: FormData) {
   const supabase = await createClient();
   
   const email = formData.get("email") as string;
@@ -36,24 +34,21 @@ export async function SignUp(formData: FormData) {
   
   if (error) {
     console.error("Sign up error:", error);
-    redirect("/sign-up?error=Could not create user");
+    redirect("/sign-up");
   }
   
-  revalidatePath("/", "layout");
-  redirect("/auth/confirm");
+  redirect("/");
 }
 
-export async function SignOut() {
+export async function signOut() {
   const supabase = await createClient();
   
   const { error } = await supabase.auth.signOut();
   
   if (error) {
     console.error("Sign out error:", error);
-    redirect("/error");
   }
   
-  revalidatePath("/", "layout");
   redirect("/");
 }
     

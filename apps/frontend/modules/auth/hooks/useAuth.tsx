@@ -58,6 +58,7 @@ export function useAuth() {
 		setLoading(true);
 		const { error } = await supabase.auth.signOut();
 		if (error) {
+			console.log('Error signing out:', error);
 			setError(error.message);
 			setLoading(false);
 		}

@@ -1,7 +1,7 @@
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { SignIn as signInAction } from "./actions";
+import { signIn as signInAction } from "./actions";
 
 export default function SignIn() {
   return (

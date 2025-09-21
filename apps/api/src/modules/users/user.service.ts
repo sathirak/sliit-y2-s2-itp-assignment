@@ -41,7 +41,6 @@ export class UserService {
         token,
         this.configService.get<string>('JWT_SECRET'),
       );
-      console.log('decodedToken', decodedToken);
     } catch (error) {
       console.log('error', error);
       throw new UnauthorizedException();
