@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, ForbiddenException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dtos/user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -10,13 +10,9 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  async getAllUsers(currentUser: UserDto): Promise<UserDto[]> {
-    if(currentUser.roleName !== 'owner') {
+  async getAllUsers(@CurrentUser() currentUser: UserDto): Promise<UserDto[]> {
     return this.userService.getAllUsers();
-  }else{
-    throw new NotFoundException();
   }
-}
 
   @Get("me")
   async me(@CurrentUser() currentUser: UserDto): Promise<UserDto> {
@@ -29,17 +25,26 @@ export class UserController {
   }
 
   @Post()
-  async create(@Body() data: CreateUserDto): Promise<UserDto> {
+  async create(@CurrentUser() currentUser: UserDto, @Body() data: CreateUserDto): Promise<UserDto> {
+    if (currentUser.roleName === 'owner') {
+      throw new ForbiddenException('Only owner can create users');
+    }
     return this.userService.create(data);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() data: UpdateUserDto) {
+  async update(@CurrentUser() currentUser: UserDto, @Param('id') id: string, @Body() data: UpdateUserDto) {
+    if (currentUser.roleName === 'owner') {
+      throw new ForbiddenException('Only owner can update users');
+    }
     return this.userService.update(id, data);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@CurrentUser() currentUser: UserDto, @Param('id') id: string) {
+    if (currentUser.roleName === 'owner') {
+      throw new ForbiddenException('Only owner can delete users');
+    }
     return this.userService.delete(id);
   }
 }
