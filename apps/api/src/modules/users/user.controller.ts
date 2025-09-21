@@ -26,7 +26,7 @@ export class UserController {
 
   @Post()
   async create(@CurrentUser() currentUser: UserDto, @Body() data: CreateUserDto): Promise<UserDto> {
-    if (currentUser.roleName === 'owner') {
+    if (currentUser.roleName !== 'owner') {
       throw new ForbiddenException('Only owner can create users');
     }
     return this.userService.create(data);
@@ -34,7 +34,7 @@ export class UserController {
 
   @Put(':id')
   async update(@CurrentUser() currentUser: UserDto, @Param('id') id: string, @Body() data: UpdateUserDto) {
-    if (currentUser.roleName === 'owner') {
+    if (currentUser.roleName !== 'owner') {
       throw new ForbiddenException('Only owner can update users');
     }
     return this.userService.update(id, data);
@@ -42,7 +42,7 @@ export class UserController {
 
   @Delete(':id')
   async delete(@CurrentUser() currentUser: UserDto, @Param('id') id: string) {
-    if (currentUser.roleName === 'owner') {
+    if (currentUser.roleName !== 'owner') {
       throw new ForbiddenException('Only owner can delete users');
     }
     return this.userService.delete(id);
