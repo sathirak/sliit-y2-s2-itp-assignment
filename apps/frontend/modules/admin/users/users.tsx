@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/modules/ui/button";
 import { Input } from "@/modules/ui/input";
-import { getUser } from "@/lib/services/user";
+import { getAllUsers, createUser, updateUser, deleteUser } from "@/lib/services/user";
 import type { UserDto } from "@/lib/dtos/user";
 import {
 	Dialog,
@@ -309,8 +309,8 @@ export default function Users() {
 		async function fetchUsers() {
 			setLoading(true);
 			try {
-				const user = await getUser();
-				setUsers([user]);
+				const users = await getAllUsers();
+				setUsers(users);
 			} catch (e) {
 				setUsers([]);
 			}
@@ -326,20 +326,15 @@ export default function Users() {
 			user.roleName?.toLowerCase().includes(search.toLowerCase())
 	);
 
-	function handleCreateUser(newUser: Partial<UserDto>) {
-		setUsers((prev) => [
-			{
-				...newUser,
-				id: Math.random().toString(),
-				createdAt: new Date(),
-				isDeleted: false,
-				firstName: "",
-				lastName: "",
-				password: newUser.password || "",
-				roleName: newUser.roleName as any,
-			} as UserDto,
-			...prev,
-		]);
+	async function handleCreateUser(newUser: Partial<UserDto>) {
+		setLoading(true);
+		try {
+			const created = await createUser(newUser);
+			setUsers((prev) => [created, ...prev]);
+		} catch (e) {
+			// Optionally show error
+		}
+		setLoading(false);
 	}
 
 	function handleEditUser(user: UserDto) {
@@ -347,12 +342,16 @@ export default function Users() {
 		setShowEdit(true);
 	}
 
-	function handleUpdateUser(updated: Partial<UserDto>) {
-		setUsers((prev) =>
-			prev.map((u) =>
-				u.id === editingUser?.id ? { ...u, ...updated } as UserDto : u
-			)
-		);
+	async function handleUpdateUser(updated: Partial<UserDto>) {
+		if (!editingUser) return;
+		setLoading(true);
+		try {
+			const updatedUser = await updateUser(editingUser.id, updated);
+			setUsers((prev) => prev.map((u) => u.id === updatedUser.id ? updatedUser : u));
+		} catch (e) {
+			// Optionally show error
+		}
+		setLoading(false);
 	}
 
 	return (
@@ -441,7 +440,16 @@ export default function Users() {
 										>
 											Edit
 										</Button>
-										<Button size="sm" variant="destructive">
+										<Button size="sm" variant="destructive" onClick={async () => {
+											setLoading(true);
+											try {
+												await deleteUser(user.id);
+												setUsers((prev) => prev.filter((u) => u.id !== user.id));
+											} catch (e) {
+												// Optionally show error
+											}
+											setLoading(false);
+										}}>
 											Delete
 										</Button>
 									</td>
