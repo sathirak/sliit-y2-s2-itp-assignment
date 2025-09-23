@@ -1,13 +1,41 @@
-import React from 'react';
+"use client"
+import React, { useState } from 'react';
+import { createTicket } from '@/lib/services/ticket';
+import { Button } from '@/modules/ui/button';
 
 export default function ContactUs() {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      await createTicket(form);
+      setSuccess(true);
+      setForm({ name: '', email: '', phone: '', message: '' });
+    } catch (err: any) {
+      setError('Failed to submit ticket. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white p-6 md:p-12 font-sans">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Contact Form */}
         <div className="space-y-8">
           <h2 className="text-3xl font-semibold text-gray-900">Contact Us</h2>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-base font-medium text-gray-700 mb-1">
@@ -17,7 +45,10 @@ export default function ContactUs() {
                 id="name"
                 type="text"
                 placeholder="Name"
+                value={form.name}
+                onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                required
               />
             </div>
 
@@ -31,6 +62,8 @@ export default function ContactUs() {
                 type="email"
                 required
                 placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
@@ -44,7 +77,10 @@ export default function ContactUs() {
                 id="phone"
                 type="tel"
                 placeholder="Phone"
+                value={form.phone}
+                onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                required
               />
             </div>
 
@@ -57,17 +93,19 @@ export default function ContactUs() {
                 id="message"
                 rows={5}
                 placeholder="Message"
+                value={form.message}
+                onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                required
               />
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-black text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition"
-            >
-              SUBMIT
-            </button>
+            {success && <div className="text-green-600">Your message has been sent!</div>}
+            {error && <div className="text-red-600">{error}</div>}
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Submitting...' : 'SUBMIT'}
+            </Button>
           </form>
         </div>
 

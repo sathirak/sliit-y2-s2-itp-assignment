@@ -6,11 +6,12 @@ import {
   IsUUID,
   IsDate,
   IsEnum,
+  IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { TicketStatus } from '../interfaces/tickets';
 
 export class TicketDto {
-
   @IsUUID()
   id: string;
 
@@ -23,19 +24,23 @@ export class TicketDto {
   email: string;
 
   @IsNotEmpty()
-  @IsPhoneNumber('LK') // You can change 'LK' to your desired region code
+  @IsPhoneNumber('LK')
   phone: string;
 
   @IsNotEmpty()
   @IsString()
   message: string;
 
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
   @IsDate()
   createdAt: Date;
 
-  @IsDate()
+  @IsBoolean()
   deleted: boolean;
 
   @IsEnum(TicketStatus)
-  status: TicketStatus
+  status: TicketStatus;
 }

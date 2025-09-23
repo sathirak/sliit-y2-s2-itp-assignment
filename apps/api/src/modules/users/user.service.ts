@@ -110,7 +110,6 @@ export class UserService {
   }
 
   async update(id: string, data: UpdateUserDto, currentUser: UserDto) {
-    // Check if current user has owner role
     if (currentUser.roleName !== 'owner') {
       throw new ForbiddenException('Only owners can update users');
     }

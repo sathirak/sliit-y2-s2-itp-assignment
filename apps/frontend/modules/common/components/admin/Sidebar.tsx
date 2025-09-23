@@ -9,7 +9,7 @@ export const Sidebar = () => {
 				<Link href="/admin/contract-management" className="font-medium">Contracts</Link>
 				<Link href="/admin/users" className="font-medium">Users</Link>
 				<Link href="/admin/order-management" className="font-medium">Orders</Link>
-                <Link href="/admin/ticket-management" className="font-medium">Ticket</Link>
+                <Link href="/admin/tickets" className="font-medium">Ticket</Link>
 			</nav>
 		</aside>
 	);

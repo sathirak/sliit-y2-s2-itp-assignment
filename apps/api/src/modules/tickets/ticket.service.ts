@@ -6,6 +6,7 @@ import { TicketDto } from "./dto.ts/ticket.dto";
 import { tickets } from "./models/ticket.model";
 import { CreateTicketDto } from "./dto.ts/create-ticket.dto";
 import { and, eq } from "drizzle-orm";
+import type { TicketStatus } from 'src/modules/tickets/interfaces/tickets';
 
 
 export class TicketService {
@@ -38,6 +39,7 @@ export class TicketService {
         message: data.message,
         email: data.email,
         phone: data.phone,
+        notes: data.notes,
       })
       .returning();
     return created;
@@ -46,24 +48,23 @@ export class TicketService {
   async update(id: string, data: UpdateTicketDto): Promise<TicketDto> {
     const [updated] = await this.db.update(tickets)
       .set({
-        name: data.name,
-        message: data.message,
-        email: data.email,
-        phone: data.phone,
-        status: data.status,
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.message !== undefined && { message: data.message }),
+        ...(data.email !== undefined && { email: data.email }),
+        ...(data.phone !== undefined && { phone: data.phone }),
+        ...(data.status !== undefined && { status: data.status as TicketStatus }),
+        ...(data.notes !== undefined && { notes: data.notes }),
       })
       .where(and(eq(tickets.id, id), eq(tickets.deleted, false)))
       .returning();
     if (!updated) throw new NotFoundException('Ticket not found');
     return updated;
   }
-
   async delete(id: string): Promise<boolean> {
     const [deleted] = await this.db.update(tickets)
       .set({ deleted: true })
-      .where(and(eq(tickets.id, id), eq(tickets.deleted, false)))
+      .where(eq(tickets.id, id))
       .returning();
-    if (!deleted) throw new NotFoundException('Ticket not found');
-    return true;
+    return !!deleted;
   }
 }

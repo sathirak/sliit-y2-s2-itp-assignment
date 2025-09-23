@@ -1,31 +1,27 @@
-"use server";
-import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from '@/utils/supabase/client';
 
-export async function signIn(formData: FormData) {
-  const supabase = await createClient();
+export async function signIn(data: { email: string; password: string }) {
+  const supabase = createClient();
   
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const { email, password } = data;
   
-  const { error } = await supabase.auth.signInWithPassword({ 
+  const { error, data: { user } } = await supabase.auth.signInWithPassword({ 
     email, 
     password,
   });
   
   if (error) {
     console.error("Sign in error:", error);
-    redirect("/sign-in");
+    return { error: error.message };
   }
   
-  redirect("/");
+  return { success: true };
 }
 
-export async function signUp(formData: FormData) {
+export async function signUp(data: { email: string; password: string }) {
   const supabase = await createClient();
   
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const { email, password } = data;
   
   const { error } = await supabase.auth.signUp({ 
     email, 
@@ -34,10 +30,10 @@ export async function signUp(formData: FormData) {
   
   if (error) {
     console.error("Sign up error:", error);
-    redirect("/sign-up");
+    return { error: error.message };
   }
   
-  redirect("/");
+  return { success: true, message: "Check your email for verification link" };
 }
 
 export async function signOut() {
@@ -47,9 +43,8 @@ export async function signOut() {
   
   if (error) {
     console.error("Sign out error:", error);
+    return { error: error.message };
   }
-  
-  redirect("/");
 }
     
 

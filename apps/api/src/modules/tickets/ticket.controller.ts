@@ -4,6 +4,7 @@ import { TicketDto } from './dto.ts/ticket.dto';
 import { CreateTicketDto } from './dto.ts/create-ticket.dto';
 import { UpdateTicketDto } from './dto.ts/update-ticket.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AllowGuests } from 'src/common/decorates/allow-guests.decorator';
 
 @Controller('ticket')
 @ApiTags('Ticket')
@@ -25,6 +26,7 @@ export class TicketController {
   }
 
   @Post()
+  @AllowGuests()
   async create(@Body() data: CreateTicketDto): Promise<TicketDto> {
     return this.ticketService.create(data);
   }

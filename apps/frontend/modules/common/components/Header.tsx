@@ -35,9 +35,11 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700 font-bold">
-                Welcome, {user?.email}
-              </span>
+              <Link href="/my-account">
+                <span className="text-sm text-gray-700 font-bold cursor-pointer hover:text-gray-900">
+                  Welcome, {user.firstName || user.email}
+                </span>
+              </Link>
               <Button 
                 variant="outline" 
                 size="sm"

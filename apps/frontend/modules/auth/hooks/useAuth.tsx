@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
-import type { UserDto } from '@/lib/dtos/user';
 import { getUser } from '@/lib/services/user';
 import { createClient } from '@/utils/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import type { UserDto } from '@/lib/dtos/user';
 
 export function useAuth() {
 	const [user, setUser] = useState<UserDto | null>(null);

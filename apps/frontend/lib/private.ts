@@ -7,6 +7,8 @@ export const apiPrivateClient = ky.create({
   hooks: {
     beforeRequest: [
       async (request) => {
+
+        console.log("Preparing request to", request.url);
         const accessToken = async (): Promise<string | undefined> => {
           const supabase = createClient();
           return (await supabase.auth.getSession()).data.session?.access_token;
