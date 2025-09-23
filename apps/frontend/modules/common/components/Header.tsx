@@ -9,7 +9,7 @@ import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 export const Header = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, logout } = useAuth();
   return (
     <header className="flex flex-col px-10 py-4 border-b">
       <div className="flex items-center gap-4">
@@ -40,13 +40,8 @@ export const Header = () => {
                   Welcome, {user.firstName || user.email}
                 </span>
               </Link>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={signOut}
-                disabled={loading}
-              >
-                SIGN OUT
+              <Button variant="outline" size="sm" onClick={logout} className="ml-2">
+                Sign Out
               </Button>
             </div>
           ) : (

@@ -1,73 +1,58 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { getUser } from '@/lib/services/user';
-import { createClient } from '@/utils/supabase/client';
-import type { UserDto } from '@/lib/dtos/user';
 
-export function useAuth() {
-	const [user, setUser] = useState<UserDto | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const supabase = createClient();
+import { useState, useEffect } from "react";
+import { getUser } from "@/lib/services/user";
+import { useAuthStore } from '@/lib/stores/auth.store';
+import { createClient } from "@/utils/supabase/client";
 
-	useEffect(() => {
-		const getInitialSession = async () => {
-			const { data: { session } } = await supabase.auth.getSession();
-			
-			if (session?.user) {
-				try {
-					const userData = await getUser();
-					setUser(userData);
-				} catch (err: any) {
-					console.error('Error fetching user data:', err);
-					setError(err?.message || 'Failed to fetch user');
-				}
-			}
-			setLoading(false);
-		};
 
-		getInitialSession();
+export type RedirectOptions = {
+  authenticated?: string;
+  unauthenticated?: string;
+};
 
-		const { data: { subscription } } = supabase.auth.onAuthStateChange(
-			async (event, session) => {
-				
-				if (session?.user) {
-					try {
-						const userData = await getUser();
-						setUser(userData);
-						setError(null);
-					} catch (err: any) {
-						console.error('Error fetching user data:', err);
-						setError(err?.message || 'Failed to fetch user');
-					}
-				} else {
-					setUser(null);
-					setError(null);
-				}
-				setLoading(false);
-			}
-		);
+export const useAuth = () => {
+  const supabase = createClient();
 
-		return () => {
-			subscription.unsubscribe();
-		};
-	}, [supabase.auth]);
 
-	const signOut = async () => {
-		setLoading(true);
-		const { error } = await supabase.auth.signOut();
-		if (error) {
-			console.log('Error signing out:', error);
-			setError(error.message);
-			setLoading(false);
-		}
-	};
 
-	return { 
-		user, 
-		setUser, 
-		loading, 
-		error,
-		signOut,
-	};
-}
+  const { user: storeUser, setUser, removeUser } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const user = await getUser();
+          if (mounted) setUser(user);
+        } else {
+          if (mounted) setUser(null);
+        }
+      } catch (err) {
+        if (mounted) setError(err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [setUser, supabase]);
+
+  const logout = async () => {
+    removeUser();
+    await supabase.auth.signOut();
+  };
+
+  return {
+    user: storeUser,
+    isAuthorized: !!storeUser,
+    isLoading,
+    logout,
+    error,
+    isError: !!error,
+  };
+};
