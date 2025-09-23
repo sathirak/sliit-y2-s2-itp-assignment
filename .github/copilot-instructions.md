@@ -54,9 +54,11 @@ modules/{domain}/
 
 ### Frontend Architecture
 - **Client Types**: `apiPublicClient` (no auth) vs `apiPrivateClient` (auto-injects Supabase JWT)
+- **Data Fetching**: SWR for client-side data fetching, caching, and synchronization
 - **Layout Structure**: `app/(main)/layout.tsx` includes Header/Footer, `app/admin/layout.tsx` for admin
 - **Services Pattern**: Type-safe service functions in `lib/services/` matching API endpoints
 - **DTOs**: Shared types in `lib/dtos/` mirror backend DTOs
+- **Hooks Pattern**: Custom SWR hooks in `lib/hooks/` for data fetching and mutations
 
 ### Authentication Flow
 1. Supabase handles auth on frontend
@@ -74,6 +76,19 @@ import { apiPublicClient } from '@/lib/public';
 // Authenticated endpoints  
 import { apiPrivateClient } from '@/lib/private';
 const result = await apiPrivateClient.get<UserDto>("user/me").json<UserDto>();
+```
+
+### SWR Data Fetching Pattern
+```typescript
+// Use custom SWR hooks for data fetching
+import { useUsers, useUserMutations } from '@/lib/hooks/useUsers';
+
+function MyComponent() {
+  const { users, isLoading, isError } = useUsers();
+  const { createUser, updateUser, deleteUser } = useUserMutations();
+  
+  // SWR handles caching, revalidation, and error states automatically
+}
 ```
 
 ### Database Service Pattern
@@ -109,6 +124,44 @@ import { ArrowRight } from 'lucide-react';
   Next <ArrowRight className="ml-2" />
 </Button>
 ```
+
+## SWR Data Management Patterns
+
+### Creating SWR Hooks
+Follow this pattern for creating domain-specific SWR hooks in `lib/hooks/`:
+
+```typescript
+// lib/hooks/useExample.ts
+import useSWR, { mutate } from 'swr';
+import { exampleService } from '@/lib/services/example';
+
+const EXAMPLES_KEY = 'examples';
+const EXAMPLE_KEY = (id: string) => `examples/${id}`;
+
+export function useExamples() {
+  const { data, error, isLoading } = useSWR(EXAMPLES_KEY, exampleService.getAll);
+  return { examples: data || [], isLoading, isError: !!error };
+}
+
+export function useExampleMutations() {
+  const createExample = async (data: CreateExampleDto) => {
+    const newExample = await exampleService.create(data);
+    mutate(EXAMPLES_KEY, (examples = []) => [newExample, ...examples], false);
+    mutate(EXAMPLES_KEY); // Revalidate
+    return newExample;
+  };
+  
+  return { createExample };
+}
+```
+
+### SWR Best Practices
+- **Caching**: SWR automatically caches responses and deduplicates requests
+- **Optimistic Updates**: Update cache immediately, then revalidate
+- **Error Handling**: Use global error handling in SWRProvider
+- **Loading States**: Always handle `isLoading` and `isError` states
+- **Search with Debouncing**: Use useState + useEffect for debounced search queries
+- **Mutations**: Always call `mutate()` after successful operations to keep cache fresh
 ## Build & Deployment Notes  
 - Turbo handles parallel builds across apps
 - Next.js uses Turbopack for faster dev builds

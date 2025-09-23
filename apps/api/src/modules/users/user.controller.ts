@@ -36,12 +36,20 @@ export class UserController {
   }
 
   @Get(":id")
-  async getUserById(@Param('id') id: string): Promise<UserDto> {
+  async getUserById(@Param('id') id: string, @CurrentUser() currentUser: UserDto): Promise<UserDto> {
+    // Allow users to get their own profile, or owners to get any user
+    if (currentUser.id !== id && currentUser.roleName !== 'owner') {
+      throw new ForbiddenException('Access denied');
+    }
     return this.userService.getUserById(id);
   }
 
   @Post()
-  async create(@Body() data: CreateUserDto): Promise<UserDto> {
+  async create(@Body() data: CreateUserDto, @CurrentUser() currentUser: UserDto): Promise<UserDto> {
+    // Check if current user has owner role for creating users manually
+    if (currentUser && currentUser.roleName !== 'owner') {
+      throw new ForbiddenException('Only owners can create users');
+    }
     return this.userService.create(data);
   }
 
