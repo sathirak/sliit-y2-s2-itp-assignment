@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { 
@@ -27,6 +28,7 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 export default function SignIn() {
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -44,6 +46,8 @@ export default function SignIn() {
       const result = await signInAction(values);
       if (result?.error) {
         setError(result.error);
+      } else if (result?.success) {
+        router.push("/");
       }
     } catch (err) {
       setError("An unexpected error occurred");

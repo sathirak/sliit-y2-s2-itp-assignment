@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { 
@@ -28,6 +29,7 @@ export default function SignUp() {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -49,6 +51,11 @@ export default function SignUp() {
       } else if (result?.success) {
         setSuccess(result.message || "Account created successfully!");
         form.reset();
+        
+        // Redirect to homepage after a short delay to show success message
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
       }
     } catch (err) {
       setError("An unexpected error occurred");

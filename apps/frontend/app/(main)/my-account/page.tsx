@@ -6,15 +6,7 @@ import { Button } from '@/modules/ui/button';
 import { User, Mail, UserCheck, Calendar } from 'lucide-react';
 
 export default function MyAccountPage() {
-  const { user, loading, error } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading your account... {JSON.stringify(user)}</div>
-      </div>
-    );
-  }
+  const { user, error } = useAuth();
 
   if (error) {
     return (
