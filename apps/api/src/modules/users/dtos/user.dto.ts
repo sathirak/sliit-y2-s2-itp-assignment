@@ -18,9 +18,6 @@ export class UserDto {
   id: string;
 
   @IsString()
-  name: string;
-
-  @IsString()
   firstName: string;
 
   @IsString()
@@ -28,10 +25,6 @@ export class UserDto {
 
   @IsEmail()
   email: string;
-
-  @IsNotEmpty()
-  @MinLength(6)
-  password: string;
 
   @IsEnum(UserRole)
   roleName: UserRole;

@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import type { Schema } from 'src/common/types/db';
 import { DatabaseAsyncProvider } from 'src/database/database.provider';
 import { userProviders, usersTable } from 'src/database/schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserDto } from './dtos/user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or, ilike } from 'drizzle-orm';
 import { verifyJwt } from 'src/common/utils/jwt';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
@@ -24,6 +24,21 @@ export class UserService {
       where: (user, { eq }) => eq(user.isDeleted, false),
     });
     return user;
+  }
+
+  async searchUsers(searchQuery: string) {
+    const users = await this.db.query.usersTable.findMany({
+      where: (user, { eq, and, or, ilike }) =>
+        and(
+          eq(user.isDeleted, false),
+          or(
+            ilike(user.firstName, `%${searchQuery}%`),
+            ilike(user.lastName, `%${searchQuery}%`),
+            ilike(user.email, `%${searchQuery}%`)
+          )
+        ),
+    });
+    return users;
   }
 
   async getUserById(userId: string) {
@@ -85,36 +100,54 @@ export class UserService {
   async create(data: CreateUserDto): Promise<UserDto> {
     const [created] = await this.db.insert(usersTable)
       .values({
-        name: data.name,
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        password: data.password,
         roleName: data.roleName,
       })
       .returning();
     return created;
   }
 
-  async update(id: string, data: UpdateUserDto) {
+  async update(id: string, data: UpdateUserDto, currentUser: UserDto) {
+    // Check if current user has owner role
+    if (currentUser.roleName !== 'owner') {
+      throw new ForbiddenException('Only owners can update users');
+    }
+
     const [updated] = await this.db.update(usersTable)
       .set({
-        name: data.name,
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        password: data.password,
         roleName: data.roleName,
       })
       .where(and(eq(usersTable.id, id), eq(usersTable.isDeleted, false)))
       .returning();
+    
+    if (!updated) {
+      throw new NotFoundException('User not found');
+    }
+    
+    return updated;
   }
 
-  async delete(id: string) {
+  async delete(id: string, currentUser: UserDto) {
+    // Check if current user has owner role
+    if (currentUser.roleName !== 'owner') {
+      throw new ForbiddenException('Only owners can delete users');
+    }
+
     const [deleted] = await this.db.update(usersTable)
       .set({ isDeleted: true })
       .where(eq(usersTable.id, id))
       .returning();
+    
+    if (!deleted) {
+      throw new NotFoundException('User not found');
+    }
+    
+    return deleted;
   }
 
   async createUser(userData: {
@@ -138,9 +171,7 @@ export class UserService {
           .values({
             firstName: firstName,
             lastName: lastName,
-            name: `${firstName} ${lastName}`,
             email: userData.email,
-            password: '',
             roleName: 'customer',
             isDeleted: false
           } as any)

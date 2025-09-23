@@ -77,8 +77,6 @@ export class JwtGuard implements CanActivate {
         firstName: 'Guest',
         lastName: '',
         createdAt: new Date(),
-        name: 'Guest',
-        password: '',
         roleName: UserRole.CUSTOMER,
         isDeleted: false,
       };

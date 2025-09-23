@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/modules/ui/button";
 import { Input } from "@/modules/ui/input";
-import { getAllUsers, createUser, updateUser, deleteUser } from "@/lib/services/user";
+import { getAllUsers, createUser, updateUser, deleteUser, searchUsers } from "@/lib/services/user";
 import type { UserDto } from "@/lib/dtos/user";
 import {
 	Dialog,
@@ -14,7 +16,6 @@ import {
 	DialogTitle,
 } from "@/modules/ui/dialog";
 import { Label } from "@/modules/ui/label";
-import { Textarea } from "@/modules/ui/textarea";
 import {
 	Select,
 	SelectContent,
@@ -22,7 +23,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/modules/ui/select";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, Search, Trash2, Edit } from "lucide-react";
 
 function AddUserModal({
 	open,
@@ -34,16 +35,15 @@ function AddUserModal({
 	onCreate: (user: Partial<UserDto>) => void;
 }) {
 	const [form, setForm] = useState({
-		name: "",
+		firstName: "",
+		lastName: "",
 		email: "",
 		roleName: "customer",
-		password: "",
-		description: "",
 	});
 	const [loading, setLoading] = useState(false);
 
 	function handleChange(
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
 	) {
 		setForm({ ...form, [e.target.name]: e.target.value });
 	}
@@ -54,6 +54,7 @@ function AddUserModal({
 		onCreate({ ...form, roleName: form.roleName as UserDto["roleName"] });
 		setLoading(false);
 		onClose();
+		setForm({ firstName: "", lastName: "", email: "", roleName: "customer" });
 	}
 
 	if (!open) return null;
@@ -63,23 +64,34 @@ function AddUserModal({
 				<DialogHeader>
 					<DialogTitle>
 						<div className="flex items-center gap-2">
-							<UserPlus className="h-6 w-6" /> Create New User
+							<UserPlus className="h-6 w-6" /> Add New User
 						</div>
 					</DialogTitle>
 					<DialogDescription>
-						Fill in the details to create a new user.
+						Create a new user with their basic information.
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div className="space-y-2">
-							<Label htmlFor="name">Name *</Label>
+							<Label htmlFor="firstName">First Name *</Label>
 							<Input
-								id="name"
-								name="name"
-								value={form.name}
+								id="firstName"
+								name="firstName"
+								value={form.firstName}
 								onChange={handleChange}
-								placeholder="Enter name"
+								placeholder="Enter first name"
+								required
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="lastName">Last Name *</Label>
+							<Input
+								id="lastName"
+								name="lastName"
+								value={form.lastName}
+								onChange={handleChange}
+								placeholder="Enter last name"
 								required
 							/>
 						</div>
@@ -115,18 +127,6 @@ function AddUserModal({
 									<SelectItem value="supplier">Supplier</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="password">Password *</Label>
-							<Input
-								id="password"
-								name="password"
-								value={form.password}
-								onChange={handleChange}
-								placeholder="Enter password"
-								type="password"
-								required
-							/>
 						</div>
 					</div>
 					<DialogFooter>
@@ -163,24 +163,24 @@ function EditUserModal({
 	onUpdate: (user: Partial<UserDto>) => void;
 }) {
 	const [form, setForm] = useState({
-		name: user?.name || "",
+		firstName: user?.firstName || "",
+		lastName: user?.lastName || "",
 		email: user?.email || "",
 		roleName: user?.roleName || "customer",
-		password: "",
 	});
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		setForm({
-			name: user?.name || "",
+			firstName: user?.firstName || "",
+			lastName: user?.lastName || "",
 			email: user?.email || "",
 			roleName: user?.roleName || "customer",
-			password: "",
 		});
 	}, [user, open]);
 
 	function handleChange(
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
 	) {
 		setForm({ ...form, [e.target.name]: e.target.value });
 	}
@@ -200,7 +200,7 @@ function EditUserModal({
 				<DialogHeader>
 					<DialogTitle>
 						<div className="flex items-center gap-2">
-							<UserPlus className="h-6 w-6" /> Edit User
+							<Edit className="h-6 w-6" /> Edit User
 						</div>
 					</DialogTitle>
 					<DialogDescription>
@@ -210,13 +210,24 @@ function EditUserModal({
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div className="space-y-2">
-							<Label htmlFor="name">Name *</Label>
+							<Label htmlFor="firstName">First Name *</Label>
 							<Input
-								id="name"
-								name="name"
-								value={form.name}
+								id="firstName"
+								name="firstName"
+								value={form.firstName}
 								onChange={handleChange}
-								placeholder="Enter name"
+								placeholder="Enter first name"
+								required
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="lastName">Last Name *</Label>
+							<Input
+								id="lastName"
+								name="lastName"
+								value={form.lastName}
+								onChange={handleChange}
+								placeholder="Enter last name"
 								required
 							/>
 						</div>
@@ -253,27 +264,6 @@ function EditUserModal({
 								</SelectContent>
 							</Select>
 						</div>
-						<div className="space-y-2">
-							<Label htmlFor="password">Password</Label>
-							<Input
-								id="password"
-								name="password"
-								value={form.password}
-								onChange={handleChange}
-								placeholder="Enter new password (optional)"
-								type="password"
-							/>
-						</div>
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="description">Description</Label>
-						<Textarea
-							id="description"
-							name="description"
-							onChange={handleChange}
-							placeholder="Enter user description"
-							rows={3}
-						/>
 					</div>
 					<DialogFooter>
 						<Button
@@ -301,9 +291,37 @@ export default function Users() {
 	const [users, setUsers] = useState<UserDto[]>([]);
 	const [search, setSearch] = useState("");
 	const [loading, setLoading] = useState(true);
+	const [searching, setSearching] = useState(false);
 	const [showAdd, setShowAdd] = useState(false);
 	const [editingUser, setEditingUser] = useState<UserDto | null>(null);
 	const [showEdit, setShowEdit] = useState(false);
+
+	// Debounced search function
+	const debouncedSearch = useCallback(
+		debounce(async (query: string) => {
+			if (!query.trim()) {
+				// If search is empty, fetch all users
+				try {
+					const users = await getAllUsers();
+					setUsers(users);
+				} catch (e) {
+					setUsers([]);
+				}
+				setSearching(false);
+				return;
+			}
+
+			setSearching(true);
+			try {
+				const searchResults = await searchUsers(query);
+				setUsers(searchResults);
+			} catch (e) {
+				setUsers([]);
+			}
+			setSearching(false);
+		}, 500),
+		[]
+	);
 
 	useEffect(() => {
 		async function fetchUsers() {
@@ -319,12 +337,15 @@ export default function Users() {
 		fetchUsers();
 	}, []);
 
-	const filteredUsers = users.filter(
-		(user) =>
-			user.name?.toLowerCase().includes(search.toLowerCase()) ||
-			user.email?.toLowerCase().includes(search.toLowerCase()) ||
-			user.roleName?.toLowerCase().includes(search.toLowerCase())
-	);
+	// Handle search input changes
+	useEffect(() => {
+		if (search.trim() === "") {
+			// Reset to all users when search is cleared
+			debouncedSearch("");
+		} else {
+			debouncedSearch(search);
+		}
+	}, [search, debouncedSearch]);
 
 	async function handleCreateUser(newUser: Partial<UserDto>) {
 		setLoading(true);
@@ -332,7 +353,7 @@ export default function Users() {
 			const created = await createUser(newUser);
 			setUsers((prev) => [created, ...prev]);
 		} catch (e) {
-			// Optionally show error
+			console.error("Error creating user:", e);
 		}
 		setLoading(false);
 	}
@@ -349,7 +370,20 @@ export default function Users() {
 			const updatedUser = await updateUser(editingUser.id, updated);
 			setUsers((prev) => prev.map((u) => u.id === updatedUser.id ? updatedUser : u));
 		} catch (e) {
-			// Optionally show error
+			console.error("Error updating user:", e);
+		}
+		setLoading(false);
+	}
+
+	async function handleDeleteUser(userId: string) {
+		if (!confirm("Are you sure you want to delete this user?")) return;
+		
+		setLoading(true);
+		try {
+			await deleteUser(userId);
+			setUsers((prev) => prev.filter((u) => u.id !== userId));
+		} catch (e) {
+			console.error("Error deleting user:", e);
 		}
 		setLoading(false);
 	}
@@ -362,7 +396,7 @@ export default function Users() {
 					<div>
 						<h1 className="text-3xl font-bold">User Management</h1>
 						<p className="text-muted-foreground">
-							Manage your users and their details
+							Manage your users and their details (Owner access only)
 						</p>
 					</div>
 				</div>
@@ -374,26 +408,38 @@ export default function Users() {
 					<span>Add User</span>
 				</Button>
 			</div>
+
 			<AddUserModal
 				open={showAdd}
 				onClose={() => setShowAdd(false)}
 				onCreate={handleCreateUser}
 			/>
+			
 			<EditUserModal
 				open={showEdit}
 				onClose={() => setShowEdit(false)}
 				user={editingUser}
 				onUpdate={handleUpdateUser}
 			/>
-			<div className="mb-4 flex justify-end">
-				<Input
-					type="text"
-					placeholder="Search users..."
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-					className="w-64"
-				/>
+
+			{/* Search Section */}
+			<div className="flex justify-end">
+				<div className="relative w-64">
+					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+					<Input
+						type="text"
+						placeholder="Search by name or email..."
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						className="pl-10"
+					/>
+					{searching && (
+						<Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin" />
+					)}
+				</div>
 			</div>
+
+			{/* Users Table */}
 			<div className="overflow-x-auto">
 				<table className="min-w-full bg-white border rounded-lg">
 					<thead>
@@ -401,57 +447,67 @@ export default function Users() {
 							<th className="py-2 px-4 border-b">Name</th>
 							<th className="py-2 px-4 border-b">Email</th>
 							<th className="py-2 px-4 border-b">Role</th>
+							<th className="py-2 px-4 border-b">Created At</th>
 							<th className="py-2 px-4 border-b">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{loading ? (
 							<tr>
-								<td colSpan={4} className="text-center py-4 text-gray-500">
-									Loading...
+								<td colSpan={5} className="text-center py-4 text-gray-500">
+									<div className="flex items-center justify-center space-x-2">
+										<Loader2 className="h-4 w-4 animate-spin" />
+										<span>Loading...</span>
+									</div>
 								</td>
 							</tr>
-						) : filteredUsers.length === 0 ? (
+						) : users.length === 0 ? (
 							<tr>
-								<td colSpan={4} className="text-center py-4 text-gray-500">
-									No users found.
+								<td colSpan={5} className="text-center py-4 text-gray-500">
+									{search.trim() ? "No users found matching your search." : "No users found."}
 								</td>
 							</tr>
 						) : (
-							filteredUsers.map((user, idx) => (
-								<tr key={user.id || idx} className="hover:bg-gray-50">
+							users.map((user) => (
+								<tr key={user.id} className="hover:bg-gray-50">
 									<td className="py-2 px-4 border-b">
-										{user.name ||
-											`${user.firstName} ${user.lastName}` ||
-											"-"}
+										{`${user.firstName} ${user.lastName}` || "-"}
 									</td>
 									<td className="py-2 px-4 border-b">
 										{user.email || "-"}
 									</td>
 									<td className="py-2 px-4 border-b">
-										{user.roleName || "-"}
+										<span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+											{user.roleName || "-"}
+										</span>
 									</td>
 									<td className="py-2 px-4 border-b">
-										<Button
-											size="sm"
-											variant="outline"
-											className="mr-2"
-											onClick={() => handleEditUser(user)}
-										>
-											Edit
-										</Button>
-										<Button size="sm" variant="destructive" onClick={async () => {
-											setLoading(true);
-											try {
-												await deleteUser(user.id);
-												setUsers((prev) => prev.filter((u) => u.id !== user.id));
-											} catch (e) {
-												// Optionally show error
-											}
-											setLoading(false);
-										}}>
-											Delete
-										</Button>
+										{user.createdAt 
+											? new Date(user.createdAt).toLocaleDateString()
+											: "-"
+										}
+									</td>
+									<td className="py-2 px-4 border-b">
+										<div className="flex space-x-2">
+											<Button
+												size="sm"
+												variant="outline"
+												onClick={() => handleEditUser(user)}
+												className="flex items-center space-x-1"
+											>
+												<Edit className="h-4 w-4" />
+												<span>Edit</span>
+											</Button>
+											<Button 
+												size="sm" 
+												variant="destructive" 
+												onClick={() => handleDeleteUser(user.id)}
+												className="flex items-center space-x-1"
+											>
+												<Trash2 className="h-4 w-4" />
+												<span>Delete</span>
+											</Button>
+										</div>
 									</td>
 								</tr>
 							))
@@ -463,3 +519,11 @@ export default function Users() {
 	);
 }
 
+// Utility function for debouncing
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
+	let timeout: NodeJS.Timeout;
+	return ((...args: any[]) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func(...args), wait);
+	}) as T;
+}

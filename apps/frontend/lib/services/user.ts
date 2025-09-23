@@ -15,6 +15,13 @@ export const getAllUsers = async (): Promise<UserDto[]> => {
     return result;
 };
 
+export const searchUsers = async (query: string): Promise<UserDto[]> => {
+    const result = await apiPrivateClient
+        .get<UserDto[]>(`user/search?q=${encodeURIComponent(query)}`)
+        .json<UserDto[]>();
+    return result;
+};
+
 export const getUserById = async (id: string): Promise<UserDto> => {
     const result = await apiPrivateClient
         .get<UserDto>(`user/${id}`)
