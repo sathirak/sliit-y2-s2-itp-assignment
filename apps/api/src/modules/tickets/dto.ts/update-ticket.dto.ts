@@ -1,7 +1,5 @@
-import { CreateTicketDto } from './create-ticket.dto';
+import { PartialType } from '@nestjs/swagger';
+import { TicketDto } from './ticket.dto';
 
-export class UpdateTicketDto extends CreateTicketDto {
-	// Allow partial update for notes, status, etc.
-	notes?: string;
-	status?: string;
-}
+// All fields optional for PATCH/PUT
+export class UpdateTicketDto extends PartialType(TicketDto) {}
