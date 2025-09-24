@@ -18,14 +18,21 @@ export async function signIn(data: { email: string; password: string }) {
   return { success: true };
 }
 
-export async function signUp(data: { email: string; password: string }) {
+export async function signUp(data: { firstName: string; lastName: string; email: string; password: string }) {
   const supabase = await createClient();
   
-  const { email, password } = data;
+  const { firstName, lastName, email, password } = data;
   
   const { error } = await supabase.auth.signUp({ 
     email, 
-    password 
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        full_name: `${firstName} ${lastName}`,
+      }
+    }
   });
   
   if (error) {
