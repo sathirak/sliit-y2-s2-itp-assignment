@@ -15,13 +15,6 @@ import { Button } from "@/modules/ui/button";
 import { Input } from "@/modules/ui/input";
 import { Label } from "@/modules/ui/label";
 import { Textarea } from "@/modules/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/modules/ui/select";
 import { Loader2 } from "lucide-react";
 
 interface ContractDialogProps {
@@ -33,20 +26,6 @@ interface ContractDialogProps {
   userRole: UserRole;
 }
 
-const STATUSES = [
-  { value: "pending", label: "Pending" },
-  { value: "active", label: "Active" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
-];
-
-// Mock suppliers - in real app, this would come from API
-const SUPPLIERS = [
-  { id: "supplier-1", name: "ABC Supply Co." },
-  { id: "supplier-2", name: "XYZ Services Ltd." },
-  { id: "supplier-3", name: "Global Solutions Inc." },
-  { id: "supplier-4", name: "Tech Partners LLC" },
-];
 
 export function ContractDialog({ 
   open, 
@@ -62,10 +41,7 @@ export function ContractDialog({
     amount: "",
     startDate: "",
     endDate: "",
-    supplierId: "",
   });
-  const [status, setStatus] = useState<string>("pending");
-  const [isPaid, setIsPaid] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,10 +55,7 @@ export function ContractDialog({
         amount: contract.amount,
         startDate: contract.startDate,
         endDate: contract.endDate,
-        supplierId: contract.supplierId,
       });
-      setStatus(contract.status);
-      setIsPaid(contract.isPaid);
     } else {
       setFormData({
         title: "",
@@ -90,10 +63,7 @@ export function ContractDialog({
         amount: "",
         startDate: "",
         endDate: "",
-        supplierId: "",
       });
-      setStatus("pending");
-      setIsPaid(false);
     }
     setError(null);
   }, [contract, open]);
@@ -106,9 +76,7 @@ export function ContractDialog({
     try {
       if (isEditing && contract) {
         const updateData: UpdateContractDto = { 
-          ...formData,
-          status: status as any,
-          isPaid
+          ...formData
         };
         await contractService.updateContract(contract.id, updateData, userId, userRole);
       } else {
@@ -163,26 +131,6 @@ export function ContractDialog({
               />
             </div>
 
-            {/* Supplier */}
-            <div className="space-y-2">
-              <Label htmlFor="supplier">Supplier *</Label>
-              <Select
-                value={formData.supplierId}
-                onValueChange={(value) => handleInputChange("supplierId", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select supplier" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SUPPLIERS.map((supplier) => (
-                    <SelectItem key={supplier.id} value={supplier.id}>
-                      {supplier.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Amount */}
             <div className="space-y-2">
               <Label htmlFor="amount">Amount *</Label>
@@ -197,28 +145,6 @@ export function ContractDialog({
                 required
               />
             </div>
-
-            {/* Status (only for editing) */}
-            {isEditing && (
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={status}
-                  onValueChange={setStatus}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUSES.map((statusOption) => (
-                      <SelectItem key={statusOption.value} value={statusOption.value}>
-                        {statusOption.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
 
             {/* Start Date */}
             <div className="space-y-2">
@@ -244,24 +170,6 @@ export function ContractDialog({
               />
             </div>
 
-            {/* Payment Status (only for editing) */}
-            {isEditing && (
-              <div className="space-y-2">
-                <Label htmlFor="isPaid">Payment Status</Label>
-                <Select
-                  value={isPaid.toString()}
-                  onValueChange={(value) => setIsPaid(value === "true")}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select payment status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="false">Unpaid</SelectItem>
-                    <SelectItem value="true">Paid</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
           </div>
 
           {/* Description */}

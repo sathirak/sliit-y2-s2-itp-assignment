@@ -391,7 +391,7 @@ export default function CheckoutPage() {
                             <Plus size={12} />
                           </button>
                         </div>
-                        <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold">Rs {(item.price * item.quantity).toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
@@ -402,20 +402,20 @@ export default function CheckoutPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>Rs {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
-                  <span>${shipping.toFixed(2)}</span>
+                  <span>Rs {shipping.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>Rs {tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>Rs {total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -442,7 +442,7 @@ export default function CheckoutPage() {
                 ) : (
                   <div className="flex items-center gap-2">
                     <Lock size={16} />
-                    Complete Order - ${total.toFixed(2)}
+                    Complete Order - Rs {total.toFixed(2)}
                   </div>
                 )}
               </Button>

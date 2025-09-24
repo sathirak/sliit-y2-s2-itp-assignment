@@ -49,7 +49,7 @@ export const OrderSingle = ({ id }: { id: string }) => {
                                 <tr key={op.id} className="border-t">
                                     <td className="py-2 px-3">{op.product?.name}</td>
                                     <td className="py-2 px-3">{op.quantity}</td>
-                                    <td className="py-2 px-3">${op.price}</td>
+                                    <td className="py-2 px-3">Rs {op.price}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -65,7 +65,7 @@ export const OrderSingle = ({ id }: { id: string }) => {
                                 <div className="font-bold">Invoice #{inv.id}</div>
                                 <div className={`px-2 py-1 rounded text-xs font-bold ${inv.status === InvoiceStatus.PAID ? "bg-green-100 text-green-700" : inv.status === InvoiceStatus.CANCELLED ? "bg-red-100 text-red-700" : inv.status === InvoiceStatus.OVERDUE ? "bg-yellow-100 text-yellow-700" : "bg-gray-200 text-gray-700"}`}>{inv.status}</div>
                             </div>
-                            <div className="mb-1 text-sm">Amount: <span className="font-semibold">${inv.amount}</span></div>
+                            <div className="mb-1 text-sm">Amount: <span className="font-semibold">Rs {inv.amount}</span></div>
                             <div className="mb-1 text-sm">Issued: {inv.issuedAt.toLocaleDateString()}</div>
                             {inv.dueDate && <div className="mb-1 text-sm">Due: {inv.dueDate.toLocaleDateString()}</div>}
                             {inv.payments && inv.payments.length > 0 && (
@@ -85,7 +85,7 @@ export const OrderSingle = ({ id }: { id: string }) => {
                                             {inv.payments.map(pay => (
                                                 <tr key={pay.id} className="border-t">
                                                     <td className="py-1 px-2">{pay.id}</td>
-                                                    <td className="py-1 px-2">${pay.amount}</td>
+                                                    <td className="py-1 px-2">Rs {pay.amount}</td>
                                                     <td className="py-1 px-2">{pay.method}</td>
                                                     <td className={`py-1 px-2 font-bold ${pay.status === PaymentStatus.COMPLETED ? "text-green-600" : pay.status === PaymentStatus.FAILED ? "text-red-600" : "text-yellow-600"}`}>{pay.status}</td>
                                                     <td className="py-1 px-2">{pay.paidAt ? new Date(pay.paidAt).toLocaleDateString() : '-'}</td>

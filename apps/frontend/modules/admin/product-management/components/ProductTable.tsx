@@ -95,7 +95,7 @@ export function ProductTable({
   const formatPrice = (price: string) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "LKR",
     }).format(parseFloat(price));
   };
 

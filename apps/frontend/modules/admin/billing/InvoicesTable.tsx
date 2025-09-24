@@ -127,7 +127,7 @@ export function InvoicesTable({ invoices, isLoading, searchTerm }: InvoicesTable
                 <TableCell>
                   <div className="flex items-center">
                     <DollarSign className="w-4 h-4 mr-1 text-green-600" />
-                    <span className="font-medium">${parseFloat(invoice.amount).toFixed(2)}</span>
+                    <span className="font-medium">Rs {parseFloat(invoice.amount).toFixed(2)}</span>
                   </div>
                 </TableCell>
                 <TableCell>

@@ -213,7 +213,7 @@ export function OrderDialog({ open, onOpenChange, order, onClose }: OrderDialogP
                         />
                         <div className="flex-1">
                           <span className="font-medium">{product.name}</span>
-                          <div className="text-xs text-muted-foreground">${product.price}</div>
+                          <div className="text-xs text-muted-foreground">Rs {product.price}</div>
                         </div>
                         {attached && (
                           <div className="flex items-center gap-2">

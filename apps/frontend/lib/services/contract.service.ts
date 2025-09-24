@@ -1,11 +1,10 @@
 import { 
   Contract, 
   ContractRequest, 
-  ContractRequestComment, 
   CreateContractDto, 
   UpdateContractDto, 
   CreateContractRequestDto, 
-  CreateContractRequestCommentDto, 
+  UpdateContractRequestDto,
   ContractFilterDto, 
   PaginatedResponse,
   UserRole 
@@ -74,20 +73,25 @@ class ContractService {
     });
   }
 
-  async markContractAsPaid(id: string, userId: string, userRole: UserRole): Promise<Contract> {
-    return this.request<Contract>(`/contracts/${id}/mark-paid?userId=${userId}&userRole=${userRole}`, {
-      method: 'PATCH',
-    });
+  // Contract Request operations - Main workflow
+  async getAllContractRequests(userId: string, userRole: UserRole): Promise<ContractRequest[]> {
+    return this.request<ContractRequest[]>(`/contracts/requests/all?userId=${userId}&userRole=${userRole}`);
   }
 
-  // Contract Request operations
-  async getContractRequests(userId: string, userRole: UserRole): Promise<ContractRequest[]> {
-    return this.request<ContractRequest[]>(`/contracts/requests/all?userId=${userId}&userRole=${userRole}`);
+  async getMyContractRequests(userId: string, userRole: UserRole): Promise<ContractRequest[]> {
+    return this.request<ContractRequest[]>(`/contracts/requests/my?userId=${userId}&userRole=${userRole}`);
   }
 
   async createContractRequest(request: CreateContractRequestDto, userId: string, userRole: UserRole): Promise<ContractRequest> {
     return this.request<ContractRequest>('/contracts/requests', {
       method: 'POST',
+      body: JSON.stringify({ ...request, userId, userRole }),
+    });
+  }
+
+  async updateContractRequest(id: string, request: UpdateContractRequestDto, userId: string, userRole: UserRole): Promise<ContractRequest> {
+    return this.request<ContractRequest>(`/contracts/requests/${id}`, {
+      method: 'PATCH',
       body: JSON.stringify({ ...request, userId, userRole }),
     });
   }
@@ -98,15 +102,9 @@ class ContractService {
     });
   }
 
-  // Contract Request Comment operations
-  async getContractRequestComments(contractRequestId: string, userId: string, userRole: UserRole): Promise<ContractRequestComment[]> {
-    return this.request<ContractRequestComment[]>(`/contracts/requests/${contractRequestId}/comments?userId=${userId}&userRole=${userRole}`);
-  }
-
-  async createContractRequestComment(contractRequestId: string, comment: CreateContractRequestCommentDto, userId: string, userRole: UserRole): Promise<ContractRequestComment> {
-    return this.request<ContractRequestComment>(`/contracts/requests/${contractRequestId}/comments`, {
-      method: 'POST',
-      body: JSON.stringify({ ...comment, userId, userRole }),
+  async markContractRequestAsPaid(id: string, userId: string, userRole: UserRole): Promise<ContractRequest> {
+    return this.request<ContractRequest>(`/contracts/requests/${id}/mark-paid?userId=${userId}&userRole=${userRole}`, {
+      method: 'PATCH',
     });
   }
 }

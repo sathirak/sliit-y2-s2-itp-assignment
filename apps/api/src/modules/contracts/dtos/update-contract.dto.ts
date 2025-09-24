@@ -42,30 +42,6 @@ export class UpdateContractDto {
   @IsString()
   endDate?: string;
 
-  @ApiPropertyOptional({
-    description: 'Contract status',
-    example: 'active',
-    enum: ['pending', 'active', 'completed', 'cancelled'],
-  })
-  @IsOptional()
-  @IsString()
-  status?: 'pending' | 'active' | 'completed' | 'cancelled';
-
-  @ApiPropertyOptional({
-    description: 'Payment status',
-    example: true,
-  })
-  @IsOptional()
-  @IsBoolean()
-  isPaid?: boolean;
-
-  @ApiPropertyOptional({
-    description: 'Supplier ID',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsOptional()
-  @IsUUID()
-  supplierId?: string;
 
   @ApiPropertyOptional({
     description: 'User ID for role-based access control',

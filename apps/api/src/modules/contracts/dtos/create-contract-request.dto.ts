@@ -47,6 +47,14 @@ export class CreateContractRequestDto {
   supplierId: string;
 
   @ApiProperty({
+    description: 'Comment from supplier about the contract request',
+    example: 'I am interested in this project and can deliver it within the timeline.',
+    required: false,
+  })
+  @IsString()
+  comment?: string;
+
+  @ApiProperty({
     description: 'User ID for role-based access control',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })

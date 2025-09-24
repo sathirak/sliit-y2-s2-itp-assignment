@@ -9,7 +9,9 @@ export const contractRequests = pgTable('contract_request', {
   amount: text('amount').notNull(),
   startDate: text('start_date').notNull(),
   endDate: text('end_date').notNull(),
-  status: text('status').notNull().default('pending'), // pending, approved, rejected
+  status: text('status').notNull().default('pending'), // pending, ongoing, completed
+  comment: text('comment'),
+  isPaid: boolean('is_paid').notNull().default(false),
   ownerId: uuid('owner_id').notNull().references(() => usersTable.id),
   supplierId: uuid('supplier_id').notNull().references(() => usersTable.id),
   ownerApproved: boolean('owner_approved').notNull().default(false),

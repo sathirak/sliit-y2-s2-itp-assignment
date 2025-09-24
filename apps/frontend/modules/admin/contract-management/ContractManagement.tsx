@@ -10,7 +10,7 @@ import { ContractRequestTable } from "./components/ContractRequestTable";
 import { Button } from "@/modules/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/modules/ui/tabs";
-import { Plus, FileText, Users, CheckCircle } from "lucide-react";
+import { Plus, FileText, Users } from "lucide-react";
 
 export function ContractManagement() {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -53,7 +53,7 @@ export function ContractManagement() {
       //   totalPages: response.totalPages,
       // });
 
-      // Hardcoded data for now
+      // Hardcoded data for now - simplified contracts (no status, isPaid, supplierId)
       const mockContracts: Contract[] = [
         {
           id: "1",
@@ -62,10 +62,7 @@ export function ContractManagement() {
           amount: "5000.00",
           startDate: "2024-01-01",
           endDate: "2024-03-31",
-          status: "active",
-          isPaid: false,
           ownerId: "owner-123",
-          supplierId: "supplier-456",
           createdAt: new Date("2024-01-01"),
           updatedAt: new Date("2024-01-15"),
         },
@@ -76,10 +73,7 @@ export function ContractManagement() {
           amount: "12000.00",
           startDate: "2024-02-01",
           endDate: "2024-06-30",
-          status: "pending",
-          isPaid: false,
           ownerId: "owner-123",
-          supplierId: "supplier-789",
           createdAt: new Date("2024-02-01"),
           updatedAt: new Date("2024-02-01"),
         },
@@ -90,10 +84,7 @@ export function ContractManagement() {
           amount: "25000.00",
           startDate: "2024-01-15",
           endDate: "2024-12-15",
-          status: "completed",
-          isPaid: true,
           ownerId: "owner-123",
-          supplierId: "supplier-101",
           createdAt: new Date("2024-01-15"),
           updatedAt: new Date("2024-12-15"),
         },
@@ -116,10 +107,10 @@ export function ContractManagement() {
   const fetchContractRequests = async () => {
     try {
       // TODO: Uncomment when backend is fixed
-      // const response = await contractService.getContractRequests(currentUser.id, currentUser.role);
+      // const response = await contractService.getMyContractRequests(currentUser.id, currentUser.role);
       // setContractRequests(response);
 
-      // Hardcoded data for now
+      // Hardcoded data for now - updated with new structure
       const mockContractRequests: ContractRequest[] = [
         {
           id: "req-1",
@@ -129,6 +120,8 @@ export function ContractManagement() {
           startDate: "2024-03-01",
           endDate: "2024-03-15",
           status: "pending",
+          comment: "I am very interested in this project and have 5+ years of experience in logo design.",
+          isPaid: false,
           ownerId: "owner-123",
           supplierId: "supplier-456",
           ownerApproved: false,
@@ -143,13 +136,32 @@ export function ContractManagement() {
           amount: "8000.00",
           startDate: "2024-04-01",
           endDate: "2024-05-31",
-          status: "pending",
+          status: "ongoing",
+          comment: "I have extensive experience with database migrations and cloud platforms.",
+          isPaid: false,
           ownerId: "owner-123",
           supplierId: "supplier-789",
-          ownerApproved: false,
-          ownerApprovedAt: null,
+          ownerApproved: true,
+          ownerApprovedAt: new Date("2024-03-16"),
           createdAt: new Date("2024-03-15"),
-          updatedAt: new Date("2024-03-15"),
+          updatedAt: new Date("2024-03-16"),
+        },
+        {
+          id: "req-3",
+          title: "Social Media Management",
+          description: "Complete social media strategy and content creation",
+          amount: "3000.00",
+          startDate: "2024-04-01",
+          endDate: "2024-07-31",
+          status: "completed",
+          comment: "I can deliver high-quality social media content and strategy.",
+          isPaid: true,
+          ownerId: "owner-123",
+          supplierId: "supplier-101",
+          ownerApproved: true,
+          ownerApprovedAt: new Date("2024-03-20"),
+          createdAt: new Date("2024-03-19"),
+          updatedAt: new Date("2024-07-31"),
         },
       ];
 
@@ -193,22 +205,6 @@ export function ContractManagement() {
     }
   };
 
-  const handleMarkAsPaid = async (id: string) => {
-    try {
-      // TODO: Uncomment when backend is fixed
-      // await contractService.markContractAsPaid(id, currentUser.id, currentUser.role);
-      // await fetchContracts();
-      
-      // For now, just update local state
-      setContracts(prev => prev.map(contract => 
-        contract.id === id ? { ...contract, isPaid: true } : contract
-      ));
-      alert("Contract marked as paid (mock action)");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to mark contract as paid");
-    }
-  };
-
   const handleApproveContractRequest = async (id: string) => {
     try {
       // TODO: Uncomment when backend is fixed
@@ -217,11 +213,78 @@ export function ContractManagement() {
       
       // For now, just update local state
       setContractRequests(prev => prev.map(request => 
-        request.id === id ? { ...request, ownerApproved: true, ownerApprovedAt: new Date() } : request
+        request.id === id ? { 
+          ...request, 
+          ownerApproved: true, 
+          ownerApprovedAt: new Date(),
+          status: 'ongoing' 
+        } : request
       ));
       alert("Contract request approved (mock action)");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to approve contract request");
+    }
+  };
+
+  const handleMarkContractRequestAsPaid = async (id: string) => {
+    try {
+      // TODO: Uncomment when backend is fixed
+      // await contractService.markContractRequestAsPaid(id, currentUser.id, currentUser.role);
+      // await fetchContractRequests();
+      
+      // For now, just update local state
+      setContractRequests(prev => prev.map(request => 
+        request.id === id ? { 
+          ...request, 
+          isPaid: true,
+          status: 'completed'
+        } : request
+      ));
+      alert("Contract request marked as paid (mock action)");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to mark contract request as paid");
+    }
+  };
+
+  const handleStatusChange = async (id: string, status: 'pending' | 'ongoing' | 'completed') => {
+    try {
+      // TODO: Uncomment when backend is fixed
+      // await contractService.updateContractRequest(id, { status }, currentUser.id, currentUser.role);
+      // await fetchContractRequests();
+      
+      // For now, just update local state
+      setContractRequests(prev => prev.map(request => 
+        request.id === id ? { 
+          ...request, 
+          status,
+          // Auto-approve if moving to ongoing
+          ...(status === 'ongoing' ? { ownerApproved: true, ownerApprovedAt: new Date() } : {})
+        } : request
+      ));
+      alert(`Contract request status updated to ${status} (mock action)`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update contract request status");
+    }
+  };
+
+  const handlePaymentChange = async (id: string, isPaid: boolean) => {
+    try {
+      // TODO: Uncomment when backend is fixed
+      // await contractService.updateContractRequest(id, { isPaid }, currentUser.id, currentUser.role);
+      // await fetchContractRequests();
+      
+      // For now, just update local state
+      setContractRequests(prev => prev.map(request => 
+        request.id === id ? { 
+          ...request, 
+          isPaid,
+          // Auto-complete if marking as paid
+          ...(isPaid ? { status: 'completed' as const } : {})
+        } : request
+      ));
+      alert(`Contract request payment updated to ${isPaid ? 'paid' : 'unpaid'} (mock action)`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update contract request payment");
     }
   };
 
@@ -258,9 +321,6 @@ export function ContractManagement() {
     setFilters(prev => ({ ...prev, page }));
   };
 
-  const pendingRequests = contractRequests.filter(req => req.status === 'pending');
-  const approvedRequests = contractRequests.filter(req => req.status === 'approved');
-
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -280,7 +340,7 @@ export function ContractManagement() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="contracts" className="flex items-center space-x-2">
             <FileText className="h-4 w-4" />
             <span>Contracts ({contracts.length})</span>
@@ -288,10 +348,6 @@ export function ContractManagement() {
           <TabsTrigger value="requests" className="flex items-center space-x-2">
             <Users className="h-4 w-4" />
             <span>Requests ({contractRequests.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="pending" className="flex items-center space-x-2">
-            <CheckCircle className="h-4 w-4" />
-            <span>Pending ({pendingRequests.length})</span>
           </TabsTrigger>
         </TabsList>
 
@@ -320,7 +376,6 @@ export function ContractManagement() {
                 loading={loading}
                 onEdit={handleEditContract}
                 onDelete={handleDeleteContract}
-                onMarkAsPaid={handleMarkAsPaid}
                 pagination={pagination}
                 onPageChange={handlePageChange}
               />
@@ -331,34 +386,19 @@ export function ContractManagement() {
         <TabsContent value="requests" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>All Contract Requests</CardTitle>
+              <CardTitle>Contract Requests</CardTitle>
               <CardDescription>
-                View and manage all contract requests
+                View and manage contract requests from suppliers
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ContractRequestTable
                 requests={contractRequests}
                 onApprove={handleApproveContractRequest}
+                onMarkAsPaid={handleMarkContractRequestAsPaid}
+                onStatusChange={handleStatusChange}
+                onPaymentChange={handlePaymentChange}
                 showAll={true}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="pending" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pending Approvals</CardTitle>
-              <CardDescription>
-                Contract requests awaiting your approval
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ContractRequestTable
-                requests={pendingRequests}
-                onApprove={handleApproveContractRequest}
-                showAll={false}
               />
             </CardContent>
           </Card>
