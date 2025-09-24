@@ -16,6 +16,9 @@ import type {
   CreatePaymentDto,
   InvoiceStatus,
   PaymentStatus,
+  OrderProductDto,
+  CreateOrderProductDto,
+  UpdateOrderProductDto,
 } from '@/lib/dtos/order';
 
 // Checkout Service Functions
@@ -72,6 +75,63 @@ export const updateOrder = async (id: string, updateOrderDto: UpdateOrderDto): P
 export const deleteOrder = async (id: string): Promise<{ message: string }> => {
   const result = await apiPrivateClient
     .delete<{ message: string }>(`order/${id}`)
+    .json();
+  return result;
+};
+
+// Order Product Service Functions
+export const getAllOrderProducts = async (): Promise<OrderProductDto[]> => {
+  const result = await apiPrivateClient
+    .get<OrderProductDto[]>("order-product")
+    .json();
+  return result;
+};
+
+export const getOrderProductById = async (id: string): Promise<OrderProductDto> => {
+  const result = await apiPrivateClient
+    .get<OrderProductDto>(`order-product/${id}`)
+    .json();
+  return result;
+};
+
+export const getOrderProductsByOrderId = async (orderId: string): Promise<OrderProductDto[]> => {
+  const result = await apiPrivateClient
+    .get<OrderProductDto[]>(`order-product/order/${orderId}`)
+    .json();
+  return result;
+};
+
+export const createOrderProduct = async (createOrderProductDto: CreateOrderProductDto): Promise<OrderProductDto> => {
+  const result = await apiPrivateClient
+    .post<OrderProductDto>("order-product", { json: createOrderProductDto })
+    .json();
+  return result;
+};
+
+export const createMultipleOrderProducts = async (createOrderProductDtos: CreateOrderProductDto[]): Promise<OrderProductDto[]> => {
+  const result = await apiPrivateClient
+    .post<OrderProductDto[]>("order-product/bulk", { json: createOrderProductDtos })
+    .json();
+  return result;
+};
+
+export const updateOrderProduct = async (id: string, updateOrderProductDto: UpdateOrderProductDto): Promise<OrderProductDto> => {
+  const result = await apiPrivateClient
+    .put<OrderProductDto>(`order-product/${id}`, { json: updateOrderProductDto })
+    .json();
+  return result;
+};
+
+export const deleteOrderProduct = async (id: string): Promise<{ message: string }> => {
+  const result = await apiPrivateClient
+    .delete<{ message: string }>(`order-product/${id}`)
+    .json();
+  return result;
+};
+
+export const deleteOrderProductsByOrderId = async (orderId: string): Promise<{ message: string }> => {
+  const result = await apiPrivateClient
+    .delete<{ message: string }>(`order-product/order/${orderId}`)
     .json();
   return result;
 };

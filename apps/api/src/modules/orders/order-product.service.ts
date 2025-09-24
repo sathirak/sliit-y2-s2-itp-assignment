@@ -67,6 +67,23 @@ export class OrderProductService {
     return newOrderProducts;
   }
 
+  async update(id: string, updateData: Partial<CreateOrderProductDto>): Promise<OrderProductDto> {
+    const [updatedOrderProduct] = await this.db
+      .update(orderProducts)
+      .set(updateData)
+      .where(eq(orderProducts.id, id))
+      .returning();
+    return updatedOrderProduct;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.db
+      .delete(orderProducts)
+      .where(eq(orderProducts.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
   async deleteByOrderId(orderId: string): Promise<void> {
     await this.db
       .delete(orderProducts)
