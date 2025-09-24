@@ -44,15 +44,12 @@ export const useProduct = (id: string) => {
   };
 };
 
-// Hook specifically for new arrivals (latest products)
 export const useNewArrivals = (limit: number = 8) => {
   const { data, error, isLoading, mutate } = useSWR(
     ['new-arrivals', limit],
     () => productService.getProducts({ 
       limit,
       page: 1,
-      // You could add additional filters here like sorting by created_at desc
-      // But since the API doesn't seem to have explicit sorting, we'll work with what we get
     }),
     {
       revalidateOnFocus: false,
