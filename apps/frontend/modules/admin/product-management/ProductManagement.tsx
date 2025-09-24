@@ -128,7 +128,7 @@ export function ProductManagement() {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Button
+          {/* <Button
             variant="outline"
             onClick={handleDownloadReport}
             disabled={downloadingReport}
@@ -140,7 +140,7 @@ export function ProductManagement() {
               <Download className="h-4 w-4" />
             )}
             <span>{downloadingReport ? 'Downloading...' : 'Download Report'}</span>
-          </Button>
+          </Button> */}
           <Button onClick={handleCreateProduct} className="flex items-center space-x-2">
             <Plus className="h-4 w-4" />
             <span>Add Product</span>
