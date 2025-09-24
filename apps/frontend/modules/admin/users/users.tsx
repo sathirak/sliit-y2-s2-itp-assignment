@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { User } from "lucide-react";
 import { Button } from "@/modules/ui/button";
 import { Input } from "@/modules/ui/input";
 import { useUsers, useSearchUsers, useUserMutations } from "@/lib/hooks/useUsers";
@@ -70,26 +71,24 @@ export default function Users() {
 		}
 	}
 
-	return (
-		<div className="container mx-auto p-6 space-y-6">
-			<div className="flex items-center justify-between">
-				<div className="flex items-center space-x-2">
-					<UserPlus className="h-8 w-8" />
-					<div>
-						<h1 className="text-3xl font-bold">User Management</h1>
-						<p className="text-muted-foreground">
-							Manage your users and their details (Owner access only)
-						</p>
-					</div>
-				</div>
-				<Button
-					onClick={() => setShowAdd(true)}
-					className="flex items-center space-x-2"
-				>
-					<UserPlus className="h-4 w-4" />
-					<span>Add User</span>
-				</Button>
-			</div>
+	 return (
+	   <div className="container mx-auto p-6 space-y-6">
+	     <div className="flex items-center justify-between">
+	       <div className="flex items-center gap-4">
+	         <User className="h-10 w-10 text-blue-500 animate-in fade-in duration-500" />
+	         <div>
+	           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">User Management</h1>
+	           <p className="text-gray-500 text-base">Manage your users and their details (Owner access only)</p>
+	         </div>
+	       </div>
+	       <Button
+	         onClick={() => setShowAdd(true)}
+	         className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-400 text-white font-bold rounded-lg shadow-lg hover:scale-105 active:scale-95 transition-transform duration-150"
+	       >
+	         <UserPlus className="h-5 w-5" />
+	         <span>Add User</span>
+	       </Button>
+	     </div>
 
 			<AddUserModal
 				open={showAdd}
@@ -130,19 +129,19 @@ export default function Users() {
 				</div>
 			)}
 
-			{/* Users Table */}
-			<div className="overflow-x-auto">
-				<table className="min-w-full bg-white border rounded-lg">
-					<thead>
-						<tr className="bg-gray-100 text-left">
-							<th className="py-2 px-4 border-b">Name</th>
-							<th className="py-2 px-4 border-b">Email</th>
-							<th className="py-2 px-4 border-b">Role</th>
-							<th className="py-2 px-4 border-b">Created At</th>
-							<th className="py-2 px-4 border-b">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
+	     {/* Users Table - Card Style */}
+	     <div className="overflow-x-auto">
+	       <table className="min-w-full bg-white border rounded-2xl shadow-lg">
+	         <thead className="sticky top-0 z-10">
+	           <tr className="bg-gradient-to-r from-blue-50 via-white to-blue-50 text-left">
+	             <th className="py-3 px-4 border-b font-bold">User</th>
+	             <th className="py-3 px-4 border-b font-bold">Email</th>
+	             <th className="py-3 px-4 border-b font-bold">Role</th>
+	             <th className="py-3 px-4 border-b font-bold">Created At</th>
+	             <th className="py-3 px-4 border-b font-bold">Actions</th>
+	           </tr>
+	         </thead>
+	         <tbody>
 						{isLoading ? (
 							<tr>
 								<td colSpan={5} className="text-center py-4 text-gray-500">
@@ -160,49 +159,54 @@ export default function Users() {
 							</tr>
 						) : (
 							displayUsers.map((user: UserDto) => (
-								<tr key={user.id} className="hover:bg-gray-50">
-									<td className="py-2 px-4 border-b">
-										{`${user.firstName} ${user.lastName}` || "-"}
-									</td>
-									<td className="py-2 px-4 border-b">
-										{user.email || "-"}
-									</td>
-									<td className="py-2 px-4 border-b">
-										<span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-											{user.roleName || "-"}
-										</span>
-									</td>
-									<td className="py-2 px-4 border-b">
-										{user.createdAt 
-											? new Date(user.createdAt).toLocaleDateString()
-											: "-"
-										}
-									</td>
-									<td className="py-2 px-4 border-b">
-										<div className="flex space-x-2">
-											<Button
-												size="sm"
-												variant="outline"
-												onClick={() => handleEditUser(user)}
-												className="flex items-center space-x-1"
-												disabled={isSubmitting}
-											>
-												<Edit className="h-4 w-4" />
-												<span>Edit</span>
-											</Button>
-											<Button 
-												size="sm" 
-												variant="destructive" 
-												onClick={() => handleDeleteUser(user.id)}
-												className="flex items-center space-x-1"
-												disabled={isSubmitting}
-											>
-												<Trash2 className="h-4 w-4" />
-												<span>Delete</span>
-											</Button>
-										</div>
-									</td>
-								</tr>
+									 <tr key={user.id} className="hover:bg-blue-50 transition-all duration-150">
+										 <td className="py-3 px-4 border-b flex items-center gap-3">
+											 <span className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg border border-blue-200 shadow-sm">
+												 {user.firstName ? user.firstName[0] : user.email[0]}
+											 </span>
+											 <span className="font-semibold text-gray-800">{`${user.firstName} ${user.lastName}` || "-"}</span>
+										 </td>
+										 <td className="py-3 px-4 border-b text-gray-700">
+											 {user.email || "-"}
+										 </td>
+										 <td className="py-3 px-4 border-b">
+																 <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${user.roleName === 'owner' ? 'bg-purple-100 text-purple-700' : user.roleName === 'supplier' ? 'bg-blue-100 text-blue-700' : user.roleName === 'sales_rep' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
+																	 {user.roleName || "-"}
+																 </span>
+										 </td>
+										 <td className="py-3 px-4 border-b text-gray-500">
+											 {user.createdAt 
+												 ? new Date(user.createdAt).toLocaleDateString()
+												 : "-"
+											 }
+										 </td>
+										 <td className="py-3 px-4 border-b">
+											 <div className="flex gap-2">
+												 <Button
+													 size="sm"
+													 variant="outline"
+													 onClick={() => handleEditUser(user)}
+													 className="flex items-center gap-1 hover:bg-blue-100 active:bg-blue-200 transition-all duration-150"
+													 disabled={isSubmitting}
+													 title="Edit user"
+												 >
+													 <Edit className="h-4 w-4" />
+													 <span>Edit</span>
+												 </Button>
+												 <Button 
+													 size="sm" 
+													 variant="destructive" 
+													 onClick={() => handleDeleteUser(user.id)}
+													 className="flex items-center gap-1 hover:bg-red-100 active:bg-red-200 transition-all duration-150"
+													 disabled={isSubmitting}
+													 title="Delete user"
+												 >
+													 <Trash2 className="h-4 w-4" />
+													 <span>Delete</span>
+												 </Button>
+											 </div>
+										 </td>
+									 </tr>
 							))
 						)}
 					</tbody>

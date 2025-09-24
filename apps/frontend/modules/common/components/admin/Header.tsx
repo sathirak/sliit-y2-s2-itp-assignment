@@ -7,7 +7,7 @@ import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Button } from '@/modules/ui/button';
 
 export const Header = () => {
-    const { user, loading, signOut } = useAuth();
+    const { user, isLoading, logout } = useAuth();
     return (
         <header className="flex flex-col px-10 py-4 border-b">
             <div className="flex items-center gap-4">
@@ -25,8 +25,8 @@ export const Header = () => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={signOut}
-                                disabled={loading}
+                                onClick={logout}
+                                disabled={isLoading}
                             >
                                 SIGN OUT
                             </Button>
