@@ -8,7 +8,8 @@ import { ProductFilters } from "./components/ProductFilters";
 import { ProductDialog } from "./components/ProductDialog";
 import { Button } from "@/modules/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
-import { Plus, Package } from "lucide-react";
+import { Plus, Package, Download } from "lucide-react";
+import { downloadProductReport } from "@/lib/utils/report.utils";
 
 export function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -26,6 +27,7 @@ export function ProductManagement() {
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -82,15 +84,35 @@ export function ProductManagement() {
   };
 
   const handleFilterChange = (newFilters: Partial<ProductFilterDto>) => {
-    setFilters(prev => ({
-      ...prev,
-      ...newFilters,
-      page: 1, // Reset to first page when filters change
-    }));
+    // If it's an empty object (clear filters), reset to defaults
+    if (Object.keys(newFilters).length === 0) {
+      setFilters({
+        page: 1,
+        limit: 10,
+      });
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        ...newFilters,
+        page: 1, // Reset to first page when filters change
+      }));
+    }
   };
 
   const handlePageChange = (page: number) => {
     setFilters(prev => ({ ...prev, page }));
+  };
+
+  const handleDownloadReport = async () => {
+    setDownloadingReport(true);
+    try {
+      const allProducts = await productService.getAllProducts();
+      downloadProductReport(allProducts);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to download report");
+    } finally {
+      setDownloadingReport(false);
+    }
   };
 
   return (
@@ -105,10 +127,25 @@ export function ProductManagement() {
             </p>
           </div>
         </div>
-        <Button onClick={handleCreateProduct} className="flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Add Product</span>
-        </Button>
+        <div className="flex items-center space-x-2">
+          {/* <Button
+            variant="outline"
+            onClick={handleDownloadReport}
+            disabled={downloadingReport}
+            className="flex items-center space-x-2"
+          >
+            {downloadingReport ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            <span>{downloadingReport ? 'Downloading...' : 'Download Report'}</span>
+          </Button> */}
+          <Button onClick={handleCreateProduct} className="flex items-center space-x-2">
+            <Plus className="h-4 w-4" />
+            <span>Add Product</span>
+          </Button>
+        </div>
       </div>
 
       <Card>

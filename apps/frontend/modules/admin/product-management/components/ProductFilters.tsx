@@ -252,7 +252,16 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end space-x-2">
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          className="flex items-center space-x-2"
+          disabled={!hasActiveFilters}
+        >
+          <X className="h-4 w-4" />
+          <span>Clear Filters</span>
+        </Button>
         <Button onClick={applyFilters} className="flex items-center space-x-2">
           <Search className="h-4 w-4" />
           <span>Apply Filters</span>
