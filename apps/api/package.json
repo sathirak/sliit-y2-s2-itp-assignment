@@ -23,6 +23,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^11.2.0",
     "@scalar/nestjs-api-reference": "^0.5.12",
+    "@supabase/supabase-js": "^2.57.4",
     "@types/multer": "^2.0.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
