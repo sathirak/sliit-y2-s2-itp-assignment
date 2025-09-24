@@ -1,24 +1,19 @@
-// types.ts - Shared Gemini API types
-
+// types.ts
 export interface GeminiContentPart {
-	text: string;
+  text: string;
 }
-
 export interface GeminiContent {
-	role: 'user' | 'model';
-	parts: GeminiContentPart[];
+  role: 'user' | 'model';
+  parts: GeminiContentPart[];
 }
-
 export interface GeminiPrompt {
-	contents: GeminiContent[];
+  contents: GeminiContent[];
 }
-
 export interface GeminiCandidate {
-	content: {
-		parts: GeminiContentPart[];
-	};
+  content: {
+    parts: GeminiContentPart[];
+  };
 }
-
 export interface GeminiResponse {
-	candidates: GeminiCandidate[];
+  candidates: GeminiCandidate[];
 }

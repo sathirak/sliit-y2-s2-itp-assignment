@@ -4,13 +4,12 @@ This folder contains all code for integrating Google Gemini AI (gemini-2.5-flash
 
 ## Files and Purpose
 
+- `config.ts` — Centralized Gemini API configuration (endpoint, model, API key).
+- `types.ts` — Shared TypeScript types/interfaces for Gemini requests and responses.
 - `GeminiClient.ts` — Handles API requests to Gemini, provides `sendGeminiPrompt(prompt)` function.
+- `utils.ts` — Utility functions for formatting responses and error handling.
 - `GeminiChat.tsx` — React component for chat-style interaction with Gemini.
 - `GeminiPromt.tsx` — React component for single-prompt Q&A with Gemini.
-- `types.ts` — Shared TypeScript types/interfaces for Gemini requests and responses.
-- `utils.ts` — Utility functions for formatting responses and error handling.
-- `config.ts` — (Optional) For advanced config or API key management.
-- `README.md` — This documentation file.
 
 ## Setup Instructions
 
