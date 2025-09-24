@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Product, CreateProductDto, UpdateProductDto } from "@/lib/dtos/product";
 import { productService } from "@/lib/services/product.service";
+import { uploadService } from "@/lib/services/upload.service";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/modules/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X, AlertCircle } from "lucide-react";
 
 interface ProductDialogProps {
   open: boolean;
@@ -71,8 +72,17 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
     price: "",
     product_image: "",
   });
+  
+  // Keep quantity as string for better input handling
+  const [qtyInput, setQtyInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Image upload states
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditing = !!product;
 
@@ -99,6 +109,8 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
         price: product.price,
         product_image: product.product_image,
       });
+      setQtyInput(product.qty.toString());
+      setShowUrlInput(!!product.product_image); // Show URL input if editing and has image
     } else {
       setFormData({
         name: "",
@@ -110,8 +122,11 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
         price: "",
         product_image: "",
       });
+      setQtyInput("");
+      setShowUrlInput(false);
     }
     setError(null);
+    setUploadError(null);
   }, [product, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,11 +135,17 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
     setError(null);
 
     try {
+      // Convert qtyInput to number for submission
+      const submissionData = {
+        ...formData,
+        qty: parseInt(qtyInput) || 0,
+      };
+
       if (isEditing && product) {
-        const updateData: UpdateProductDto = { ...formData };
+        const updateData: UpdateProductDto = { ...submissionData };
         await productService.updateProduct(product.id, updateData);
       } else {
-        await productService.createProduct(formData);
+        await productService.createProduct(submissionData);
       }
       onSaved();
     } catch (err) {
@@ -139,6 +160,53 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadError(null);
+
+    try {
+      const response = await uploadService.uploadImage(file);
+      handleInputChange('product_image', response.url);
+      setShowUrlInput(false); // Hide URL input on successful upload
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload image');
+      setShowUrlInput(true); // Show URL input as fallback
+    } finally {
+      setUploadingImage(false);
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveImage = () => {
+    handleInputChange('product_image', '');
+    setShowUrlInput(false);
+    setUploadError(null);
+  };
+
+  const handleShowUrlInput = () => {
+    setShowUrlInput(true);
+    setUploadError(null);
   };
 
   return (
@@ -275,9 +343,9 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
                 id="qty"
                 type="number"
                 min="0"
-                value={formData.qty}
-                onChange={(e) => handleInputChange("qty", parseInt(e.target.value) || 0)}
-                placeholder="0"
+                value={qtyInput}
+                onChange={(e) => setQtyInput(e.target.value)}
+                placeholder="Enter quantity"
                 required
               />
             </div>
@@ -297,14 +365,92 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
           </div>
 
           {/* Product Image */}
-          <div className="space-y-2">
-            <Label htmlFor="product_image">Product Image URL (temp)</Label>
-            <Input
-              id="product_image"
-              value={formData.product_image}
-              onChange={(e) => handleInputChange("product_image", e.target.value)}
-              placeholder="https://example.com/image.jpg"
-            />
+          <div className="space-y-4">
+            <Label>Product Image</Label>
+            
+            {/* Image Preview */}
+            {formData.product_image && (
+              <div className="relative inline-block">
+                <img
+                  src={formData.product_image}
+                  alt="Product preview"
+                  className="w-32 h-32 object-cover rounded-lg border"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                  onClick={handleRemoveImage}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+
+            {/* Upload Error */}
+            {uploadError && (
+              <div className="flex items-center space-x-2 text-red-600 text-sm">
+                <AlertCircle className="h-4 w-4" />
+                <span>{uploadError}</span>
+              </div>
+            )}
+
+            {/* Upload Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="flex items-center space-x-2"
+                >
+                  {uploadingImage ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                  <span>{uploadingImage ? 'Uploading...' : 'Upload Image'}</span>
+                </Button>
+              </div>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleShowUrlInput}
+                className="text-sm"
+              >
+                Or enter URL
+              </Button>
+            </div>
+
+            {/* URL Input (fallback) */}
+            {showUrlInput && (
+              <div className="space-y-2">
+                <Label htmlFor="product_image_url">Image URL</Label>
+                <Input
+                  id="product_image_url"
+                  value={formData.product_image}
+                  onChange={(e) => handleInputChange("product_image", e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+            )}
+            
+            <p className="text-xs text-gray-500">
+              Supported formats: JPG, PNG, GIF, WebP. Max size: 5MB.
+            </p>
           </div>
 
           <DialogFooter>

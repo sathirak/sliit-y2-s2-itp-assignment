@@ -31,8 +31,8 @@ export class ProductController {
     description: 'Product created successfully',
     type: ProductDto,
   })
-  @AllowGuests()
   @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Admin access required' })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
@@ -94,6 +94,7 @@ export class ProductController {
     description: 'Product updated successfully',
     type: ProductDto,
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Admin access required' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(id, updateProductDto);
@@ -104,6 +105,7 @@ export class ProductController {
   @ApiOperation({ summary: 'Delete a product' })
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiResponse({ status: 204, description: 'Product deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Admin access required' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   remove(@Param('id') id: string) {
     return this.productService.remove(id);
