@@ -5,11 +5,11 @@ export class UpdateContractRequestDto {
   @ApiPropertyOptional({
     description: 'Contract request status',
     example: 'ongoing',
-    enum: ['pending', 'ongoing', 'completed'],
+    enum: ['pending', 'ongoing', 'completed', 'rejected'],
   })
   @IsOptional()
   @IsString()
-  status?: 'pending' | 'ongoing' | 'completed';
+  status?: 'pending' | 'ongoing' | 'completed' | 'rejected';
 
   @ApiPropertyOptional({
     description: 'Comment from supplier about the contract request',

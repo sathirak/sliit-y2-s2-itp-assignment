@@ -246,7 +246,7 @@ export function ContractManagement() {
     }
   };
 
-  const handleStatusChange = async (id: string, status: 'pending' | 'ongoing' | 'completed') => {
+  const handleStatusChange = async (id: string, status: 'pending' | 'ongoing' | 'completed' | 'rejected') => {
     try {
       // TODO: Uncomment when backend is fixed
       // await contractService.updateContractRequest(id, { status }, currentUser.id, currentUser.role);

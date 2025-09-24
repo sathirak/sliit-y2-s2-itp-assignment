@@ -17,7 +17,7 @@ export interface ContractRequest {
   amount: string;
   startDate: string;
   endDate: string;
-  status: 'pending' | 'ongoing' | 'completed';
+  status: 'pending' | 'ongoing' | 'completed' | 'rejected';
   comment?: string;
   isPaid: boolean;
   ownerId: string;
@@ -50,7 +50,7 @@ export interface CreateContractRequestDto {
 }
 
 export interface UpdateContractRequestDto {
-  status?: 'pending' | 'ongoing' | 'completed';
+  status?: 'pending' | 'ongoing' | 'completed' | 'rejected';
   comment?: string;
   isPaid?: boolean;
 }

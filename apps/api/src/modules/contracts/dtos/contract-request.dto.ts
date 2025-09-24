@@ -40,7 +40,7 @@ export class ContractRequestDto {
   @ApiProperty({
     description: 'Contract request status',
     example: 'pending',
-    enum: ['pending', 'ongoing', 'completed'],
+    enum: ['pending', 'ongoing', 'completed', 'rejected'],
   })
   status: string;
 

@@ -18,13 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/modules/ui/select";
-import { CheckCircle, XCircle, Calendar, User, MessageSquare } from "lucide-react";
+import { CheckCircle, XCircle, Calendar, User, MessageSquare, Clock } from "lucide-react";
 
 interface ContractRequestTableProps {
   requests: ContractRequest[];
   onApprove?: (id: string) => void;
   onMarkAsPaid?: (id: string) => void;
-  onStatusChange?: (id: string, status: 'pending' | 'ongoing' | 'completed') => void;
+  onStatusChange?: (id: string, status: 'pending' | 'ongoing' | 'completed' | 'rejected') => void;
   onPaymentChange?: (id: string, isPaid: boolean) => void;
   showAll: boolean;
   showActions?: boolean;
@@ -69,6 +69,12 @@ export function ContractRequestTable({
         label: "Completed", 
         icon: CheckCircle,
         className: "bg-green-100 text-green-800 border-green-200"
+      },
+      rejected: { 
+        variant: "destructive" as const, 
+        label: "Rejected", 
+        icon: XCircle,
+        className: "bg-red-100 text-red-800 border-red-200"
       },
     };
     
@@ -139,7 +145,7 @@ export function ContractRequestTable({
                   {onStatusChange ? (
                     <Select
                       value={request.status}
-                      onValueChange={(value) => onStatusChange(request.id, value as 'pending' | 'ongoing' | 'completed')}
+                      onValueChange={(value) => onStatusChange(request.id, value as 'pending' | 'ongoing' | 'completed' | 'rejected')}
                     >
                       <SelectTrigger className="w-[150px] h-8">
                         <SelectValue>
@@ -163,6 +169,12 @@ export function ContractRequestTable({
                           <div className="flex items-center space-x-2">
                             <CheckCircle className="h-3 w-3" />
                             <span>Completed</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="rejected">
+                          <div className="flex items-center space-x-2">
+                            <XCircle className="h-3 w-3" />
+                            <span>Rejected</span>
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -255,12 +267,3 @@ export function ContractRequestTable({
   );
 }
 
-// Clock icon component
-function Clock({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="10"></circle>
-      <polyline points="12,6 12,12 16,14"></polyline>
-    </svg>
-  );
-}
