@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Contract, ContractRequest, ContractFilterDto, UserRole } from "@/lib/services/dtos/contract";
 import { contractService } from "@/lib/services/contract.service";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { ContractTable } from "./components/ContractTable";
 import { ContractFilters } from "./components/ContractFilters";
 import { ContractDialog } from "./components/ContractDialog";
@@ -31,72 +32,41 @@ export function ContractManagement() {
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
   const [activeTab, setActiveTab] = useState("contracts");
 
-  // Mock user data - in real app, this would come from auth context
-  const currentUser = {
-    id: "owner-123",
-    role: UserRole.OWNER,
-    name: "John Owner"
+  // Get current user from auth hook
+  const { user, isLoading: authLoading } = useAuth();
+  
+  // Convert role from UserDto to UserRole enum
+  const getUserRole = (roleName: string): UserRole => {
+    switch (roleName) {
+      case 'owner':
+        return UserRole.OWNER;
+      case 'supplier':
+        return UserRole.SUPPLIER;
+      case 'customer':
+        return UserRole.CUSTOMER;
+      default:
+        return UserRole.CUSTOMER;
+    }
   };
 
+  const currentUser = useMemo(() => {
+    return user ? {
+      id: user.id,
+      role: getUserRole(user.roleName),
+      name: `${user.firstName} ${user.lastName}`
+    } : null;
+  }, [user]);
+
   const fetchContracts = async () => {
+    if (!currentUser) return;
+    
     try {
       setLoading(true);
       setError(null);
       
-      // TODO: Uncomment when backend is fixed
-      // const response = await contractService.getContracts(filters, currentUser.id, currentUser.role);
-      // setContracts(response.data);
-      // setPagination({
-      //   total: response.total,
-      //   page: response.page,
-      //   limit: response.limit,
-      //   totalPages: response.totalPages,
-      // });
-
-      // Hardcoded data for now - simplified contracts (no status, isPaid, supplierId)
-      const mockContracts: Contract[] = [
-        {
-          id: "1",
-          title: "Website Development Contract",
-          description: "Development of a corporate website with modern design and responsive layout",
-          amount: "5000.00",
-          startDate: "2024-01-01",
-          endDate: "2024-03-31",
-          ownerId: "owner-123",
-          createdAt: new Date("2024-01-01"),
-          updatedAt: new Date("2024-01-15"),
-        },
-        {
-          id: "2",
-          title: "Mobile App Development",
-          description: "iOS and Android mobile application development",
-          amount: "12000.00",
-          startDate: "2024-02-01",
-          endDate: "2024-06-30",
-          ownerId: "owner-123",
-          createdAt: new Date("2024-02-01"),
-          updatedAt: new Date("2024-02-01"),
-        },
-        {
-          id: "3",
-          title: "E-commerce Platform",
-          description: "Full-stack e-commerce platform with payment integration",
-          amount: "25000.00",
-          startDate: "2024-01-15",
-          endDate: "2024-12-15",
-          ownerId: "owner-123",
-          createdAt: new Date("2024-01-15"),
-          updatedAt: new Date("2024-12-15"),
-        },
-      ];
-
-      setContracts(mockContracts);
-      setPagination({
-        total: mockContracts.length,
-        page: 1,
-        limit: 10,
-        totalPages: 1,
-      });
+      const response = await contractService.getContracts(filters, currentUser.id, currentUser.role);
+      setContracts(response.data);
+      setPagination(response.pagination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch contracts");
     } finally {
@@ -105,79 +75,51 @@ export function ContractManagement() {
   };
 
   const fetchContractRequests = async () => {
+    if (!currentUser) return;
+    
     try {
-      // TODO: Uncomment when backend is fixed
-      // const response = await contractService.getMyContractRequests(currentUser.id, currentUser.role);
-      // setContractRequests(response);
-
-      // Hardcoded data for now - updated with new structure
-      const mockContractRequests: ContractRequest[] = [
-        {
-          id: "req-1",
-          title: "Logo Design Project",
-          description: "Professional logo design for new startup company",
-          amount: "1500.00",
-          startDate: "2024-03-01",
-          endDate: "2024-03-15",
-          status: "pending",
-          comment: "I am very interested in this project and have 5+ years of experience in logo design.",
-          isPaid: false,
-          ownerId: "owner-123",
-          supplierId: "supplier-456",
-          ownerApproved: false,
-          ownerApprovedAt: null,
-          createdAt: new Date("2024-02-28"),
-          updatedAt: new Date("2024-02-28"),
-        },
-        {
-          id: "req-2",
-          title: "Database Migration Service",
-          description: "Migrate legacy database to modern cloud solution",
-          amount: "8000.00",
-          startDate: "2024-04-01",
-          endDate: "2024-05-31",
-          status: "ongoing",
-          comment: "I have extensive experience with database migrations and cloud platforms.",
-          isPaid: false,
-          ownerId: "owner-123",
-          supplierId: "supplier-789",
-          ownerApproved: true,
-          ownerApprovedAt: new Date("2024-03-16"),
-          createdAt: new Date("2024-03-15"),
-          updatedAt: new Date("2024-03-16"),
-        },
-        {
-          id: "req-3",
-          title: "Social Media Management",
-          description: "Complete social media strategy and content creation",
-          amount: "3000.00",
-          startDate: "2024-04-01",
-          endDate: "2024-07-31",
-          status: "completed",
-          comment: "I can deliver high-quality social media content and strategy.",
-          isPaid: true,
-          ownerId: "owner-123",
-          supplierId: "supplier-101",
-          ownerApproved: true,
-          ownerApprovedAt: new Date("2024-03-20"),
-          createdAt: new Date("2024-03-19"),
-          updatedAt: new Date("2024-07-31"),
-        },
-      ];
-
-      setContractRequests(mockContractRequests);
+      const response = await contractService.getMyContractRequests(currentUser.id, currentUser.role);
+      setContractRequests(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch contract requests");
     }
   };
 
   useEffect(() => {
-    fetchContracts();
-  }, [filters]);
+    if (currentUser) {
+      fetchContracts();
+    }
+  }, [filters, currentUser]);
 
   useEffect(() => {
-    fetchContractRequests();
-  }, []);
+    if (currentUser) {
+      fetchContractRequests();
+    }
+  }, [currentUser]);
+
+  // Show loading while authentication is being checked
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <p>Please wait while we load your contract management.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if no user is authenticated
+  if (!currentUser) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p>Please log in to access contract management.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateContract = () => {
     setEditingContract(null);
@@ -190,15 +132,12 @@ export function ContractManagement() {
   };
 
   const handleDeleteContract = async (id: string) => {
+    if (!currentUser) return;
+    
     if (window.confirm("Are you sure you want to delete this contract?")) {
       try {
-        // TODO: Uncomment when backend is fixed
-        // await contractService.deleteContract(id, currentUser.id, currentUser.role);
-        // await fetchContracts();
-        
-        // For now, just remove from local state
-        setContracts(prev => prev.filter(contract => contract.id !== id));
-        alert("Contract deleted (mock action)");
+        await contractService.deleteContract(id, currentUser.id, currentUser.role);
+        await fetchContracts();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to delete contract");
       }
@@ -206,83 +145,44 @@ export function ContractManagement() {
   };
 
   const handleApproveContractRequest = async (id: string) => {
+    if (!currentUser) return;
+    
     try {
-      // TODO: Uncomment when backend is fixed
-      // await contractService.approveContractRequest(id, currentUser.id, currentUser.role);
-      // await fetchContractRequests();
-      
-      // For now, just update local state
-      setContractRequests(prev => prev.map(request => 
-        request.id === id ? { 
-          ...request, 
-          ownerApproved: true, 
-          ownerApprovedAt: new Date(),
-          status: 'ongoing' 
-        } : request
-      ));
-      alert("Contract request approved (mock action)");
+      await contractService.approveContractRequest(id, currentUser.id, currentUser.role);
+      await fetchContractRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to approve contract request");
     }
   };
 
   const handleMarkContractRequestAsPaid = async (id: string) => {
+    if (!currentUser) return;
+    
     try {
-      // TODO: Uncomment when backend is fixed
-      // await contractService.markContractRequestAsPaid(id, currentUser.id, currentUser.role);
-      // await fetchContractRequests();
-      
-      // For now, just update local state
-      setContractRequests(prev => prev.map(request => 
-        request.id === id ? { 
-          ...request, 
-          isPaid: true,
-          status: 'completed'
-        } : request
-      ));
-      alert("Contract request marked as paid (mock action)");
+      await contractService.markContractRequestAsPaid(id, currentUser.id, currentUser.role);
+      await fetchContractRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to mark contract request as paid");
     }
   };
 
-  const handleStatusChange = async (id: string, status: 'pending' | 'ongoing' | 'completed' | 'rejected') => {
+  const handleStatusChange = async (id: string, status: 'pending' | 'ongoing' | 'completed') => {
+    if (!currentUser) return;
+    
     try {
-      // TODO: Uncomment when backend is fixed
-      // await contractService.updateContractRequest(id, { status }, currentUser.id, currentUser.role);
-      // await fetchContractRequests();
-      
-      // For now, just update local state
-      setContractRequests(prev => prev.map(request => 
-        request.id === id ? { 
-          ...request, 
-          status,
-          // Auto-approve if moving to ongoing
-          ...(status === 'ongoing' ? { ownerApproved: true, ownerApprovedAt: new Date() } : {})
-        } : request
-      ));
-      alert(`Contract request status updated to ${status} (mock action)`);
+      await contractService.updateContractRequest(id, { status }, currentUser.id, currentUser.role);
+      await fetchContractRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update contract request status");
     }
   };
 
   const handlePaymentChange = async (id: string, isPaid: boolean) => {
+    if (!currentUser) return;
+    
     try {
-      // TODO: Uncomment when backend is fixed
-      // await contractService.updateContractRequest(id, { isPaid }, currentUser.id, currentUser.role);
-      // await fetchContractRequests();
-      
-      // For now, just update local state
-      setContractRequests(prev => prev.map(request => 
-        request.id === id ? { 
-          ...request, 
-          isPaid,
-          // Auto-complete if marking as paid
-          ...(isPaid ? { status: 'completed' as const } : {})
-        } : request
-      ));
-      alert(`Contract request payment updated to ${isPaid ? 'paid' : 'unpaid'} (mock action)`);
+      await contractService.updateContractRequest(id, { isPaid }, currentUser.id, currentUser.role);
+      await fetchContractRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update contract request payment");
     }
@@ -295,10 +195,6 @@ export function ContractManagement() {
 
   const handleContractSaved = () => {
     handleDialogClose();
-    // TODO: Uncomment when backend is fixed
-    // fetchContracts();
-    
-    // For now, just refresh the mock data
     fetchContracts();
   };
 

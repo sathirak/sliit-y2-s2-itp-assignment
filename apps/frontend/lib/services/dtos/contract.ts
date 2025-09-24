@@ -45,7 +45,7 @@ export interface CreateContractRequestDto {
   amount: string;
   startDate: string;
   endDate: string;
-  supplierId: string;
+  ownerId: string;
   comment?: string;
 }
 

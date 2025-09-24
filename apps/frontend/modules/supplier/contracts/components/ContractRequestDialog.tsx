@@ -39,7 +39,7 @@ export function ContractRequestDialog({
     amount: "",
     startDate: "",
     endDate: "",
-    supplierId: userId,
+    ownerId: "",
     comment: "",
   });
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ export function ContractRequestDialog({
         amount: contract.amount,
         startDate: contract.startDate,
         endDate: contract.endDate,
-        supplierId: userId,
+        ownerId: contract.ownerId,
         comment: "",
       });
     } else if (!open) {
@@ -65,11 +65,11 @@ export function ContractRequestDialog({
         amount: "",
         startDate: "",
         endDate: "",
-        supplierId: userId,
+        ownerId: "",
         comment: "",
       });
     }
-  }, [contract, userId, open]);
+  }, [contract, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +96,7 @@ export function ContractRequestDialog({
       amount: "",
       startDate: "",
       endDate: "",
-      supplierId: userId,
+      ownerId: "",
       comment: "",
     });
     setError(null);
@@ -135,13 +135,20 @@ export function ContractRequestDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount</Label>
+              <Label htmlFor="amount">Proposed Amount (Rs)</Label>
               <Input
                 id="amount"
+                type="number"
+                step="0.01"
+                min="0"
                 value={formData.amount}
-                readOnly
-                className="bg-gray-50"
+                onChange={(e) => handleInputChange("amount", e.target.value)}
+                placeholder="Enter your proposed amount"
+                required
               />
+              <p className="text-xs text-muted-foreground">
+                You can modify the amount to propose your own pricing for this contract
+              </p>
             </div>
           </div>
 

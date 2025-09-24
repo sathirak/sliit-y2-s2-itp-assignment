@@ -9,26 +9,9 @@ import {
   PaginatedResponse,
   UserRole 
 } from './dtos/contract';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { apiPrivateClient } from '../private';
 
 class ContractService {
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-  }
 
   // Contract CRUD operations
   async getContracts(filters: ContractFilterDto = {}, userId: string, userRole: UserRole): Promise<PaginatedResponse<Contract>> {
@@ -44,68 +27,58 @@ class ContractService {
     searchParams.append('userRole', userRole);
 
     const queryString = searchParams.toString();
-    const endpoint = queryString ? `/contracts?${queryString}` : `/contracts?userId=${userId}&userRole=${userRole}`;
+    const endpoint = queryString ? `contracts?${queryString}` : `contracts?userId=${userId}&userRole=${userRole}`;
     
-    return this.request<PaginatedResponse<Contract>>(endpoint);
+    return apiPrivateClient.get(endpoint).json<PaginatedResponse<Contract>>();
   }
 
   async getContract(id: string, userId: string, userRole: UserRole): Promise<Contract> {
-    return this.request<Contract>(`/contracts/${id}?userId=${userId}&userRole=${userRole}`);
+    return apiPrivateClient.get(`contracts/${id}?userId=${userId}&userRole=${userRole}`).json<Contract>();
   }
 
   async createContract(contract: CreateContractDto, userId: string, userRole: UserRole): Promise<Contract> {
-    return this.request<Contract>('/contracts', {
-      method: 'POST',
-      body: JSON.stringify({ ...contract, userId, userRole }),
-    });
+    return apiPrivateClient.post('contracts', {
+      json: contract
+    }).json<Contract>();
   }
 
   async updateContract(id: string, contract: UpdateContractDto, userId: string, userRole: UserRole): Promise<Contract> {
-    return this.request<Contract>(`/contracts/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ ...contract, userId, userRole }),
-    });
+    return apiPrivateClient.patch(`contracts/${id}`, {
+      json: contract
+    }).json<Contract>();
   }
 
   async deleteContract(id: string, userId: string, userRole: UserRole): Promise<void> {
-    return this.request<void>(`/contracts/${id}?userId=${userId}&userRole=${userRole}`, {
-      method: 'DELETE',
-    });
+    await apiPrivateClient.delete(`contracts/${id}?userId=${userId}&userRole=${userRole}`);
   }
 
   // Contract Request operations - Main workflow
   async getAllContractRequests(userId: string, userRole: UserRole): Promise<ContractRequest[]> {
-    return this.request<ContractRequest[]>(`/contracts/requests/all?userId=${userId}&userRole=${userRole}`);
+    return apiPrivateClient.get(`contracts/requests/all?userId=${userId}&userRole=${userRole}`).json<ContractRequest[]>();
   }
 
   async getMyContractRequests(userId: string, userRole: UserRole): Promise<ContractRequest[]> {
-    return this.request<ContractRequest[]>(`/contracts/requests/my?userId=${userId}&userRole=${userRole}`);
+    return apiPrivateClient.get(`contracts/requests/my?userId=${userId}&userRole=${userRole}`).json<ContractRequest[]>();
   }
 
   async createContractRequest(request: CreateContractRequestDto, userId: string, userRole: UserRole): Promise<ContractRequest> {
-    return this.request<ContractRequest>('/contracts/requests', {
-      method: 'POST',
-      body: JSON.stringify({ ...request, userId, userRole }),
-    });
+    return apiPrivateClient.post('contracts/requests', {
+      json: request
+    }).json<ContractRequest>();
   }
 
   async updateContractRequest(id: string, request: UpdateContractRequestDto, userId: string, userRole: UserRole): Promise<ContractRequest> {
-    return this.request<ContractRequest>(`/contracts/requests/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ ...request, userId, userRole }),
-    });
+    return apiPrivateClient.patch(`contracts/requests/${id}`, {
+      json: request
+    }).json<ContractRequest>();
   }
 
   async approveContractRequest(id: string, userId: string, userRole: UserRole): Promise<ContractRequest> {
-    return this.request<ContractRequest>(`/contracts/requests/${id}/approve?userId=${userId}&userRole=${userRole}`, {
-      method: 'PATCH',
-    });
+    return apiPrivateClient.patch(`contracts/requests/${id}/approve?userId=${userId}&userRole=${userRole}`).json<ContractRequest>();
   }
 
   async markContractRequestAsPaid(id: string, userId: string, userRole: UserRole): Promise<ContractRequest> {
-    return this.request<ContractRequest>(`/contracts/requests/${id}/mark-paid?userId=${userId}&userRole=${userRole}`, {
-      method: 'PATCH',
-    });
+    return apiPrivateClient.patch(`contracts/requests/${id}/mark-paid?userId=${userId}&userRole=${userRole}`).json<ContractRequest>();
   }
 }
 

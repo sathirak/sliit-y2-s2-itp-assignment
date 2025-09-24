@@ -54,12 +54,13 @@ export class ContractService {
     // Build where clause with role-based filtering
     const additionalFilters: any[] = [eq(contracts.deleted, false)];
 
-    // Role-based access control - simplified since contracts don't have suppliers anymore
+    // Role-based access control
     if (userRole === UserRole.OWNER) {
       // Owners can only see contracts where they are the owner
       additionalFilters.push(eq(contracts.ownerId, userId));
     }
-    // Note: Suppliers will now view contracts through contract requests
+    // Suppliers can see all contracts (as opportunities to bid on)
+    // No additional filters needed for suppliers - they see all available contracts
 
     // Add search functionality
     if (search) {
@@ -181,9 +182,7 @@ export class ContractService {
 
   // Contract Request operations - this is now the main workflow
   async createContractRequest(createContractRequestDto: CreateContractRequestDto, supplierId: string, userRole: UserRole) {
-    if (userRole !== UserRole.SUPPLIER) {
-      throw new ForbiddenException('Only suppliers can create contract requests');
-    }
+    // No role validation as requested - accept any userId as supplierId
 
     const [contractRequest] = await this.db.insert(contractRequests)
       .values({

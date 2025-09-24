@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Contract, ContractRequest, UserRole, CreateContractRequestDto } from "@/lib/services/dtos/contract";
 import { contractService } from "@/lib/services/contract.service";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { ContractTable } from "@/modules/admin/contract-management/components/ContractTable";
 import { ContractRequestTable } from "@/modules/admin/contract-management/components/ContractRequestTable";
 import { ContractRequestDialog } from "./components/ContractRequestDialog";
@@ -20,71 +21,41 @@ export function SupplierContractView() {
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
   const [activeTab, setActiveTab] = useState("all-contracts");
 
-  // Mock user data - in real app, this would come from auth context
-  const currentUser = {
-    id: "supplier-123",
-    role: UserRole.SUPPLIER,
-    name: "Jane Supplier"
+  // Get current user from auth hook
+  const { user, isLoading: authLoading } = useAuth();
+  
+  // Convert role from UserDto to UserRole enum
+  const getUserRole = (roleName: string): UserRole => {
+    switch (roleName) {
+      case 'owner':
+        return UserRole.OWNER;
+      case 'supplier':
+        return UserRole.SUPPLIER;
+      case 'customer':
+        return UserRole.CUSTOMER;
+      default:
+        return UserRole.CUSTOMER;
+    }
   };
 
+  const currentUser = useMemo(() => {
+    return user ? {
+      id: user.id,
+      role: getUserRole(user.roleName),
+      name: `${user.firstName} ${user.lastName}`
+    } : null;
+  }, [user]);
+
   const fetchAllContracts = async () => {
+    if (!currentUser) return;
+    
     try {
       setLoading(true);
       setError(null);
       
-      // TODO: Uncomment when backend is fixed
-      // const response = await contractService.getContracts({}, currentUser.id, currentUser.role);
-      // setAllContracts(response.data);
-
-      // Hardcoded data for now - all available contracts (opportunities for suppliers)
-      const mockContracts: Contract[] = [
-        {
-          id: "1",
-          title: "Website Development Contract",
-          description: "Development of a corporate website with modern design and responsive layout",
-          amount: "5000.00",
-          startDate: "2024-01-01",
-          endDate: "2024-03-31",
-          ownerId: "owner-123",
-          createdAt: new Date("2024-01-01"),
-          updatedAt: new Date("2024-01-15"),
-        },
-        {
-          id: "2",
-          title: "Mobile App Development",
-          description: "iOS and Android mobile application development",
-          amount: "12000.00",
-          startDate: "2024-02-01",
-          endDate: "2024-06-30",
-          ownerId: "owner-456",
-          createdAt: new Date("2024-02-01"),
-          updatedAt: new Date("2024-02-01"),
-        },
-        {
-          id: "3",
-          title: "E-commerce Platform",
-          description: "Full-stack e-commerce platform with payment integration",
-          amount: "25000.00",
-          startDate: "2024-01-15",
-          endDate: "2024-12-15",
-          ownerId: "owner-789",
-          createdAt: new Date("2024-01-15"),
-          updatedAt: new Date("2024-12-15"),
-        },
-        {
-          id: "4",
-          title: "Database Migration Service",
-          description: "Migrate legacy database to modern cloud solution",
-          amount: "8000.00",
-          startDate: "2024-04-01",
-          endDate: "2024-05-31",
-          ownerId: "owner-101",
-          createdAt: new Date("2024-03-15"),
-          updatedAt: new Date("2024-03-15"),
-        },
-      ];
-
-      setAllContracts(mockContracts);
+      // For suppliers, get all available contracts (opportunities to bid on)
+      const response = await contractService.getContracts({}, currentUser.id, currentUser.role);
+      setAllContracts(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch contracts");
     } finally {
@@ -93,60 +64,46 @@ export function SupplierContractView() {
   };
 
   const fetchMyRequests = async () => {
+    if (!currentUser) return;
+    
     try {
-      // TODO: Uncomment when backend is fixed
-      // const response = await contractService.getMyContractRequests(currentUser.id, currentUser.role);
-      // setMyRequests(response);
-
-      // Hardcoded data for now - supplier's own requests
-      const mockMyRequests: ContractRequest[] = [
-        {
-          id: "req-supplier-1",
-          title: "E-commerce Store Development",
-          description: "Full-stack e-commerce store with payment integration",
-          amount: "15000.00",
-          startDate: "2024-03-01",
-          endDate: "2024-06-30",
-          status: "pending",
-          comment: "I have 8+ years of experience in e-commerce development and can deliver a high-quality solution.",
-          isPaid: false,
-          ownerId: "owner-123",
-          supplierId: "supplier-123", // This supplier's request
-          ownerApproved: false,
-          ownerApprovedAt: null,
-          createdAt: new Date("2024-02-28"),
-          updatedAt: new Date("2024-02-28"),
-        },
-        {
-          id: "req-supplier-2",
-          title: "Social Media Management",
-          description: "Complete social media strategy and content creation",
-          amount: "3000.00",
-          startDate: "2024-04-01",
-          endDate: "2024-07-31",
-          status: "ongoing",
-          comment: "I specialize in social media marketing and have managed campaigns for 50+ brands.",
-          isPaid: false,
-          ownerId: "owner-456",
-          supplierId: "supplier-123", // This supplier's request
-          ownerApproved: true,
-          ownerApprovedAt: new Date("2024-03-11"),
-          createdAt: new Date("2024-03-10"),
-          updatedAt: new Date("2024-03-11"),
-        },
-      ];
-
-      setMyRequests(mockMyRequests);
+      const response = await contractService.getMyContractRequests(currentUser.id, currentUser.role);
+      setMyRequests(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch my requests");
     }
   };
 
-
   useEffect(() => {
-    fetchAllContracts();
-    fetchMyRequests();
-  }, []);
+    if (currentUser) {
+      fetchAllContracts();
+      fetchMyRequests();
+    }
+  }, [currentUser]);
+
+  // Show loading while authentication is being checked
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <p>Please wait while we load your contracts.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if no user is authenticated
+  if (!currentUser) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p>Please log in to access contract requests.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateRequest = (contract: Contract) => {
     setSelectedContract(contract);

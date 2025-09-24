@@ -26,6 +26,8 @@ import { ContractRequestDto } from './dtos/contract-request.dto';
 import { ContractFilterDto } from './dtos/contract-filter.dto';
 import { PaginatedResponseDto } from '../../common/dto/pagination.dto';
 import { UserRole } from '../users/interfaces/roles.enum';
+import { CurrentUser } from '../../common/decorates/current-user.decorator';
+import { UserDto } from '../users/dtos/user.dto';
 
 @ApiTags('contracts')
 @ApiBearerAuth()
@@ -43,8 +45,8 @@ export class ContractController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 403, description: 'Forbidden - Only owners can create contracts' })
-  create(@Body() createContractDto: CreateContractDto, @Body('userId') userId: string, @Body('userRole') userRole: string) {
-    return this.contractService.create(createContractDto, userId, userRole as UserRole);
+  create(@Body() createContractDto: CreateContractDto, @CurrentUser() user: UserDto) {
+    return this.contractService.create(createContractDto, user.id, user.roleName);
   }
 
   @Get()
@@ -81,8 +83,8 @@ export class ContractController {
   })
   @ApiResponse({ status: 404, description: 'Contract not found' })
   @ApiResponse({ status: 403, description: 'Forbidden - Only owners can update contracts' })
-  update(@Param('id') id: string, @Body() updateContractDto: UpdateContractDto, @Body('userId') userId: string, @Body('userRole') userRole: string) {
-    return this.contractService.update(id, updateContractDto, userId, userRole as UserRole);
+  update(@Param('id') id: string, @Body() updateContractDto: UpdateContractDto, @CurrentUser() user: UserDto) {
+    return this.contractService.update(id, updateContractDto, user.id, user.roleName);
   }
 
   @Delete(':id')
@@ -105,8 +107,8 @@ export class ContractController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 403, description: 'Forbidden - Only suppliers can create contract requests' })
-  createContractRequest(@Body() createContractRequestDto: CreateContractRequestDto, @Body('userId') userId: string, @Body('userRole') userRole: string) {
-    return this.contractService.createContractRequest(createContractRequestDto, userId, userRole as UserRole);
+  createContractRequest(@Body() createContractRequestDto: CreateContractRequestDto, @CurrentUser() user: UserDto) {
+    return this.contractService.createContractRequest(createContractRequestDto, user.id, user.roleName);
   }
 
   @Get('requests/all')
@@ -143,10 +145,9 @@ export class ContractController {
   updateContractRequest(
     @Param('id') id: string, 
     @Body() updateContractRequestDto: UpdateContractRequestDto, 
-    @Body('userId') userId: string, 
-    @Body('userRole') userRole: string
+    @CurrentUser() user: UserDto
   ) {
-    return this.contractService.updateContractRequest(id, updateContractRequestDto, userId, userRole as UserRole);
+    return this.contractService.updateContractRequest(id, updateContractRequestDto, user.id, user.roleName);
   }
 
   @Patch('requests/:id/approve')
