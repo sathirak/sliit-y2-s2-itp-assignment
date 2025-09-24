@@ -240,11 +240,18 @@ export function ContractManagement() {
   };
 
   const handleFilterChange = (newFilters: Partial<ContractFilterDto>) => {
-    setFilters(prev => ({
-      ...prev,
-      ...newFilters,
-      page: 1, // Reset to first page when filters change
-    }));
+    if (Object.keys(newFilters).length === 0) {
+      setFilters({
+        page: 1,
+        limit: 10,
+      });
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        ...newFilters,
+        page: 1, // Reset to first page when filters change
+      }));
+    }
   };
 
   const handlePageChange = (page: number) => {

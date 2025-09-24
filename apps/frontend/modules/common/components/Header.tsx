@@ -67,11 +67,6 @@ export const Header = () => {
               <FileText size={16} /> Temp Contracts
             </Button>
           </Link>
-          <Link href="/admin/product-management">
-            <Button variant="outline" size="sm">
-              <FileText size={16} /> Temp products
-            </Button>
-          </Link>
           <Link href="/supplier/contracts">
             <Button variant="outline" size="sm">
               <Users size={16} /> Temp Supplier
