@@ -1,6 +1,7 @@
 import { Header } from '@/modules/common/components/Header';
 import { Footer } from '@/modules/common/components/Footer';
 import type { Metadata } from "next";
+import ChatBubble from '@/modules/chatbot/components/Chatbubble';
 
 export const metadata: Metadata = {
     title: "CrownUp Clothing Store",
@@ -14,6 +15,7 @@ export default function Layout({
     return (
         <>
             <Header />
+            <ChatBubble />
             {children}
             <Footer />
         </>
