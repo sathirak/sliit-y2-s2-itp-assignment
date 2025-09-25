@@ -1,9 +1,10 @@
 import { Header } from '@/modules/common/components/admin/Header';
-import { Sidebar } from '@/modules/common/components/admin/Sidebar';
+import { AdminRouteGuard } from '@/modules/common/components/admin/AdminRouteGuard';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "CrownUp Clothing Store",
+    title: "CrownUp Admin Panel",
+    description: "Administrative dashboard for CrownUp Clothing Store",
 };
 
 export default function Layout({
@@ -12,14 +13,11 @@ export default function Layout({
     children: React.ReactNode;
 }>) {
     return (
-        <>
+        <AdminRouteGuard>
             <Header />
-            <div className="flex min-h-screen">
-                <Sidebar />
-                <main className="flex-1 p-6 bg-gray-50">
-                    {children}
-                </main>
-            </div>
-        </>
+            <main className="min-h-screen p-6 bg-gray-50">
+                {children}
+            </main>
+        </AdminRouteGuard>
     );
 }
