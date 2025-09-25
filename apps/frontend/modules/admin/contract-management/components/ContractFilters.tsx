@@ -3,13 +3,6 @@
 import { ContractFilterDto } from "@/lib/services/dtos/contract";
 import { Input } from "@/modules/ui/input";
 import { Button } from "@/modules/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/modules/ui/select";
 import { Search, Filter, X } from "lucide-react";
 import { useState } from "react";
 
@@ -18,26 +11,13 @@ interface ContractFiltersProps {
   onFilterChange: (filters: Partial<ContractFilterDto>) => void;
 }
 
-const STATUSES = [
-  { value: "pending", label: "Pending" },
-  { value: "active", label: "Active" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
-];
-
-const PAYMENT_STATUS = [
-  { value: "true", label: "Paid" },
-  { value: "false", label: "Unpaid" },
-];
 
 export function ContractFilters({ filters, onFilterChange }: ContractFiltersProps) {
   const [localFilters, setLocalFilters] = useState<Partial<ContractFilterDto>>({
     search: filters.search || "",
     title: filters.title || "",
-    status: filters.status || "",
-    isPaid: filters.isPaid,
-    minAmount: filters.minAmount || "",
-    maxAmount: filters.maxAmount || "",
+    minAmount: filters.minAmount || 0,
+    maxAmount: filters.maxAmount || 0,
     startDateFrom: filters.startDateFrom || "",
     startDateTo: filters.startDateTo || "",
     endDateFrom: filters.endDateFrom || "",
@@ -53,9 +33,17 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
 
   const applyFilters = () => {
     const cleanFilters = Object.fromEntries(
-      Object.entries(localFilters).filter(([_, value]) => 
-        value !== "" && value !== null && value !== undefined
-      )
+      Object.entries(localFilters).filter(([key, value]) => {
+        // Filter out empty strings, null, undefined, and 0 values for amount fields
+        if (value === "" || value === null || value === undefined) {
+          return false;
+        }
+        // For amount fields, also filter out 0 values
+        if ((key === 'minAmount' || key === 'maxAmount') && value === 0) {
+          return false;
+        }
+        return true;
+      })
     );
     onFilterChange(cleanFilters);
   };
@@ -63,11 +51,9 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
   const clearFilters = () => {
     setLocalFilters({
       search: "",
-      title: "",
-      status: "",
-      isPaid: undefined,
-      minAmount: "",
-      maxAmount: "",
+      title: "", 
+      minAmount: 0,
+      maxAmount: 0,
       startDateFrom: "",
       startDateTo: "",
       endDateFrom: "",
@@ -76,9 +62,16 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
     onFilterChange({});
   };
 
-  const hasActiveFilters = Object.values(localFilters).some(
-    value => value !== "" && value !== null && value !== undefined
-  );
+  const hasActiveFilters = Object.entries(localFilters).some(([key, value]) => {
+    if (value === "" || value === null || value === undefined) {
+      return false;
+    }
+    // For amount fields, also check for 0 values
+    if ((key === 'minAmount' || key === 'maxAmount') && value === 0) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-4">
@@ -98,7 +91,7 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Search */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Search</label>
@@ -123,47 +116,6 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
           />
         </div>
 
-        {/* Status */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Status</label>
-          <Select
-            value={localFilters.status}
-            onValueChange={(value) => handleFilterChange("status", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              {STATUSES.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Payment Status */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Payment Status</label>
-          <Select
-            value={localFilters.isPaid?.toString() || ""}
-            onValueChange={(value) => handleFilterChange("isPaid", value === "true")}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="All payments" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All payments</SelectItem>
-              {PAYMENT_STATUS.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
 
         {/* Amount Range */}
         <div className="space-y-2">

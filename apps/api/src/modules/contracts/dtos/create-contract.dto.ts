@@ -39,12 +39,6 @@ export class CreateContractDto {
   @IsString()
   endDate: string;
 
-  @ApiProperty({
-    description: 'Supplier ID',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsUUID()
-  supplierId: string;
 
   @ApiProperty({
     description: 'User ID for role-based access control',

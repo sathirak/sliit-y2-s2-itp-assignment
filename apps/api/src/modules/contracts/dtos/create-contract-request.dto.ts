@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsNumber, IsDateString, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateContractRequestDto {
   @ApiProperty({
@@ -40,26 +40,18 @@ export class CreateContractRequestDto {
   endDate: string;
 
   @ApiProperty({
-    description: 'Supplier ID',
+    description: 'Owner ID (from the original contract)',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  supplierId: string;
+  ownerId: string;
 
   @ApiProperty({
-    description: 'User ID for role-based access control',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'Comment from supplier about the contract request',
+    example: 'I am interested in this project and can deliver it within the timeline.',
+    required: false,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  userId: string;
-
-  @ApiProperty({
-    description: 'User role for role-based access control',
-    enum: ['customer', 'owner', 'sales_rep', 'supplier'],
-    example: 'owner',
-  })
-  @IsString()
-  @IsNotEmpty()
-  userRole: string;
+  comment?: string;
 }

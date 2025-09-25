@@ -166,7 +166,7 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount ($)</FormLabel>
+                  <FormLabel>Amount (Rs)</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="0.00" 
