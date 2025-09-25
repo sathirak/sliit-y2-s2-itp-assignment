@@ -1,9 +1,9 @@
-import { NewArrivals } from '@/modules/home/components/NewArrivals';
+import { AllProducts } from '@/modules/home/components/AllProducts';
 
 export const Home = () => {
     return (
         <>
-        <NewArrivals />
+        <AllProducts />
         </>
     );
 };

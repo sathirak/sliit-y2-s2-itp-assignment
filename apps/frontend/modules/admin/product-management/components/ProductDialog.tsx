@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/modules/ui/select";
 import { Loader2, Upload, X, AlertCircle } from "lucide-react";
+import { CATEGORIES, SIZES, COLORS } from "@/lib/constants/categories";
 
 interface ProductDialogProps {
   open: boolean;
@@ -32,34 +33,6 @@ interface ProductDialogProps {
   onSaved: () => void;
 }
 
-const CATEGORIES = [
-  "T-Shirts",
-  "Jeans",
-  "Dresses",
-  "Sweaters",
-  "Jackets",
-  "Shoes",
-  "Accessories",
-  "Home",
-  "Electronics",
-  "Clothing",
-];
-
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "Standard", "One-Size", "32", "34", "36", "38", "40", "42"];
-
-const COLORS = [
-  "Black",
-  "White",
-  "Red",
-  "Blue",
-  "Green",
-  "Yellow",
-  "Pink",
-  "Purple",
-  "Orange",
-  "Brown",
-  "Gray",
-];
 
 export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductDialogProps) {
   const [formData, setFormData] = useState<CreateProductDto>({

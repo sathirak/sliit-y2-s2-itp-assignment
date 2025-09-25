@@ -44,23 +44,3 @@ export const useProduct = (id: string) => {
   };
 };
 
-export const useNewArrivals = (limit: number = 8) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    ['new-arrivals', limit],
-    () => productService.getProducts({ 
-      limit,
-      page: 1,
-    }),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-    }
-  );
-
-  return {
-    products: data?.data || [],
-    isLoading,
-    error,
-    mutate,
-  };
-};

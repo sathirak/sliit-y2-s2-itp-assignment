@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { CATEGORIES } from '@/lib/constants/categories';
 
 export const Header = () => {
   const { user, logout } = useAuth();
@@ -21,15 +22,13 @@ export const Header = () => {
       <div className="flex items-center justify-between mt-2">
         <nav className="flex-1">
           <ul className="flex gap-6 font-bold text-sm mt-2">
-            <li className="cursor-pointer">WOMEN </li>
-            <li className="cursor-pointer">SALE</li>
-            <li className="cursor-pointer">THIS WEEK</li>
-            <li className="cursor-pointer">WORKWEAR</li>
-            <li className="cursor-pointer">ACTIVE WEAR</li>
-            <li className="cursor-pointer">LINEN</li>
-            <li className="cursor-pointer">NATURAL BLENDS</li>
-            <li className="cursor-pointer">DENIM</li>
-            <li className="cursor-pointer">OCCASION</li>
+            {CATEGORIES.map((category) => (
+              <li key={category} className="cursor-pointer hover:text-gray-600 transition-colors">
+                <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}`}>
+                  {category.toUpperCase()}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
         <div className="flex items-center gap-4">
