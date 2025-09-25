@@ -9,6 +9,8 @@ import type { UserDto } from "@/lib/dtos/user";
 import { Loader2, UserPlus, Search, Trash2, Edit } from "lucide-react";
 import { AddUserModal, EditUserModal } from "./index";
 import type { CreateUserFormData, EditUserFormData } from "./index";
+import { UserRegistrationChart } from "./UserRegistrationChart";
+import { UserStatsCards } from "./UserStatsCards";
 
 export default function Users() {
 	const [search, setSearch] = useState("");
@@ -106,6 +108,22 @@ export default function Users() {
 				onUpdateUser={handleUpdateUser}
 				isSubmitting={isSubmitting}
 			/>
+
+			{/* User Stats Cards */}
+			<UserStatsCards users={allUsers} className="mb-6" />
+
+			{/* User Registration Chart */}
+			<Card>
+				<CardHeader>
+					<CardTitle>User Analytics</CardTitle>
+					<CardDescription>
+						Monthly user registration trends and statistics
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<UserRegistrationChart users={allUsers} />
+				</CardContent>
+			</Card>
 
 			<Card>
 				<CardHeader>
