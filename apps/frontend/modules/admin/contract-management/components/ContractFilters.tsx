@@ -16,8 +16,8 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
   const [localFilters, setLocalFilters] = useState<Partial<ContractFilterDto>>({
     search: filters.search || "",
     title: filters.title || "",
-    minAmount: filters.minAmount || "",
-    maxAmount: filters.maxAmount || "",
+    minAmount: filters.minAmount || 0,
+    maxAmount: filters.maxAmount || 0,
     startDateFrom: filters.startDateFrom || "",
     startDateTo: filters.startDateTo || "",
     endDateFrom: filters.endDateFrom || "",
@@ -43,9 +43,9 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
   const clearFilters = () => {
     setLocalFilters({
       search: "",
-      title: "",
-      minAmount: "",
-      maxAmount: "",
+      title: "", 
+      minAmount: 0,
+      maxAmount: 0,
       startDateFrom: "",
       startDateTo: "",
       endDateFrom: "",
