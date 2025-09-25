@@ -133,16 +133,6 @@ export const Header = () => {
               </Button>
             </Link>
           )}
-          <Link href="/admin/contract-management">
-            <Button variant="outline" size="sm">
-              <FileText size={16} /> Temp Contracts
-            </Button>
-          </Link>
-          <Link href="/supplier/contracts">
-            <Button variant="outline" size="sm">
-              <Users size={16} /> Temp Supplier
-            </Button>
-          </Link>
           <div className="ml-auto text-xs text-gray-500 flex items-center gap-1">
             <Gift size={12} />
             <span>Free shipping on orders over $100</span>

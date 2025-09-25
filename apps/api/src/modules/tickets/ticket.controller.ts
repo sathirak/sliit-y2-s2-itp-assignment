@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, NotFoundException, Query } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { TicketDto } from './dto.ts/ticket.dto';
 import { CreateTicketDto } from './dto.ts/create-ticket.dto';
 import { UpdateTicketDto } from './dto.ts/update-ticket.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { AllowGuests } from 'src/common/decorates/allow-guests.decorator';
 
 @Controller('ticket')
@@ -12,8 +12,13 @@ export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
   @Get()
-  async getAll(): Promise<TicketDto[]> {
-    return this.ticketService.getTicket();
+  @ApiQuery({ name: 'status', required: false, description: 'Filter by ticket status' })
+  @ApiQuery({ name: 'search', required: false, description: 'Search by name, email, or message' })
+  async getAll(
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+  ): Promise<TicketDto[]> {
+    return this.ticketService.getTicket(status, search);
   }
 
   @Get(':id')
