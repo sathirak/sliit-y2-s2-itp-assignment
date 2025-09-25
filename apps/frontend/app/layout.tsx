@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SWRProvider } from "@/lib/providers/SWRProvider";
-import { ChatBubble } from "@/modules/ui/chat-bubble";
 import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +28,6 @@ export default function RootLayout({
       >
         <SWRProvider>
           {children}
-          <ChatBubble />
         </SWRProvider>
       </body>
     </html>
