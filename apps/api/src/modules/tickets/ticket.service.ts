@@ -5,7 +5,7 @@ import { DatabaseAsyncProvider } from "src/database/database.provider";
 import { TicketDto } from "./dto.ts/ticket.dto";
 import { tickets } from "./models/ticket.model";
 import { CreateTicketDto } from "./dto.ts/create-ticket.dto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or, ilike } from "drizzle-orm";
 import type { TicketStatus } from 'src/modules/tickets/interfaces/tickets';
 
 
@@ -15,9 +15,29 @@ export class TicketService {
     private db: Schema,
   ) { }
 
-  async getTicket(): Promise<TicketDto[]> {
+  async getTicket(status?: string, search?: string): Promise<TicketDto[]> {
+    let whereConditions = [eq(tickets.deleted, false)];
+
+    // Filter by status if provided
+    if (status) {
+      whereConditions.push(eq(tickets.status, status as TicketStatus));
+    }
+
+    // Search functionality
+    if (search) {
+      const searchPattern = `%${search}%`;
+      whereConditions.push(
+        or(
+          ilike(tickets.name, searchPattern),
+          ilike(tickets.email, searchPattern),
+          ilike(tickets.message, searchPattern)
+        )
+      );
+    }
+
     const ticket = await this.db.query.tickets.findMany({
-      where: (tickets, { eq }) => eq(tickets.deleted, false),
+      where: and(...whereConditions),
+      orderBy: (tickets, { desc }) => [desc(tickets.createdAt)]
     });
 
     return ticket;
