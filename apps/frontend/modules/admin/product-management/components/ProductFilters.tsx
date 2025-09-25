@@ -26,14 +26,14 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
     category: filters.category || "all",
     size: filters.size || "all",
     color: filters.color || "all",
-    minPrice: filters.minPrice || "",
-    maxPrice: filters.maxPrice || "",
-    minQty: filters.minQty || "",
-    maxQty: filters.maxQty || "",
-    availability: filters.availability || "all",
+    minPrice: filters.minPrice || undefined,
+    maxPrice: filters.maxPrice || undefined,
+    minQty: filters.minQty || undefined,
+    maxQty: filters.maxQty || undefined,
+    availability: filters.availability || undefined,
   });
 
-  const handleFilterChange = (key: keyof ProductFilterDto, value: string | number) => {
+  const handleFilterChange = (key: keyof ProductFilterDto, value: string | number | undefined) => {
     setLocalFilters(prev => ({
       ...prev,
       [key]: value,
@@ -55,11 +55,11 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
       category: "all",
       size: "all",
       color: "all",
-      minPrice: "",
-      maxPrice: "",
-      minQty: "",
-      maxQty: "",
-      availability: "all",
+      minPrice: undefined,
+      maxPrice: undefined,
+      minQty: undefined,
+      maxQty: undefined,
+      availability: undefined,
     });
     onFilterChange({});
   };
@@ -171,12 +171,12 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
             type="number"
             min="0"
             placeholder="0"
-            value={localFilters.minPrice}
+            value={localFilters.minPrice || ""}
             onChange={(e) => {
               const inputValue = e.target.value;
               // Allow empty string or valid positive numbers only
               if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
-                const value = inputValue === "" ? "" : parseInt(inputValue);
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
                 handleFilterChange("minPrice", value);
               }
             }}
@@ -195,12 +195,12 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
             type="number"
             min="0"
             placeholder="1000"
-            value={localFilters.maxPrice}
+            value={localFilters.maxPrice || ""}
             onChange={(e) => {
               const inputValue = e.target.value;
               // Allow empty string or valid positive numbers only
               if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
-                const value = inputValue === "" ? "" : parseInt(inputValue);
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
                 handleFilterChange("maxPrice", value);
               }
             }}
@@ -220,12 +220,12 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
             type="number"
             min="0"
             placeholder="0"
-            value={localFilters.minQty}
+            value={localFilters.minQty || ""}
             onChange={(e) => {
               const inputValue = e.target.value;
               // Allow empty string or valid positive numbers only
               if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
-                const value = inputValue === "" ? "" : parseInt(inputValue);
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
                 handleFilterChange("minQty", value);
               }
             }}
@@ -244,12 +244,12 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
             type="number"
             min="0"
             placeholder="100"
-            value={localFilters.maxQty}
+            value={localFilters.maxQty || ""}
             onChange={(e) => {
               const inputValue = e.target.value;
               // Allow empty string or valid positive numbers only
               if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
-                const value = inputValue === "" ? "" : parseInt(inputValue);
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
                 handleFilterChange("maxQty", value);
               }
             }}
@@ -266,8 +266,8 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
         <div className="space-y-2">
           <label className="text-sm font-medium">Availability</label>
           <Select
-            value={localFilters.availability}
-            onValueChange={(value) => handleFilterChange("availability", value)}
+            value={localFilters.availability || "all"}
+            onValueChange={(value) => handleFilterChange("availability", value === "all" ? undefined : value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="All" />
