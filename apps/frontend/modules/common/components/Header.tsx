@@ -5,11 +5,25 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { CartIcon } from '../CartIcon';
+import { useCartStore } from '@/lib/stores/cart.store';
 
 export const Header = () => {
   const { user, logout } = useAuth();
+  const { totalItems } = useCartStore();
+  const router = useRouter();
+
+  const handleCartClick = () => {
+    router.push('/cart');
+  };
+
+  const handleCheckoutClick = () => {
+    router.push('/checkout');
+  };
+
   return (
     <header className="flex flex-col px-10 py-4 border-b">
       <div className="flex items-center gap-4">
@@ -59,9 +73,14 @@ export const Header = () => {
           <Button variant="outline" size="sm">
             <Heart size={16} /> WISHLIST (0)
           </Button>
-          <Button variant="outline" size="sm">
-            <ShoppingBag size={16} /> CART
+          <Button variant="outline" size="sm" onClick={handleCartClick}>
+            <ShoppingBag size={16} /> CART ({totalItems})
           </Button>
+          {totalItems > 0 && (
+            <Button variant="default" size="sm" onClick={handleCheckoutClick}>
+              CHECKOUT
+            </Button>
+          )}
           <Link href="/admin/contract-management">
             <Button variant="outline" size="sm">
               <FileText size={16} /> Temp Contracts

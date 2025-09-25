@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useNewArrivals } from "@/lib/hooks/useProducts";
+import { AddToCartButton } from "@/modules/common/AddToCartButton";
 
 export const NewArrivals = () => {
   const { products, isLoading, error } = useNewArrivals(8);
@@ -115,7 +116,7 @@ export const NewArrivals = () => {
                   with{" "}
                   <span className="font-bold">intpay</span>
                 </div>
-                <div className="text-sm text-gray-500 mb-2">
+                <div className="text-sm text-gray-500 mb-4">
                   {product.qty > 0 ? (
                     <span className="text-green-600">
                       {product.qty} in stock
@@ -124,6 +125,11 @@ export const NewArrivals = () => {
                     <span className="text-red-600">Out of stock</span>
                   )}
                 </div>
+                <AddToCartButton 
+                  product={product} 
+                  size="sm" 
+                  className="w-full mb-2"
+                />
                 <div className="text-xs text-gray-400 mt-2">CROWNUP</div>
               </div>
             </div>

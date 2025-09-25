@@ -44,6 +44,7 @@ interface OrdersTableProps {
   orders: OrderDto[];
   isLoading: boolean;
   searchTerm: string;
+  onRowClick?: (order: OrderDto) => void;
 }
 
 const getStatusColor = (status: OrderStatus) => {
@@ -61,7 +62,7 @@ const getStatusColor = (status: OrderStatus) => {
   }
 };
 
-export function OrdersTable({ orders, isLoading, searchTerm }: OrdersTableProps) {
+export function OrdersTable({ orders, isLoading, searchTerm, onRowClick }: OrdersTableProps) {
   const [selectedOrder, setSelectedOrder] = useState<OrderDto | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -138,7 +139,11 @@ export function OrdersTable({ orders, isLoading, searchTerm }: OrdersTableProps)
           </TableHeader>
           <TableBody>
             {filteredOrders.map((order) => (
-              <TableRow key={order.id}>
+              <TableRow 
+                key={order.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => onRowClick?.(order)}
+              >
                 <TableCell className="font-medium">
                   {order.id.slice(0, 8)}...
                 </TableCell>
