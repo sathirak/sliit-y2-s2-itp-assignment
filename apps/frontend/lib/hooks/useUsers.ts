@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useState, useEffect, useCallback } from 'react';
 import type { UserDto } from '@/lib/dtos/user';
-import { getAllUsers, getUserById, searchUsers, createUser, updateUser, deleteUser } from '@/lib/services/user';
+import { getAllUsers, getUserById, searchUsers, createUser, updateUser, deleteUser, getUser } from '@/lib/services/user';
 
 // SWR Keys
 const USERS_KEY = 'users';
@@ -43,6 +43,26 @@ export function useUser(id: string | null) {
     isLoading,
     isError: !!error,
     error,
+  };
+}
+
+// Hook to get current user profile (using the /me endpoint)
+export function useCurrentUser() {
+  const { data, error, isLoading, mutate: mutateCurrentUser } = useSWR<UserDto>(
+    'user/me',
+    getUser,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000, // Dedupe requests within 1 minute
+    }
+  );
+
+  return {
+    user: data,
+    isLoading,
+    isError: !!error,
+    error,
+    mutateCurrentUser,
   };
 }
 
@@ -137,9 +157,38 @@ export function useUserMutations() {
     mutate(USERS_KEY);
   };
 
+  // Update current user profile
+  const updateCurrentUserMutation = async (userData: Partial<UserDto>) => {
+    // Get current user first to know their ID
+    const currentUserResponse = await getUser();
+    const updatedUser = await updateUser(currentUserResponse.id, userData);
+    
+    // Update the current user cache
+    mutate('user/me', updatedUser, false);
+    
+    // Update the users list cache
+    mutate(
+      USERS_KEY,
+      (users: UserDto[] = []) =>
+        users.map(user => user.id === currentUserResponse.id ? updatedUser : user),
+      false
+    );
+    
+    // Update individual user cache
+    mutate(USER_KEY(currentUserResponse.id), updatedUser, false);
+    
+    // Revalidate caches
+    mutate('user/me');
+    mutate(USERS_KEY);
+    mutate(USER_KEY(currentUserResponse.id));
+    
+    return updatedUser;
+  };
+
   return {
     createUser: createUserMutation,
     updateUser: updateUserMutation,
+    updateCurrentUser: updateCurrentUserMutation,
     deleteUser: deleteUserMutation,
   };
 }
