@@ -33,9 +33,17 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
 
   const applyFilters = () => {
     const cleanFilters = Object.fromEntries(
-      Object.entries(localFilters).filter(([_, value]) => 
-        value !== "" && value !== null && value !== undefined
-      )
+      Object.entries(localFilters).filter(([key, value]) => {
+        // Filter out empty strings, null, undefined, and 0 values for amount fields
+        if (value === "" || value === null || value === undefined) {
+          return false;
+        }
+        // For amount fields, also filter out 0 values
+        if ((key === 'minAmount' || key === 'maxAmount') && value === 0) {
+          return false;
+        }
+        return true;
+      })
     );
     onFilterChange(cleanFilters);
   };
@@ -54,9 +62,16 @@ export function ContractFilters({ filters, onFilterChange }: ContractFiltersProp
     onFilterChange({});
   };
 
-  const hasActiveFilters = Object.values(localFilters).some(
-    value => value !== "" && value !== null && value !== undefined
-  );
+  const hasActiveFilters = Object.entries(localFilters).some(([key, value]) => {
+    if (value === "" || value === null || value === undefined) {
+      return false;
+    }
+    // For amount fields, also check for 0 values
+    if ((key === 'minAmount' || key === 'maxAmount') && value === 0) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-4">

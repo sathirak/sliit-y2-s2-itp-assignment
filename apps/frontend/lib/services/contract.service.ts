@@ -18,9 +18,15 @@ class ContractService {
     const searchParams = new URLSearchParams();
     
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        searchParams.append(key, value.toString());
+      // Filter out empty strings, null, undefined, and 0 values for amount fields
+      if (value === undefined || value === null || value === '') {
+        return;
       }
+      // For amount fields, also filter out 0 values
+      if ((key === 'minAmount' || key === 'maxAmount') && value === 0) {
+        return;
+      }
+      searchParams.append(key, value.toString());
     });
 
     searchParams.append('userId', userId);
