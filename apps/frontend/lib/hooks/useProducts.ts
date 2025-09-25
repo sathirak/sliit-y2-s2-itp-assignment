@@ -43,4 +43,3 @@ export const useProduct = (id: string) => {
     mutate,
   };
 };
-

@@ -142,9 +142,16 @@ export interface CheckoutResponseDto {
 }
 
 // Create DTOs
+export interface CreateOrderProductItemDto {
+    productId: string;
+    quantity: number;
+    price: string;
+}
+
 export interface CreateOrderDto {
     status: OrderStatus;
     customerId?: string;
+    products?: CreateOrderProductItemDto[];
 }
 
 export interface CreateOrderProductDto {
@@ -152,6 +159,13 @@ export interface CreateOrderProductDto {
     productId: string;
     quantity: number;
     price: string;
+}
+
+export interface UpdateOrderProductDto {
+    orderId?: string;
+    productId?: string;
+    quantity?: number;
+    price?: string;
 }
 
 export interface CreateInvoiceDto {
@@ -172,6 +186,7 @@ export interface CreatePaymentDto {
 export interface UpdateOrderDto {
     status?: OrderStatus;
     customerId?: string;
+    products?: CreateOrderProductItemDto[];
 }
 
 // Payment with Relations Interface
