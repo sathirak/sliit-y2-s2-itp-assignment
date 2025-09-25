@@ -365,6 +365,7 @@ export default function CheckoutPage() {
                       <span>Subtotal</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
+
                     <div className="flex justify-between text-gray-600">
                       <span>Shipping</span>
                       <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
@@ -387,26 +388,27 @@ export default function CheckoutPage() {
                     <p className="text-sm text-green-700">
                       Your payment information is secured with 256-bit SSL encryption
                     </p>
+
                   </div>
 
-                  {/* Complete Order Button */}
-                  <Button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="w-full h-12 text-lg font-semibold"
-                  >
-                    {isProcessing ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Processing...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Lock size={16} />
-                        Complete Order - ${total.toFixed(2)}
-                      </div>
-                    )}
-                  </Button>
+              {/* Complete Order Button */}
+              <Button
+                onClick={handleSubmit}
+                disabled={isProcessing}
+                className="w-full h-12 text-lg font-semibold"
+              >
+                {isProcessing ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Lock size={16} />
+                    Complete Order - Rs {total.toFixed(2)}
+                  </div>
+                )}
+              </Button>
 
                   <p className="text-xs text-gray-500 text-center mt-3">
                     By placing your order, you agree to our Terms of Service and Privacy Policy

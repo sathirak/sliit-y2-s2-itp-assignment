@@ -34,7 +34,7 @@ const faqs: FAQ[] = [
   {
     id: '3',
     question: '🚚 What are your shipping options?',
-    answer: 'We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Free standard shipping on orders over $50.'
+    answer: 'We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Free standard shipping on orders over Rs 5000.'
   },
   {
     id: '4',
@@ -60,7 +60,7 @@ const getAutoResponse = (message: string): string => {
   }
   
   if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-    return 'We offer standard (3-5 days) and express shipping (1-2 days). Free standard shipping on orders over $50!';
+    return 'We offer standard (3-5 days) and express shipping (1-2 days). Free standard shipping on orders over Rs 5000!';
   }
   
   if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {

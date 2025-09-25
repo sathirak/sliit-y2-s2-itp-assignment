@@ -40,9 +40,22 @@ export class ContractRequestDto {
   @ApiProperty({
     description: 'Contract request status',
     example: 'pending',
-    enum: ['pending', 'approved', 'rejected'],
+    enum: ['pending', 'ongoing', 'completed', 'rejected'],
   })
   status: string;
+
+  @ApiProperty({
+    description: 'Comment from supplier about the contract request',
+    example: 'I am interested in this project and can deliver it within the timeline.',
+    required: false,
+  })
+  comment?: string;
+
+  @ApiProperty({
+    description: 'Payment status',
+    example: false,
+  })
+  isPaid: boolean;
 
   @ApiProperty({
     description: 'Owner ID',

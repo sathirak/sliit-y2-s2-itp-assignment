@@ -7,7 +7,6 @@ import { payments, paymentsRelations } from 'src/modules/orders/models/payment.m
 import { products } from 'src/modules/products/models/product.model';
 import { contracts } from 'src/modules/contracts/models/contract.model';
 import { contractRequests } from 'src/modules/contracts/models/contract-request.model';
-import { contractRequestComments } from 'src/modules/contracts/models/contract-request-comment.model';
 import { userProviders, userProvidersRelations } from 'src/modules/users/models/user-providers.model';
 
 export { 
@@ -25,7 +24,6 @@ export {
     products, 
     contracts, 
     contractRequests, 
-    contractRequestComments,
     userProviders, 
     userProvidersRelations
 };

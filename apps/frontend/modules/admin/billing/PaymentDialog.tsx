@@ -153,7 +153,7 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
                 <p className="text-gray-600">Amount:</p>
                 <div className="flex items-center">
                   <DollarSign className="w-4 h-4 mr-1 text-green-600" />
-                  <span className="font-medium">${parseFloat(payment.amount).toFixed(2)}</span>
+                  <span className="font-medium">Rs {parseFloat(payment.amount).toFixed(2)}</span>
                 </div>
               </div>
               <div>
@@ -177,7 +177,7 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
               <div className="pt-2 border-t">
                 <p className="text-gray-600 text-sm">Invoice Details:</p>
                 <div className="mt-1 flex items-center justify-between">
-                  <span>Invoice Amount: ${parseFloat(payment.invoice.amount).toFixed(2)}</span>
+                  <span>Invoice Amount: Rs {parseFloat(payment.invoice.amount).toFixed(2)}</span>
                   <Badge variant="outline">
                     {payment.invoice.status.toUpperCase()}
                   </Badge>
@@ -207,14 +207,14 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
                           .filter(invoice => invoice.status !== 'paid' && invoice.status !== 'cancelled')
                           .map((invoice) => (
                           <SelectItem key={invoice.id} value={invoice.id}>
-                            Invoice {invoice.id.slice(0, 8)}... - ${parseFloat(invoice.amount).toFixed(2)} ({invoice.status})
+                            Invoice {invoice.id.slice(0, 8)}... - Rs {parseFloat(invoice.amount).toFixed(2)} ({invoice.status})
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                     {selectedInvoice && (
                       <div className="text-sm text-gray-600 mt-1">
-                        Amount: ${parseFloat(selectedInvoice.amount).toFixed(2)} | Status: {selectedInvoice.status}
+                        Amount: Rs {parseFloat(selectedInvoice.amount).toFixed(2)} | Status: {selectedInvoice.status}
                       </div>
                     )}
                     <FormMessage />
@@ -227,7 +227,7 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Payment Amount ($)</FormLabel>
+                    <FormLabel>Payment Amount (Rs)</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="0.00" 
@@ -249,7 +249,7 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
                         onClick={() => form.setValue('amount', selectedInvoice.amount)}
                         className="mt-1"
                       >
-                        Use full invoice amount (${parseFloat(selectedInvoice.amount).toFixed(2)})
+                        Use full invoice amount (Rs {parseFloat(selectedInvoice.amount).toFixed(2)})
                       </Button>
                     )}
                     <FormMessage />

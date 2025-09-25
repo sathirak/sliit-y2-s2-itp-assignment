@@ -153,7 +153,7 @@ export function PaymentsTable({ payments, isLoading, searchTerm, onRowClick }: P
                 <TableCell>
                   <div className="flex items-center">
                     <DollarSign className="w-4 h-4 mr-1 text-green-600" />
-                    <span className="font-medium">${parseFloat(payment.amount).toFixed(2)}</span>
+                    <span className="font-medium">Rs {parseFloat(payment.amount).toFixed(2)}</span>
                   </div>
                 </TableCell>
                 <TableCell>

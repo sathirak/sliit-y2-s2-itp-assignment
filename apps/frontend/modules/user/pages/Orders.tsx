@@ -275,7 +275,7 @@ export const Orders = () => {
                         </div>
                         <div className="mb-2">
                             <span className="text-sm font-semibold">Total: </span>
-                            <span className="text-sm">${order.invoices[0]?.amount ?? "0.00"}</span>
+                            <span className="text-sm">Rs {order.invoices[0]?.amount ?? "0.00"}</span>
                         </div>
                         <div>
                             <span className="text-sm font-semibold">Items: </span>

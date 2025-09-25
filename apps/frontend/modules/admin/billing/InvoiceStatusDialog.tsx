@@ -93,7 +93,7 @@ export function InvoiceStatusDialog({ open, onOpenChange, invoice, onClose }: In
         <DialogHeader>
           <DialogTitle>Update Invoice Status</DialogTitle>
           <DialogDescription>
-            Update the status of invoice {invoice.id.slice(0, 8)}... for ${parseFloat(invoice.amount).toFixed(2)}
+            Update the status of invoice {invoice.id.slice(0, 8)}... for Rs {parseFloat(invoice.amount).toFixed(2)}
           </DialogDescription>
         </DialogHeader>
 
@@ -103,7 +103,7 @@ export function InvoiceStatusDialog({ open, onOpenChange, invoice, onClose }: In
               <div className="text-sm text-gray-600">
                 <p><strong>Invoice ID:</strong> {invoice.id}</p>
                 <p><strong>Order ID:</strong> {invoice.orderId}</p>
-                <p><strong>Amount:</strong> ${parseFloat(invoice.amount).toFixed(2)}</p>
+                <p><strong>Amount:</strong> Rs {parseFloat(invoice.amount).toFixed(2)}</p>
                 <p><strong>Current Status:</strong> {invoice.status}</p>
               </div>
             </div>

@@ -10,15 +10,13 @@ import {
   TableRow,
 } from "@/modules/ui/table";
 import { Button } from "@/modules/ui/button";
-import { Badge } from "@/modules/ui/badge";
-import { Edit, Trash2, DollarSign, Calendar, User } from "lucide-react";
+import { Edit, Trash2, Calendar } from "lucide-react";
 
 interface ContractTableProps {
   contracts: Contract[];
   loading: boolean;
   onEdit: (contract: Contract) => void;
   onDelete: (id: string) => void;
-  onMarkAsPaid: (id: string) => void;
   pagination: {
     total: number;
     page: number;
@@ -33,14 +31,13 @@ export function ContractTable({
   loading,
   onEdit,
   onDelete,
-  onMarkAsPaid,
   pagination,
   onPageChange,
 }: ContractTableProps) {
   const formatPrice = (amount: string) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "LKR",
     }).format(parseFloat(amount));
   };
 
@@ -48,31 +45,6 @@ export function ContractTable({
     return new Date(dateString).toLocaleDateString();
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { variant: "secondary" as const, label: "Pending" },
-      active: { variant: "default" as const, label: "Active" },
-      completed: { variant: "outline" as const, label: "Completed" },
-      cancelled: { variant: "destructive" as const, label: "Cancelled" },
-    };
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
-
-  const getPaymentBadge = (isPaid: boolean) => {
-    return isPaid ? (
-      <Badge variant="default" className="bg-green-100 text-green-800">
-        <DollarSign className="h-3 w-3 mr-1" />
-        Paid
-      </Badge>
-    ) : (
-      <Badge variant="secondary">
-        <DollarSign className="h-3 w-3 mr-1" />
-        Unpaid
-      </Badge>
-    );
-  };
 
   if (loading) {
     return (
@@ -101,10 +73,7 @@ export function ContractTable({
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment</TableHead>
               <TableHead>Duration</TableHead>
-              <TableHead>Supplier</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -122,18 +91,10 @@ export function ContractTable({
                 <TableCell className="font-medium">
                   {formatPrice(contract.amount)}
                 </TableCell>
-                <TableCell>{getStatusBadge(contract.status)}</TableCell>
-                <TableCell>{getPaymentBadge(contract.isPaid)}</TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     <span>{formatDate(contract.startDate)} - {formatDate(contract.endDate)}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-1 text-sm">
-                    <User className="h-3 w-3" />
-                    <span>{contract.supplierId}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
@@ -145,16 +106,6 @@ export function ContractTable({
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    {!contract.isPaid && contract.status === 'active' && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onMarkAsPaid(contract.id)}
-                        className="text-green-600 hover:text-green-700"
-                      >
-                        <DollarSign className="h-4 w-4" />
-                      </Button>
-                    )}
                     <Button
                       variant="ghost"
                       size="sm"
