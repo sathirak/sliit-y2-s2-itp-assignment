@@ -6,6 +6,7 @@ import {
   updateOrder,
   deleteOrder,
   getOrderDetails,
+  getCustomerOrders,
 } from '@/lib/services/order';
 import type {
   OrderDto,
@@ -18,6 +19,7 @@ import type {
 const ORDERS_KEY = 'orders';
 const ORDER_KEY = (id: string) => `orders/${id}`;
 const ORDER_DETAILS_KEY = (id: string) => `orders/${id}/details`;
+const CUSTOMER_ORDERS_KEY = (customerId: string) => `orders/customer/${customerId}`;
 
 // Orders Hooks
 export function useOrders() {
@@ -50,6 +52,23 @@ export function useOrderDetails(id: string) {
     orderDetails: data,
     isLoading,
     isError: !!error,
+  };
+}
+
+export function useCustomerOrders(customerId: string | null) {
+  const { data, error, isLoading } = useSWR(
+    customerId ? CUSTOMER_ORDERS_KEY(customerId) : null,
+    customerId ? () => getCustomerOrders(customerId) : null,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000, // Dedupe requests within 1 minute
+    }
+  );
+  return {
+    orders: data || [],
+    isLoading,
+    isError: !!error,
+    error,
   };
 }
 

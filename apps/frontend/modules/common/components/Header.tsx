@@ -5,15 +5,27 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { CartIcon } from '../CartIcon';
+import { useCartStore } from '@/lib/stores/cart.store';
 
 export const Header = () => {
   const { user, logout } = useAuth();
-  
+  const { totalItems } = useCartStore();
+  const router = useRouter();
+
   // Check if user has admin access (owner, sales_rep, supplier)
   const hasAdminAccess = user && ['owner', 'sales_rep', 'supplier'].includes(user.roleName);
-  
+
+  const handleCartClick = () => {
+    router.push('/cart');
+  };
+
+  const handleCheckoutClick = () => {
+    router.push('/checkout');
+  };
   return (
     <header className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200 shadow-sm">
       {/* Top section with brand */}
@@ -59,7 +71,7 @@ export const Header = () => {
               </li>
             </ul>
           </nav>
-          
+
           <div className="flex items-center gap-6">
             {user ? (
               <div className="flex items-center gap-3">
@@ -82,7 +94,7 @@ export const Header = () => {
                 </Button>
               </Link>
             )}
-            
+
             <div className="relative">
               <Input
                 type="text"
@@ -96,26 +108,41 @@ export const Header = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Action buttons section */}
       <div className="px-8 py-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-100">
         <div className="flex items-center gap-6">
           <Button variant="outline" size="sm" className="hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-all duration-300 shadow-sm">
-            <Heart size={16} className="mr-2" /> 
+            <Heart size={16} className="mr-2" />
             <span className="font-semibold">WISHLIST (0)</span>
           </Button>
-          <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 shadow-sm">
-            <ShoppingBag size={16} className="mr-2" /> 
-            <span className="font-semibold">CART</span>
+          <Button variant="outline" size="sm" onClick={handleCartClick} className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 shadow-sm">
+            <ShoppingBag size={16} className="mr-2" />
+            <span className="font-semibold">CART ({totalItems})</span>
           </Button>
+          {totalItems > 0 && (
+            <Button variant="default" size="sm" onClick={handleCheckoutClick}>
+              CHECKOUT
+            </Button>
+          )}
           {hasAdminAccess && (
             <Link href="/admin">
               <Button variant="outline" size="sm" className="hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 transition-all duration-300 shadow-sm">
-                <Settings size={16} className="mr-2" /> 
+                <Settings size={16} className="mr-2" />
                 <span className="font-semibold">ADMIN</span>
               </Button>
             </Link>
           )}
+          <Link href="/admin/contract-management">
+            <Button variant="outline" size="sm">
+              <FileText size={16} /> Temp Contracts
+            </Button>
+          </Link>
+          <Link href="/supplier/contracts">
+            <Button variant="outline" size="sm">
+              <Users size={16} /> Temp Supplier
+            </Button>
+          </Link>
           <div className="ml-auto text-xs text-gray-500 flex items-center gap-1">
             <Gift size={12} />
             <span>Free shipping on orders over $100</span>
