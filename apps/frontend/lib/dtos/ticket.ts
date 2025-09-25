@@ -32,3 +32,8 @@ export interface UpdateTicketDto {
   status?: TicketStatus;
   notes?: string;
 }
+
+export interface TicketFilterDto {
+  status?: TicketStatus;
+  search?: string;
+}

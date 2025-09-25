@@ -35,6 +35,7 @@ interface InvoicesTableProps {
   invoices: InvoiceWithRelationsDto[];
   isLoading: boolean;
   searchTerm: string;
+  onRowClick?: (invoice: InvoiceWithRelationsDto) => void;
 }
 
 const getStatusColor = (status: InvoiceStatus) => {
@@ -54,7 +55,7 @@ const getStatusColor = (status: InvoiceStatus) => {
   }
 };
 
-export function InvoicesTable({ invoices, isLoading, searchTerm }: InvoicesTableProps) {
+export function InvoicesTable({ invoices, isLoading, searchTerm, onRowClick }: InvoicesTableProps) {
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceWithRelationsDto | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
@@ -115,7 +116,11 @@ export function InvoicesTable({ invoices, isLoading, searchTerm }: InvoicesTable
           </TableHeader>
           <TableBody>
             {filteredInvoices.map((invoice) => (
-              <TableRow key={invoice.id}>
+              <TableRow 
+                key={invoice.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => onRowClick?.(invoice)}
+              >
                 <TableCell className="font-medium">
                   {invoice.id.slice(0, 8)}...
                 </TableCell>

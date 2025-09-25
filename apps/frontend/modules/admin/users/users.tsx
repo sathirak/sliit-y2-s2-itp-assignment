@@ -3,11 +3,14 @@
 import React, { useState } from "react";
 import { Button } from "@/modules/ui/button";
 import { Input } from "@/modules/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { useUsers, useSearchUsers, useUserMutations } from "@/lib/hooks/useUsers";
 import type { UserDto } from "@/lib/dtos/user";
 import { Loader2, UserPlus, Search, Trash2, Edit } from "lucide-react";
 import { AddUserModal, EditUserModal } from "./index";
 import type { CreateUserFormData, EditUserFormData } from "./index";
+import { UserRegistrationChart } from "./UserRegistrationChart";
+import { UserStatsCards } from "./UserStatsCards";
 
 export default function Users() {
 	const [search, setSearch] = useState("");
@@ -106,33 +109,57 @@ export default function Users() {
 				isSubmitting={isSubmitting}
 			/>
 
-			{/* Search Section */}
-			<div className="flex justify-end">
-				<div className="relative w-64">
-					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-					<Input
-						type="text"
-						placeholder="Search by name or email..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						className="pl-10"
-					/>
-					{isLoading && search.trim().length > 0 && (
-						<Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin" />
+			{/* User Stats Cards */}
+			<UserStatsCards users={allUsers} className="mb-6" />
+
+			{/* User Registration Chart */}
+			<Card>
+				<CardHeader>
+					<CardTitle>User Analytics</CardTitle>
+					<CardDescription>
+						Monthly user registration trends and statistics
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<UserRegistrationChart users={allUsers} />
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Users</CardTitle>
+					<CardDescription>
+						View and manage all users in your system
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					{/* Search Section */}
+					<div className="flex justify-end">
+						<div className="relative w-64">
+							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+							<Input
+								type="text"
+								placeholder="Search by name or email..."
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+								className="pl-10"
+							/>
+							{isLoading && search.trim().length > 0 && (
+								<Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin" />
+							)}
+						</div>
+					</div>
+
+					{/* Error Display */}
+					{usersError && (
+						<div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
+							Failed to load users. Please try again.
+						</div>
 					)}
-				</div>
-			</div>
 
-			{/* Error Display */}
-			{usersError && (
-				<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-					Failed to load users. Please try again.
-				</div>
-			)}
-
-			{/* Users Table */}
-			<div className="overflow-x-auto">
-				<table className="min-w-full bg-white border rounded-lg">
+					{/* Users Table */}
+					<div className="overflow-x-auto">
+						<table className="min-w-full bg-white border rounded-lg">
 					<thead>
 						<tr className="bg-gray-100 text-left">
 							<th className="py-2 px-4 border-b">Name</th>
@@ -208,6 +235,8 @@ export default function Users() {
 					</tbody>
 				</table>
 			</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

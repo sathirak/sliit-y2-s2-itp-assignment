@@ -30,14 +30,14 @@ export const processCheckout = async (checkoutDto: CheckoutDto): Promise<Checkou
 };
 
 export const getCustomerOrders = async (customerId: string): Promise<OrderDto[]> => {
-  const result = await apiPublicClient
+  const result = await apiPrivateClient
     .get<OrderDto[]>(`checkout/customer/${customerId}/orders`)
     .json();
   return result;
 };
 
 export const getOrderDetails = async (orderId: string): Promise<OrderDetailsResponseDto> => {
-  const result = await apiPublicClient
+  const result = await apiPrivateClient
     .get<OrderDetailsResponseDto>(`checkout/order/${orderId}/details`)
     .json();
   return result;

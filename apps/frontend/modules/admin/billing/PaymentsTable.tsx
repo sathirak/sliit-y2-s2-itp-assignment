@@ -33,6 +33,7 @@ interface PaymentsTableProps {
   payments: PaymentWithRelationsDto[];
   isLoading: boolean;
   searchTerm: string;
+  onRowClick?: (payment: PaymentWithRelationsDto) => void;
 }
 
 const getStatusColor = (status: PaymentStatus) => {
@@ -80,7 +81,7 @@ const formatMethodName = (method: PaymentMethod) => {
   }
 };
 
-export function PaymentsTable({ payments, isLoading, searchTerm }: PaymentsTableProps) {
+export function PaymentsTable({ payments, isLoading, searchTerm, onRowClick }: PaymentsTableProps) {
   const [selectedPayment, setSelectedPayment] = useState<PaymentWithRelationsDto | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
@@ -136,7 +137,11 @@ export function PaymentsTable({ payments, isLoading, searchTerm }: PaymentsTable
           </TableHeader>
           <TableBody>
             {filteredPayments.map((payment) => (
-              <TableRow key={payment.id}>
+              <TableRow 
+                key={payment.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => onRowClick?.(payment)}
+              >
                 <TableCell className="font-medium">
                   {payment.id.slice(0, 8)}...
                 </TableCell>
