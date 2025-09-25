@@ -66,7 +66,12 @@ export function ContractManagement() {
       
       const response = await contractService.getContracts(filters, currentUser.id, currentUser.role);
       setContracts(response.data);
-      setPagination(response.pagination);
+      setPagination({
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.totalPages
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch contracts");
     } finally {
@@ -292,7 +297,9 @@ export function ContractManagement() {
                 requests={contractRequests}
                 onApprove={handleApproveContractRequest}
                 onMarkAsPaid={handleMarkContractRequestAsPaid}
-                onStatusChange={handleStatusChange}
+                onStatusChange={(id: string, status: "pending" | "ongoing" | "completed" | "rejected") => {
+                  handleStatusChange(id, status as "pending" | "ongoing" | "completed");
+                }}
                 onPaymentChange={handlePaymentChange}
                 showAll={true}
               />
