@@ -1,12 +1,24 @@
 import useSWR, { mutate } from 'swr';
-import { Ticket, CreateTicketDto, UpdateTicketDto } from '../dtos/ticket';
+import { Ticket, CreateTicketDto, UpdateTicketDto, TicketFilterDto } from '../dtos/ticket';
 import { getTickets, getTicket, createTicket, updateTicket, deleteTicket } from '../services/ticket';
 
 const TICKETS_KEY = 'tickets';
+const FILTERED_TICKETS_KEY = (filters: TicketFilterDto) => {
+  const params = new URLSearchParams();
+  if (filters.status) params.append('status', filters.status);
+  if (filters.search) params.append('search', filters.search);
+  return `tickets?${params.toString()}`;
+};
 const TICKET_KEY = (id: string) => `tickets/${id}`;
 
-export function useTickets() {
-  const { data, error, isLoading, mutate: mutateTickets } = useSWR<Ticket[]>(TICKETS_KEY, getTickets, {
+export function useTickets(filters?: TicketFilterDto) {
+  const key = filters && (filters.status || filters.search) 
+    ? FILTERED_TICKETS_KEY(filters) 
+    : TICKETS_KEY;
+    
+  const fetcher = () => getTickets(filters);
+  
+  const { data, error, isLoading, mutate: mutateTickets } = useSWR<Ticket[]>(key, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 60000,
   });
