@@ -37,7 +37,7 @@ export const getCustomerOrders = async (customerId: string): Promise<OrderDto[]>
 };
 
 export const getOrderDetails = async (orderId: string): Promise<OrderDetailsResponseDto> => {
-  const result = await apiPublicClient
+  const result = await apiPrivateClient
     .get<OrderDetailsResponseDto>(`checkout/order/${orderId}/details`)
     .json();
   return result;

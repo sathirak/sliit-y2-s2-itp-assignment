@@ -27,6 +27,10 @@ import { usePayments } from '@/lib/hooks/usePayments';
 import { PaymentDialog } from '@/modules/admin/billing/PaymentDialog';
 import { InvoiceDialog } from '@/modules/admin/billing/InvoiceDialog';
 import { PaymentsTable } from '@/modules/admin/billing/PaymentsTable';
+import { OrderDetailDialog } from '@/modules/admin/billing/OrderDetailDialog';
+import { InvoiceDetailDialog } from '@/modules/admin/billing/InvoiceDetailDialog';
+import { PaymentDetailDialog } from '@/modules/admin/billing/PaymentDetailDialog';
+import type { OrderDto, InvoiceWithRelationsDto, PaymentWithRelationsDto } from '@/lib/dtos/order';
 
 export default function BillingPage() {
   const [activeTab, setActiveTab] = useState<'orders' | 'invoices' | 'payments'>('orders');
@@ -34,6 +38,14 @@ export default function BillingPage() {
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  
+  // Detail dialog states
+  const [selectedOrderForDetail, setSelectedOrderForDetail] = useState<OrderDto | null>(null);
+  const [selectedInvoiceForDetail, setSelectedInvoiceForDetail] = useState<InvoiceWithRelationsDto | null>(null);
+  const [selectedPaymentForDetail, setSelectedPaymentForDetail] = useState<PaymentWithRelationsDto | null>(null);
+  const [isOrderDetailDialogOpen, setIsOrderDetailDialogOpen] = useState(false);
+  const [isInvoiceDetailDialogOpen, setIsInvoiceDetailDialogOpen] = useState(false);
+  const [isPaymentDetailDialogOpen, setIsPaymentDetailDialogOpen] = useState(false);
 
   const { orders, isLoading: ordersLoading } = useOrders();
   const { invoices, isLoading: invoicesLoading } = useInvoices();
@@ -54,6 +66,22 @@ export default function BillingPage() {
 
   const handleRefresh = () => {
     window.location.reload();
+  };
+
+  // Row click handlers for detail dialogs
+  const handleOrderRowClick = (order: OrderDto) => {
+    setSelectedOrderForDetail(order);
+    setIsOrderDetailDialogOpen(true);
+  };
+
+  const handleInvoiceRowClick = (invoice: InvoiceWithRelationsDto) => {
+    setSelectedInvoiceForDetail(invoice);
+    setIsInvoiceDetailDialogOpen(true);
+  };
+
+  const handlePaymentRowClick = (payment: PaymentWithRelationsDto) => {
+    setSelectedPaymentForDetail(payment);
+    setIsPaymentDetailDialogOpen(true);
   };
 
   const getTabButtonText = (tab: string, count: number) => {
@@ -205,6 +233,7 @@ export default function BillingPage() {
                 orders={orders} 
                 isLoading={ordersLoading} 
                 searchTerm={searchTerm}
+                onRowClick={handleOrderRowClick}
               />
             </TabsContent>
 
@@ -213,6 +242,7 @@ export default function BillingPage() {
                 invoices={invoices} 
                 isLoading={invoicesLoading} 
                 searchTerm={searchTerm}
+                onRowClick={handleInvoiceRowClick}
               />
             </TabsContent>
 
@@ -221,6 +251,7 @@ export default function BillingPage() {
                 payments={payments} 
                 isLoading={paymentsLoading} 
                 searchTerm={searchTerm}
+                onRowClick={handlePaymentRowClick}
               />
             </TabsContent>
           </Tabs>
@@ -241,6 +272,23 @@ export default function BillingPage() {
         open={isPaymentDialogOpen} 
         onOpenChange={setIsPaymentDialogOpen}
         invoices={invoices}
+      />
+
+      {/* Detail Dialogs */}
+      <OrderDetailDialog
+        order={selectedOrderForDetail}
+        open={isOrderDetailDialogOpen}
+        onOpenChange={setIsOrderDetailDialogOpen}
+      />
+      <InvoiceDetailDialog
+        invoice={selectedInvoiceForDetail}
+        open={isInvoiceDetailDialogOpen}
+        onOpenChange={setIsInvoiceDetailDialogOpen}
+      />
+      <PaymentDetailDialog
+        payment={selectedPaymentForDetail}
+        open={isPaymentDetailDialogOpen}
+        onOpenChange={setIsPaymentDetailDialogOpen}
       />
     </div>
   );
