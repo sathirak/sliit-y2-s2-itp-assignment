@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
+import { OrderProductController } from './order-product.controller';
 import { InvoiceController } from './invoice.controller';
 import { InvoiceService } from './invoice.service';
 import { PaymentController } from './payment.controller';
@@ -14,6 +15,7 @@ import { OrderProductService } from './order-product.service';
     imports: [DatabaseModule],
     controllers: [
         OrderController,
+        OrderProductController,
         InvoiceController,
         PaymentController,
         CheckoutController,
