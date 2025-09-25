@@ -275,6 +275,7 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="in_stock">In Stock</SelectItem>
+              <SelectItem value="low_stock">Low Stock</SelectItem>
               <SelectItem value="out_of_stock">Out of Stock</SelectItem>
             </SelectContent>
           </Select>

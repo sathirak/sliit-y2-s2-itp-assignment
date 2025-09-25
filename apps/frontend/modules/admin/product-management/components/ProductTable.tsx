@@ -93,10 +93,16 @@ export function ProductTable({
   onPageChange,
 }: ProductTableProps) {
   const formatPrice = (price: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(parseFloat(price));
+    const numPrice = parseFloat(price);
+    return `Rs. ${numPrice.toLocaleString('en-US', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    })}`;
+  };
+
+  const truncateDescription = (text: string, maxLength: number = 50) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
   };
 
   const getAvailabilityBadge = (qty: number) => {
@@ -157,8 +163,11 @@ export function ProductTable({
                 <TableCell>
                   <div>
                     <div className="font-medium">{product.name}</div>
-                    <div className="text-sm text-muted-foreground line-clamp-2">
-                      {product.description}
+                    <div 
+                      className="text-sm text-muted-foreground cursor-help"
+                      title={product.description}
+                    >
+                      {truncateDescription(product.description)}
                     </div>
                   </div>
                 </TableCell>

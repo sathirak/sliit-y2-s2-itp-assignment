@@ -1,5 +1,5 @@
-export const CATEGORIES = [
-  "All",
+// Product categories (for creating/editing products)
+export const PRODUCT_CATEGORIES = [
   "Dresses",
   "Tops",
   "Pants",
@@ -9,6 +9,12 @@ export const CATEGORIES = [
   "Jumpsuits & Rompers",
   "Blazers",
   "Jackets",
+];
+
+// Filter categories (includes "All" for filtering)
+export const CATEGORIES = [
+  "All",
+  ...PRODUCT_CATEGORIES,
 ];
 
 export const SIZES = ["UK 6", "UK 8", "UK 10", "UK 12", "UK 16"];

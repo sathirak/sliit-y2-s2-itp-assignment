@@ -62,10 +62,10 @@ export class ProductFilterDto extends PaginationDto {
   maxQty?: number;
 
   @ApiPropertyOptional({
-    description: 'Filter by availability (in stock or out of stock)',
-    enum: ['in_stock', 'out_of_stock'],
+    description: 'Filter by availability (in stock, low stock, or out of stock)',
+    enum: ['in_stock', 'low_stock', 'out_of_stock'],
   })
   @IsOptional()
   @IsString()
-  availability?: 'in_stock' | 'out_of_stock';
+  availability?: 'in_stock' | 'low_stock' | 'out_of_stock';
 }
