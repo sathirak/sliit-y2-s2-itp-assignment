@@ -185,6 +185,19 @@ export function ContractManagement() {
   const handlePaymentChange = async (id: string, isPaid: boolean) => {
     if (!currentUser) return;
     
+    // Find the contract request to check its status
+    const request = contractRequests.find(req => req.id === id);
+    if (!request) {
+      setError("Contract request not found");
+      return;
+    }
+    
+    // Prevent setting payment to paid if status is pending or rejected
+    if (isPaid && (request.status === 'pending' || request.status === 'rejected')) {
+      setError(`Cannot mark payment as paid for ${request.status} contract requests`);
+      return;
+    }
+    
     try {
       await contractService.updateContractRequest(id, { isPaid }, currentUser.id, currentUser.role);
       await fetchContractRequests();

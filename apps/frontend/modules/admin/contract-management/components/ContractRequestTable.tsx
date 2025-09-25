@@ -1,6 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { ContractRequest } from "@/lib/services/dtos/contract";
+import { UserDto } from "@/lib/dtos/user";
+import { getAllUsers } from "@/lib/services/user";
 import {
   Table,
   TableBody,
@@ -39,6 +42,30 @@ export function ContractRequestTable({
   showAll,
   showActions = true,
 }: ContractRequestTableProps) {
+  const [users, setUsers] = useState<UserDto[]>([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+
+  // Fetch all users to create a mapping from ID to name
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const allUsers = await getAllUsers();
+        setUsers(allUsers);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Create a mapping from user ID to user name
+  const getUserName = (userId: string): string => {
+    const user = users.find(u => u.id === userId);
+    return user ? `${user.firstName} ${user.lastName}` : userId; // Fallback to ID if user not found
+  };
   const formatPrice = (amount: string) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -122,7 +149,7 @@ export function ContractRequestTable({
               <TableHead>Status</TableHead>
               <TableHead>Payment</TableHead>
               <TableHead>Duration</TableHead>
-              <TableHead>Supplier</TableHead>
+              {showAll && <TableHead>Supplier</TableHead>}
               <TableHead>Comment</TableHead>
               {showActions && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
@@ -201,10 +228,18 @@ export function ContractRequestTable({
                             <span>Unpaid</span>
                           </div>
                         </SelectItem>
-                        <SelectItem value="true">
+                        <SelectItem 
+                          value="true" 
+                          disabled={request.status === 'pending' || request.status === 'rejected'}
+                        >
                           <div className="flex items-center space-x-2">
                             <CheckCircle className="h-3 w-3" />
                             <span>Paid</span>
+                            {(request.status === 'pending' || request.status === 'rejected') && (
+                              <span className="text-xs text-muted-foreground ml-1">
+                                (Not available for {request.status} status)
+                              </span>
+                            )}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -219,12 +254,14 @@ export function ContractRequestTable({
                     <span>{formatDate(request.startDate)} - {formatDate(request.endDate)}</span>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-1 text-sm">
-                    <User className="h-3 w-3" />
-                    <span>{request.supplierId}</span>
-                  </div>
-                </TableCell>
+                {showAll && (
+                  <TableCell>
+                    <div className="flex items-center space-x-1 text-sm">
+                      <User className="h-3 w-3" />
+                      <span>{usersLoading ? "Loading..." : getUserName(request.supplierId)}</span>
+                    </div>
+                  </TableCell>
+                )}
                 <TableCell className="text-sm text-muted-foreground max-w-xs">
                   <div className="truncate" title={request.comment}>
                     {request.comment || "No comment"}
