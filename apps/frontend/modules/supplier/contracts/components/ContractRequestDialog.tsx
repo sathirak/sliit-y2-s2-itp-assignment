@@ -44,6 +44,7 @@ export function ContractRequestDialog({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   // Update form data when contract changes
   useEffect(() => {
@@ -77,6 +78,15 @@ export function ContractRequestDialog({
 
     setLoading(true);
     setError(null);
+    setDateError(null);
+
+    // Validate dates before submission
+    const dateValidationError = validateDates(formData.startDate, formData.endDate);
+    if (dateValidationError) {
+      setDateError(dateValidationError);
+      setLoading(false);
+      return;
+    }
 
     try {
       await contractService.createContractRequest(formData, userId, userRole);
@@ -103,8 +113,35 @@ export function ContractRequestDialog({
     onOpenChange(false);
   };
 
+  const validateDates = (startDate: string, endDate: string): string | null => {
+    if (!startDate || !endDate) return null;
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (startDate === endDate) {
+      return "Start date and end date cannot be the same";
+    }
+    
+    if (end <= start) {
+      return "End date must be after start date";
+    }
+    
+    return null;
+  };
+
   const handleInputChange = (field: keyof CreateContractRequestDto, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Validate dates when either date changes
+      if (field === 'startDate' || field === 'endDate') {
+        const dateValidationError = validateDates(newData.startDate, newData.endDate);
+        setDateError(dateValidationError);
+      }
+      
+      return newData;
+    });
   };
 
   return (
@@ -120,6 +157,12 @@ export function ContractRequestDialog({
         {error && (
           <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
             {error}
+          </div>
+        )}
+
+        {dateError && (
+          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
+            {dateError}
           </div>
         )}
 
@@ -171,6 +214,7 @@ export function ContractRequestDialog({
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => handleInputChange("startDate", e.target.value)}
+                min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
                 required
               />
             </div>
@@ -181,6 +225,7 @@ export function ContractRequestDialog({
                 type="date"
                 value={formData.endDate}
                 onChange={(e) => handleInputChange("endDate", e.target.value)}
+                min={formData.startDate || new Date().toISOString().split('T')[0]} // Must be after start date
                 required
               />
             </div>
@@ -201,7 +246,7 @@ export function ContractRequestDialog({
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || !!dateError}>
               {loading ? "Submitting..." : "Submit Request"}
             </Button>
           </DialogFooter>

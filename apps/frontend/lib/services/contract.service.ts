@@ -38,13 +38,21 @@ class ContractService {
 
   async createContract(contract: CreateContractDto, userId: string, userRole: UserRole): Promise<Contract> {
     return apiPrivateClient.post('contracts', {
-      json: contract
+      json: {
+        ...contract,
+        userId,
+        userRole
+      }
     }).json<Contract>();
   }
 
   async updateContract(id: string, contract: UpdateContractDto, userId: string, userRole: UserRole): Promise<Contract> {
     return apiPrivateClient.patch(`contracts/${id}`, {
-      json: contract
+      json: {
+        ...contract,
+        userId,
+        userRole
+      }
     }).json<Contract>();
   }
 

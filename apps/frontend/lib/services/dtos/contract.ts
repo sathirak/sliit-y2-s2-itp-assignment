@@ -35,6 +35,8 @@ export interface CreateContractDto {
   amount: string;
   startDate: string;
   endDate: string;
+  userId: string;
+  userRole: string;
 }
 
 export interface UpdateContractDto extends Partial<CreateContractDto> {}

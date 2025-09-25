@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Contract, CreateContractDto, UpdateContractDto, UserRole } from "@/lib/services/dtos/contract";
+
+// Form data type without userId and userRole (these will be added by the service)
+type ContractFormData = Omit<CreateContractDto, 'userId' | 'userRole'>;
 import { contractService } from "@/lib/services/contract.service";
 import {
   Dialog,
@@ -35,7 +38,7 @@ export function ContractDialog({
   userId, 
   userRole 
 }: ContractDialogProps) {
-  const [formData, setFormData] = useState<CreateContractDto>({
+  const [formData, setFormData] = useState<ContractFormData>({
     title: "",
     description: "",
     amount: "",
@@ -44,6 +47,7 @@ export function ContractDialog({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const isEditing = !!contract;
 
@@ -72,6 +76,15 @@ export function ContractDialog({
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setDateError(null);
+
+    // Validate dates before submission
+    const dateValidationError = validateDates(formData.startDate, formData.endDate);
+    if (dateValidationError) {
+      setDateError(dateValidationError);
+      setLoading(false);
+      return;
+    }
 
     try {
       if (isEditing && contract) {
@@ -90,11 +103,38 @@ export function ContractDialog({
     }
   };
 
-  const handleInputChange = (field: keyof CreateContractDto, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+  const validateDates = (startDate: string, endDate: string): string | null => {
+    if (!startDate || !endDate) return null;
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (startDate === endDate) {
+      return "Start date and end date cannot be the same";
+    }
+    
+    if (end <= start) {
+      return "End date must be after start date";
+    }
+    
+    return null;
+  };
+
+  const handleInputChange = (field: keyof ContractFormData, value: string) => {
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value,
+      };
+      
+      // Validate dates when either date changes
+      if (field === 'startDate' || field === 'endDate') {
+        const dateValidationError = validateDates(newData.startDate, newData.endDate);
+        setDateError(dateValidationError);
+      }
+      
+      return newData;
+    });
   };
 
   return (
@@ -115,6 +155,12 @@ export function ContractDialog({
           {error && (
             <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
               {error}
+            </div>
+          )}
+
+          {dateError && (
+            <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
+              {dateError}
             </div>
           )}
 
@@ -154,6 +200,7 @@ export function ContractDialog({
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => handleInputChange("startDate", e.target.value)}
+                min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
                 required
               />
             </div>
@@ -166,6 +213,7 @@ export function ContractDialog({
                 type="date"
                 value={formData.endDate}
                 onChange={(e) => handleInputChange("endDate", e.target.value)}
+                min={formData.startDate || new Date().toISOString().split('T')[0]} // Must be after start date
                 required
               />
             </div>
@@ -194,7 +242,7 @@ export function ContractDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || !!dateError}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditing ? "Update Contract" : "Create Contract"}
             </Button>
