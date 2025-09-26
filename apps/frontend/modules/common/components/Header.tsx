@@ -1,20 +1,26 @@
 "use client";
 
-import { Heart, ShoppingBag, FileText, Users, Settings, Search, Crown, Star, Gift, User } from "lucide-react";
+import { Heart, ShoppingBag, FileText, Users, Settings, Search, Crown, Star, Gift, User, LogIn, UserPlus, LogOut } from "lucide-react";
 import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { CATEGORIES } from '@/lib/constants/categories';
 import { useCartStore } from '@/lib/stores/cart.store';
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const { totalItems } = useCartStore();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Check if user has admin access (owner, sales_rep)
   const hasAdminAccess = user && ['owner', 'sales_rep'].includes(user.roleName);
@@ -27,6 +33,15 @@ export const Header = () => {
 
   const handleCheckoutClick = () => {
     router.push('/checkout');
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
   return (
     <header className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200 shadow-sm">
@@ -60,16 +75,46 @@ export const Header = () => {
           </ul>
         </nav>
         <div className="flex items-center gap-4">
-          {user ? (
-            <div className="flex items-center gap-2">
+          {!isMounted || isLoading ? (
+            // Show placeholder during hydration/loading
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          ) : user ? (
+            <div className="flex items-center gap-3">
               <Link href="/my-account" className="flex items-center gap-2 hover:text-gray-900 transition-colors">
                 <User size={16} className="text-gray-600" />
                 <span className="text-sm text-gray-700 font-bold">
                   Welcome, {user.firstName || user.email}
                 </span>
               </Link>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300 shadow-sm"
+              >
+                <LogOut size={16} className="mr-2" />
+                <span className="font-semibold">SIGN OUT</span>
+              </Button>
             </div>
-          ) : null}
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link href="/sign-in">
+                <Button variant="outline" size="sm" className="hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 transition-all duration-300 shadow-sm">
+                  <LogIn size={16} className="mr-2" />
+                  <span className="font-semibold">SIGN IN</span>
+                </Button>
+              </Link>
+              <Link href="/sign-up">
+                <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 shadow-sm">
+                  <UserPlus size={16} className="mr-2" />
+                  <span className="font-semibold">SIGN UP</span>
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
