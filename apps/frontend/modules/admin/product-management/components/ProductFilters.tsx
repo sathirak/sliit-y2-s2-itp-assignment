@@ -12,40 +12,13 @@ import {
 } from "@/modules/ui/select";
 import { Search, Filter, X } from "lucide-react";
 import { useState } from "react";
+import { CATEGORIES, SIZES, COLORS } from "@/lib/constants/categories";
 
 interface ProductFiltersProps {
   filters: ProductFilterDto;
   onFilterChange: (filters: Partial<ProductFilterDto>) => void;
 }
 
-const CATEGORIES = [
-  "T-Shirts",
-  "Jeans",
-  "Dresses",
-  "Sweaters",
-  "Jackets",
-  "Shoes",
-  "Accessories",
-  "Home",
-  "Electronics",
-  "Clothing",
-];
-
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "Standard", "One-Size", "32", "34", "36", "38", "40", "42"];
-
-const COLORS = [
-  "Black",
-  "White",
-  "Red",
-  "Blue",
-  "Green",
-  "Yellow",
-  "Pink",
-  "Purple",
-  "Orange",
-  "Brown",
-  "Gray",
-];
 
 export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps) {
   const [localFilters, setLocalFilters] = useState<Partial<ProductFilterDto>>({
@@ -53,14 +26,14 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
     category: filters.category || "all",
     size: filters.size || "all",
     color: filters.color || "all",
-    minPrice: filters.minPrice || "",
-    maxPrice: filters.maxPrice || "",
-    minQty: filters.minQty || "",
-    maxQty: filters.maxQty || "",
-    availability: filters.availability || "all",
+    minPrice: filters.minPrice || undefined,
+    maxPrice: filters.maxPrice || undefined,
+    minQty: filters.minQty || undefined,
+    maxQty: filters.maxQty || undefined,
+    availability: filters.availability || undefined,
   });
 
-  const handleFilterChange = (key: keyof ProductFilterDto, value: string | number) => {
+  const handleFilterChange = (key: keyof ProductFilterDto, value: string | number | undefined) => {
     setLocalFilters(prev => ({
       ...prev,
       [key]: value,
@@ -82,11 +55,11 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
       category: "all",
       size: "all",
       color: "all",
-      minPrice: "",
-      maxPrice: "",
-      minQty: "",
-      maxQty: "",
-      availability: "all",
+      minPrice: undefined,
+      maxPrice: undefined,
+      minQty: undefined,
+      maxQty: undefined,
+      availability: undefined,
     });
     onFilterChange({});
   };
@@ -196,9 +169,23 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
           <label className="text-sm font-medium">Min Price</label>
           <Input
             type="number"
+            min="0"
             placeholder="0"
-            value={localFilters.minPrice}
-            onChange={(e) => handleFilterChange("minPrice", e.target.value ? parseInt(e.target.value) : "")}
+            value={localFilters.minPrice || ""}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Allow empty string or valid positive numbers only
+              if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
+                handleFilterChange("minPrice", value);
+              }
+            }}
+            onKeyPress={(e) => {
+              // Only allow numbers, backspace, delete, tab, escape, enter
+              if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
 
@@ -206,9 +193,23 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
           <label className="text-sm font-medium">Max Price</label>
           <Input
             type="number"
+            min="0"
             placeholder="1000"
-            value={localFilters.maxPrice}
-            onChange={(e) => handleFilterChange("maxPrice", e.target.value ? parseInt(e.target.value) : "")}
+            value={localFilters.maxPrice || ""}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Allow empty string or valid positive numbers only
+              if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
+                handleFilterChange("maxPrice", value);
+              }
+            }}
+            onKeyPress={(e) => {
+              // Only allow numbers, backspace, delete, tab, escape, enter
+              if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
 
@@ -217,9 +218,23 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
           <label className="text-sm font-medium">Min Quantity</label>
           <Input
             type="number"
+            min="0"
             placeholder="0"
-            value={localFilters.minQty}
-            onChange={(e) => handleFilterChange("minQty", e.target.value ? parseInt(e.target.value) : "")}
+            value={localFilters.minQty || ""}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Allow empty string or valid positive numbers only
+              if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
+                handleFilterChange("minQty", value);
+              }
+            }}
+            onKeyPress={(e) => {
+              // Only allow numbers, backspace, delete, tab, escape, enter
+              if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
 
@@ -227,9 +242,23 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
           <label className="text-sm font-medium">Max Quantity</label>
           <Input
             type="number"
+            min="0"
             placeholder="100"
-            value={localFilters.maxQty}
-            onChange={(e) => handleFilterChange("maxQty", e.target.value ? parseInt(e.target.value) : "")}
+            value={localFilters.maxQty || ""}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Allow empty string or valid positive numbers only
+              if (inputValue === "" || (/^\d+$/.test(inputValue) && parseInt(inputValue) >= 0)) {
+                const value = inputValue === "" ? undefined : parseInt(inputValue);
+                handleFilterChange("maxQty", value);
+              }
+            }}
+            onKeyPress={(e) => {
+              // Only allow numbers, backspace, delete, tab, escape, enter
+              if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
 
@@ -237,8 +266,8 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
         <div className="space-y-2">
           <label className="text-sm font-medium">Availability</label>
           <Select
-            value={localFilters.availability}
-            onValueChange={(value) => handleFilterChange("availability", value)}
+            value={localFilters.availability || "all"}
+            onValueChange={(value) => handleFilterChange("availability", value === "all" ? undefined : value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="All" />
@@ -246,6 +275,7 @@ export function ProductFilters({ filters, onFilterChange }: ProductFiltersProps)
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="in_stock">In Stock</SelectItem>
+              <SelectItem value="low_stock">Low Stock</SelectItem>
               <SelectItem value="out_of_stock">Out of Stock</SelectItem>
             </SelectContent>
           </Select>

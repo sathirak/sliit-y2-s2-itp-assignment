@@ -7,6 +7,7 @@ import {
   IsDate,
   IsBoolean,
   IsOptional,
+  Min,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -42,7 +43,7 @@ export class ProductDto {
 
   @ApiProperty({ description: 'Product quantity in stock' })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   qty: number;
 
   @ApiProperty({ description: 'Product price' })

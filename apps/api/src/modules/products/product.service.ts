@@ -76,7 +76,9 @@ export class ProductService {
     if (availability === 'out_of_stock') {
       additionalFilters.push(eq(products.qty, 0));
     } else if (availability === 'in_stock') {
-      additionalFilters.push(sql`${products.qty} > 0`);
+      additionalFilters.push(sql`${products.qty} >= 10`);
+    } else if (availability === 'low_stock') {
+      additionalFilters.push(sql`${products.qty} > 0 AND ${products.qty} < 10`);
     }
 
     const whereClause = additionalFilters.length > 0 ? and(...additionalFilters) : undefined;

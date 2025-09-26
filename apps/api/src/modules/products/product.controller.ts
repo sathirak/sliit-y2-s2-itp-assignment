@@ -50,7 +50,7 @@ export class ProductController {
   @ApiQuery({ name: 'maxPrice', required: false, description: 'Maximum price filter' })
   @ApiQuery({ name: 'minQty', required: false, description: 'Minimum quantity filter' })
   @ApiQuery({ name: 'maxQty', required: false, description: 'Maximum quantity filter' })
-  @ApiQuery({ name: 'availability', required: false, description: 'Availability filter', enum: ['in_stock', 'out_of_stock'] })
+  @ApiQuery({ name: 'availability', required: false, description: 'Availability filter', enum: ['in_stock', 'low_stock', 'out_of_stock'] })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of products',

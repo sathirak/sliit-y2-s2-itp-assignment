@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/modules/ui/select";
 import { Loader2, Upload, X, AlertCircle } from "lucide-react";
+import { PRODUCT_CATEGORIES, SIZES, COLORS } from "@/lib/constants/categories";
 
 interface ProductDialogProps {
   open: boolean;
@@ -32,34 +33,6 @@ interface ProductDialogProps {
   onSaved: () => void;
 }
 
-const CATEGORIES = [
-  "T-Shirts",
-  "Jeans",
-  "Dresses",
-  "Sweaters",
-  "Jackets",
-  "Shoes",
-  "Accessories",
-  "Home",
-  "Electronics",
-  "Clothing",
-];
-
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "Standard", "One-Size", "32", "34", "36", "38", "40", "42"];
-
-const COLORS = [
-  "Black",
-  "White",
-  "Red",
-  "Blue",
-  "Green",
-  "Yellow",
-  "Pink",
-  "Purple",
-  "Orange",
-  "Brown",
-  "Gray",
-];
 
 export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductDialogProps) {
   const [formData, setFormData] = useState<CreateProductDto>({
@@ -101,7 +74,7 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
     if (product) {
       setFormData({
         name: product.name,
-        category: normalizeValue(product.category, CATEGORIES),
+        category: normalizeValue(product.category, PRODUCT_CATEGORIES),
         description: product.description,
         size: normalizeValue(product.size, SIZES),
         color: normalizeValue(product.color, COLORS),
@@ -254,13 +227,13 @@ export function ProductDialog({ open, onOpenChange, product, onSaved }: ProductD
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map((category) => (
+                  {PRODUCT_CATEGORIES.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>
                   ))}
                   {/* Show current value if it's not in the list */}
-                  {formData.category && !CATEGORIES.includes(formData.category) && (
+                  {formData.category && !PRODUCT_CATEGORIES.includes(formData.category) && (
                     <SelectItem key={formData.category} value={formData.category}>
                       {formData.category}
                     </SelectItem>

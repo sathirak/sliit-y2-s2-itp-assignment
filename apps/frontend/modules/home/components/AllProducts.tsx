@@ -2,11 +2,12 @@
 
 import React from "react";
 import Image from "next/image";
-import { useNewArrivals } from "@/lib/hooks/useProducts";
+import Link from "next/link";
+import { useProducts } from "@/lib/hooks/useProducts";
 import { AddToCartButton } from "@/modules/common/AddToCartButton";
 
-export const NewArrivals = () => {
-  const { products, isLoading, error } = useNewArrivals(8);
+export const AllProducts = () => {
+  const { products, isLoading, error } = useProducts({ limit: 12 });
 
   // Helper function to calculate installment price
   const calculateInstallment = (price: string) => {
@@ -27,7 +28,7 @@ export const NewArrivals = () => {
     return (
       <section className="max-w-6xl mx-auto py-10">
         <h2 className="text-3xl font-semibold text-center mb-2 tracking-wide">
-          NEW ARRIVALS
+          ALL PRODUCTS
         </h2>
         <div className="flex justify-center mb-8">
           <span className="block w-16 h-1 bg-black"></span>
@@ -43,7 +44,7 @@ export const NewArrivals = () => {
     return (
       <section className="max-w-6xl mx-auto py-10">
         <h2 className="text-3xl font-semibold text-center mb-2 tracking-wide">
-          NEW ARRIVALS
+          ALL PRODUCTS
         </h2>
         <div className="flex justify-center mb-8">
           <span className="block w-16 h-1 bg-black"></span>
@@ -85,52 +86,59 @@ export const NewArrivals = () => {
               key={product.id}
               className="bg-white shadow rounded overflow-hidden flex flex-col items-center hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="w-full h-96 flex items-center justify-center bg-gray-100">
-                <Image
-                  src={product.product_image}
-                  alt={product.name}
-                  width={400}
-                  height={400}
-                  className="object-cover h-full w-full"
-                  onError={(e) => {
-                    // Fallback to placeholder if image fails to load
-                    (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
-                  }}
-                />
-              </div>
-              <div className="p-4 w-full text-center">
-                <div className="text-lg font-medium mb-1 line-clamp-2">
-                  {product.name}
+              {/* Clickable Product Info Area */}
+              <Link href={`/product/${product.id}`} className="w-full">
+                <div className="w-full h-96 flex items-center justify-center bg-gray-100 cursor-pointer">
+                  <Image
+                    src={product.product_image}
+                    alt={product.name}
+                    width={400}
+                    height={400}
+                    className="object-cover h-full w-full hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      // Fallback to placeholder if image fails to load
+                      (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
+                    }}
+                  />
                 </div>
-                <div className="text-sm text-gray-600 mb-2">
-                  {product.category} • {product.size} • {product.color}
+                <div className="p-4 w-full text-center cursor-pointer">
+                  <div className="text-lg font-medium mb-1 line-clamp-2">
+                    {product.name}
+                  </div>
+                  <div className="text-sm text-gray-600 mb-2">
+                    {product.category} • {product.size} • {product.color}
+                  </div>
+                  <div className="text-2xl font-bold mb-1">
+                    Rs. {formatPrice(product.price)}
+                  </div>
+                  <div className="text-sm mb-2">
+                    or 3 x{" "}
+                    <span className="font-semibold">
+                      Rs. {calculateInstallment(product.price)}
+                    </span>{" "}
+                    with{" "}
+                    <span className="font-bold">intpay</span>
+                  </div>
+                  <div className="text-sm text-gray-500 mb-2">
+                    {product.qty > 0 ? (
+                      <span className="text-green-600">
+                        {product.qty} in stock
+                      </span>
+                    ) : (
+                      <span className="text-red-600">Out of stock</span>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-400 mt-2">CROWNUP</div>
                 </div>
-                <div className="text-2xl font-bold mb-1">
-                  Rs. {formatPrice(product.price)}
-                </div>
-                <div className="text-sm mb-2">
-                  or 3 x{" "}
-                  <span className="font-semibold">
-                    Rs. {calculateInstallment(product.price)}
-                  </span>{" "}
-                  with{" "}
-                  <span className="font-bold">intpay</span>
-                </div>
-                <div className="text-sm text-gray-500 mb-4">
-                  {product.qty > 0 ? (
-                    <span className="text-green-600">
-                      {product.qty} in stock
-                    </span>
-                  ) : (
-                    <span className="text-red-600">Out of stock</span>
-                  )}
-                </div>
+              </Link>
+              
+              {/* Action Buttons - Not clickable for navigation */}
+              <div className="p-4 pt-0 w-full">
                 <AddToCartButton 
                   product={product} 
-                  size="sm" 
-                  className="w-full mb-2"
+                  className="w-full"
+                  size="default"
                 />
-                <div className="text-xs text-gray-400 mt-2">CROWNUP</div>
               </div>
             </div>
           ))}

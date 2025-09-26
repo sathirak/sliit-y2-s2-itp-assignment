@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, ShoppingBag, FileText, Users, Settings, Search, Crown, Star, Gift } from "lucide-react";
+import { Heart, ShoppingBag, FileText, Users, Settings, Search, Crown, Star, Gift, User } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import Image from 'next/image';
@@ -8,10 +8,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
+import { CATEGORIES } from '@/lib/constants/categories';
 import { useCartStore } from '@/lib/stores/cart.store';
 
 export const Header = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { totalItems } = useCartStore();
   const router = useRouter();
 
@@ -30,7 +31,7 @@ export const Header = () => {
   return (
     <header className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200 shadow-sm">
       {/* Top section with brand */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-4">
         <Link href="/" className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-all duration-300 w-fit group">
           <div className="relative">
             <Image src={BrandLogoImg} alt="Brand Logo" className="w-20 h-auto group-hover:scale-105 transition-transform duration-300" />
@@ -45,73 +46,35 @@ export const Header = () => {
         </Link>
       </div>
 
-      {/* Navigation section */}
-      <div className="px-8 py-4 bg-white border-t border-gray-100">
-        <div className="flex items-center justify-between">
-          <nav className="flex-1">
-            <ul className="flex gap-8 font-semibold text-sm">
-              <li className="cursor-pointer hover:text-yellow-600 hover:scale-105 transition-all duration-300 relative group">
-                <span>HER MAJESTY</span>
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></div>
-              </li>
-              <li className="cursor-pointer hover:text-yellow-600 hover:scale-105 transition-all duration-300 relative group">
-                <span>CROWN DEALS</span>
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></div>
-              </li>
-              <li className="cursor-pointer hover:text-yellow-600 hover:scale-105 transition-all duration-300 relative group">
-                <span>WEEKLY TREASURES</span>
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></div>
-              </li>
-              <li className="cursor-pointer hover:text-yellow-600 hover:scale-105 transition-all duration-300 relative group">
-                <span>OFFICE ROYALTY</span>
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></div>
-              </li>
-              <li className="cursor-pointer hover:text-yellow-600 hover:scale-105 transition-all duration-300 relative group">
-                <span>ACTIVE CROWN</span>
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></div>
-              </li>
-            </ul>
-          </nav>
-
-          <div className="flex items-center gap-6">
-            {user ? (
-              <div className="flex items-center gap-3">
-                <Link href="/my-account">
-                  <span className="text-sm text-gray-700 font-semibold cursor-pointer hover:text-yellow-600 transition-colors duration-300 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                      <Crown size={16} className="text-yellow-600" />
-                    </div>
-                    {user.firstName || user.email}
-                  </span>
+      {/* Navigation and Right Side in one line */}
+      <div className="flex items-center justify-between px-6 py-3">
+        <nav className="flex-1">
+          <ul className="flex gap-6 font-bold text-sm">
+            {CATEGORIES.map((category) => (
+              <li key={category} className="cursor-pointer hover:text-gray-600 transition-colors">
+                <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}`}>
+                  {category.toUpperCase()}
                 </Link>
-                <Button variant="outline" size="sm" onClick={logout} className="hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300">
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <Link href="/sign-in">
-                <Button variant="outline" className="hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-300 transition-all duration-300 flex items-center gap-2">
-                  <Crown size={16} /> SIGN IN
-                </Button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-2">
+              <Link href="/my-account" className="flex items-center gap-2 hover:text-gray-900 transition-colors">
+                <User size={16} className="text-gray-600" />
+                <span className="text-sm text-gray-700 font-bold">
+                  Welcome, {user.firstName || user.email}
+                </span>
               </Link>
-            )}
-
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search royal fashion..."
-                className="w-56 pl-10 pr-4 py-2 border-2 border-gray-200 rounded-full focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 transition-all duration-300"
-              />
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <Search size={16} />
-              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
 
       {/* Action buttons section */}
-      <div className="px-8 py-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-100">
+      <div className="px-6 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-100">
         <div className="flex items-center gap-6">
           <Button variant="outline" size="sm" className="hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-all duration-300 shadow-sm">
             <Heart size={16} className="mr-2" />

@@ -36,7 +36,7 @@ export interface ProductFilterDto {
   maxPrice?: number;
   minQty?: number;
   maxQty?: number;
-  availability?: 'in_stock' | 'out_of_stock';
+  availability?: 'in_stock' | 'low_stock' | 'out_of_stock';
 }
 
 export interface PaginatedResponse<T> {
