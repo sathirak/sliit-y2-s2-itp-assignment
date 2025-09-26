@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { AddToCartButton } from "@/modules/common/AddToCartButton";
 
 interface CategoryPageProps {
   slug: string;
@@ -162,20 +163,11 @@ export const CategoryPage = ({ slug }: CategoryPageProps) => {
                 
                 {/* Action Buttons - Not clickable for navigation */}
                 <div className="p-4 pt-0 w-full">
-                  <div className="flex flex-col gap-2">
-                    <button 
-                      className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition-colors font-medium"
-                      disabled={product.qty === 0}
-                    >
-                      Order Now
-                    </button>
-                    <button 
-                      className="w-full border border-black text-black py-2 px-4 rounded hover:bg-black hover:text-white transition-colors font-medium"
-                      disabled={product.qty === 0}
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
+                                 <AddToCartButton 
+                                    product={product} 
+                                    className="w-full"
+                                    size="default"
+                                  />
                 </div>
               </div>
             ))}

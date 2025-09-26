@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, ShoppingBag, FileText, Users, Settings, Search, Crown, Star, Gift } from "lucide-react";
+import { Heart, ShoppingBag, FileText, Users, Settings, Search, Crown, Star, Gift, User } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import Image from 'next/image';
@@ -31,7 +31,7 @@ export const Header = () => {
   return (
     <header className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200 shadow-sm">
       {/* Top section with brand */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-4">
         <Link href="/" className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-all duration-300 w-fit group">
           <div className="relative">
             <Image src={BrandLogoImg} alt="Brand Logo" className="w-20 h-auto group-hover:scale-105 transition-transform duration-300" />
@@ -47,9 +47,9 @@ export const Header = () => {
       </div>
 
       {/* Navigation and Right Side in one line */}
-      <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center justify-between px-6 py-3">
         <nav className="flex-1">
-          <ul className="flex gap-6 font-bold text-sm mt-2">
+          <ul className="flex gap-6 font-bold text-sm">
             {CATEGORIES.map((category) => (
               <li key={category} className="cursor-pointer hover:text-gray-600 transition-colors">
                 <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}`}>
@@ -62,29 +62,19 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-2">
-              <Link href="/my-account">
-                <span className="text-sm text-gray-700 font-bold cursor-pointer hover:text-gray-900">
+              <Link href="/my-account" className="flex items-center gap-2 hover:text-gray-900 transition-colors">
+                <User size={16} className="text-gray-600" />
+                <span className="text-sm text-gray-700 font-bold">
                   Welcome, {user.firstName || user.email}
                 </span>
               </Link>
-            )}
-
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search royal fashion..."
-                className="w-56 pl-10 pr-4 py-2 border-2 border-gray-200 rounded-full focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 transition-all duration-300"
-              />
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <Search size={16} />
-              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
 
       {/* Action buttons section */}
-      <div className="px-8 py-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-100">
+      <div className="px-6 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-yellow-100">
         <div className="flex items-center gap-6">
           <Button variant="outline" size="sm" className="hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-all duration-300 shadow-sm">
             <Heart size={16} className="mr-2" />

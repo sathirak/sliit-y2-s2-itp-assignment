@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { useProduct } from "@/lib/hooks/useProducts";
 import { Badge } from "@/modules/ui/badge";
+import { AddToCartButton } from "@/modules/common/AddToCartButton";
 
 interface ProductDetailsProps {
   id: string;
@@ -154,19 +155,13 @@ export const ProductDetails = ({ id }: ProductDetailsProps) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3 pt-4">
-            <button 
-              className="w-full bg-black text-white py-4 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold text-lg"
-              disabled={product.qty === 0}
-            >
-              Order Now
-            </button>
-            <button 
-              className="w-full border-2 border-black text-black py-4 px-6 rounded-lg hover:bg-black hover:text-white transition-colors font-semibold text-lg"
-              disabled={product.qty === 0}
-            >
-              Add to Cart
-            </button>
+          <div className="pt-4">
+            <AddToCartButton 
+              product={product} 
+              className="w-full py-4 px-6 text-lg"
+              size="lg"
+              showQuantityControls={true}
+            />
           </div>
 
           {/* Additional Info */}
