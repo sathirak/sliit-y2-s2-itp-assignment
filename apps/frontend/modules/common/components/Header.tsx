@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import BrandLogoImg from '@/modules/assets/images/brand/logo.png';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
-import { CartIcon } from '../CartIcon';
 import { useCartStore } from '@/lib/stores/cart.store';
 
 export const Header = () => {
@@ -16,8 +15,10 @@ export const Header = () => {
   const { totalItems } = useCartStore();
   const router = useRouter();
 
-  // Check if user has admin access (owner, sales_rep, supplier)
-  const hasAdminAccess = user && ['owner', 'sales_rep', 'supplier'].includes(user.roleName);
+  // Check if user has admin access (owner, sales_rep)
+  const hasAdminAccess = user && ['owner', 'sales_rep'].includes(user.roleName);
+  // Check if user is a supplier
+  const isSupplier = user && user.roleName === 'supplier';
 
   const handleCartClick = () => {
     router.push('/cart');
@@ -130,6 +131,14 @@ export const Header = () => {
               <Button variant="outline" size="sm" className="hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 transition-all duration-300 shadow-sm">
                 <Settings size={16} className="mr-2" />
                 <span className="font-semibold">ADMIN</span>
+              </Button>
+            </Link>
+          )}
+          {isSupplier && (
+            <Link href="/supplier/contracts">
+              <Button variant="outline" size="sm" className="hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all duration-300 shadow-sm">
+                <FileText size={16} className="mr-2" />
+                <span className="font-semibold">CONTRACTS</span>
               </Button>
             </Link>
           )}
