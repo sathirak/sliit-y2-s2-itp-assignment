@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
 import { Button } from './button';
 import { Card } from './card';
 import { Badge } from './badge';
@@ -48,34 +48,15 @@ const faqs: FAQ[] = [
   }
 ];
 
-const getAutoResponse = (message: string): string => {
-  const lowerMessage = message.toLowerCase();
-  
-  if (lowerMessage.includes('order') || lowerMessage.includes('track')) {
-    return 'To track your order, please visit the "My Orders" section in your account. If you need further assistance, our customer service team is available 24/7.';
+import { AIService } from '../ai/ai.service';
+
+const getAutoResponse = async (message: string): Promise<string> => {
+  try {
+    return await AIService.generateResponse(message);
+  } catch (error) {
+    console.error('Error getting AI response:', error);
+    return 'I apologize, but I\'m having trouble processing your request. Please try checking our FAQs or contact customer service for assistance.';
   }
-  
-  if (lowerMessage.includes('return') || lowerMessage.includes('refund')) {
-    return 'We have a flexible 30-day return policy. You can initiate a return from your account or contact our support team for assistance.';
-  }
-  
-  if (lowerMessage.includes('shipping') || lowerMessage.includes('delivery')) {
-    return 'We offer standard (3-5 days) and express shipping (1-2 days). Free standard shipping on orders over Rs 5000!';
-  }
-  
-  if (lowerMessage.includes('size') || lowerMessage.includes('fit')) {
-    return 'Please check our detailed size guide available on each product page. Our customer service can help you find the perfect fit!';
-  }
-  
-  if (lowerMessage.includes('payment') || lowerMessage.includes('pay')) {
-    return 'We accept all major credit cards, PayPal, Apple Pay, and Google Pay. Your payment information is always secure with us.';
-  }
-  
-  if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-    return 'Hello! Welcome to CrownUp Clothing Store. How can I help you today? Feel free to check out our FAQs above or ask me anything!';
-  }
-  
-  return 'Thank you for your message! For immediate assistance, please check our FAQs above. For complex inquiries, our customer service team will get back to you within 24 hours.';
 };
 
 export function ChatBubble() {
@@ -100,7 +81,7 @@ export function ChatBubble() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: ChatMessage = {
@@ -114,16 +95,34 @@ export function ChatBubble() {
     setInputValue('');
     setShowFAQs(false);
 
-    // Simulate typing delay for bot response
-    setTimeout(() => {
-      const botResponse: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: getAutoResponse(inputValue),
+    // Show loading state while getting AI response
+    const loadingMessage: ChatMessage = {
+      id: 'loading',
+      text: '',
+      isUser: false,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+
+    try {
+      const aiResponse = await getAutoResponse(inputValue);
+      
+      // Replace loading message with actual response
+      setMessages(prev => prev.filter(msg => msg.id !== 'loading').concat({
+        id: Date.now().toString(),
+        text: aiResponse,
         isUser: false,
         timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+      }));
+    } catch (error) {
+      // Replace loading message with error message
+      setMessages(prev => prev.filter(msg => msg.id !== 'loading').concat({
+        id: Date.now().toString(),
+        text: 'Sorry, I had trouble processing that. Please try again or check our FAQs.',
+        isUser: false,
+        timestamp: new Date()
+      }));
+    }
   };
 
   const handleFAQClick = (faq: FAQ) => {
@@ -242,17 +241,26 @@ export function ChatBubble() {
                         : 'bg-white border border-gray-200 text-gray-900'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed">{message.text}</p>
-                    <p
-                      className={`text-xs mt-2 ${
-                        message.isUser ? 'text-blue-100' : 'text-gray-500'
-                      }`}
-                    >
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
+                    {message.id === 'loading' ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                        <span className="text-sm text-gray-500">CrownUp AI is thinking...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm leading-relaxed">{message.text}</p>
+                        <p
+                          className={`text-xs mt-2 ${
+                            message.isUser ? 'text-blue-100' : 'text-gray-500'
+                          }`}
+                        >
+                          {message.timestamp.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </>
+                    )}
                   </div>
                   {message.isUser && (
                     <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
