@@ -18,8 +18,10 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.17",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.56.1",
+    "ai": "^5.0.56",
     "jsonwebtoken": "^9.0.2"
   }
 }
