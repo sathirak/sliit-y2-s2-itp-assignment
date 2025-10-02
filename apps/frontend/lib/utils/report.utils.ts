@@ -1,7 +1,8 @@
 import { Product } from '../dtos/product';
+import { Contract } from '../services/dtos/contract';
 
 export interface ReportColumn {
-  key: keyof Product | string;
+  key: string;
   header: string;
   formatter?: (value: any) => string;
 }
@@ -107,5 +108,69 @@ export const downloadProductReport = (products: Product[]): void => {
   const csvContent = generateProductReport(products);
   const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
   const filename = `products-report-${timestamp}.csv`;
+  downloadCSV(csvContent, filename);
+};
+
+export const contractReportColumns: ReportColumn[] = [
+  { key: 'title', header: 'Contract Title' },
+  { key: 'description', header: 'Description' },
+  { 
+    key: 'amount', 
+    header: 'Amount (Rs.)',
+    formatter: (value: string) => {
+      const numAmount = parseFloat(value);
+      return numAmount.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      });
+    }
+  },
+  { 
+    key: 'startDate', 
+    header: 'Start Date',
+    formatter: (value: string | Date) => {
+      const date = new Date(value);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+  },
+  { 
+    key: 'endDate', 
+    header: 'End Date',
+    formatter: (value: string | Date) => {
+      const date = new Date(value);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+  },
+  { 
+    key: 'createdAt', 
+    header: 'Created Date',
+    formatter: (value: string | Date) => {
+      const date = new Date(value);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+  },
+  { key: 'ownerId', header: 'Owner ID' }
+];
+
+export const generateContractReport = (contracts: Contract[]): string => {
+  return generateCSV(contracts, contractReportColumns);
+};
+
+export const downloadContractReport = (contracts: Contract[]): void => {
+  const csvContent = generateContractReport(contracts);
+  const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+  const filename = `contracts-report-${timestamp}.csv`;
   downloadCSV(csvContent, filename);
 };

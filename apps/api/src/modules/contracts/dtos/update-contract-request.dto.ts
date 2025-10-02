@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsInt, Min, Max } from 'class-validator';
 
 export class UpdateContractRequestDto {
   @ApiPropertyOptional({
@@ -43,4 +43,16 @@ export class UpdateContractRequestDto {
   @IsOptional()
   @IsString()
   userRole?: string;
+
+  @ApiPropertyOptional({
+    description: 'Rating for the contract request (1-5 stars)',
+    example: 5,
+    minimum: 1,
+    maximum: 5,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  rating?: number;
 }

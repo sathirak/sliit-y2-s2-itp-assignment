@@ -203,6 +203,7 @@ export function SupplierContractView() {
                 requests={myRequests}
                 showAll={false}
                 showActions={false}
+                canRate={false}
               />
             </CardContent>
           </Card>

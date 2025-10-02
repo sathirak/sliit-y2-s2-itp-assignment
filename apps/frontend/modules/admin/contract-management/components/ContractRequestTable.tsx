@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/modules/ui/select";
 import { CheckCircle, XCircle, Calendar, User, MessageSquare, Clock } from "lucide-react";
+import { StarRating, StarDisplay } from "@/modules/ui/star-rating";
 
 interface ContractRequestTableProps {
   requests: ContractRequest[];
@@ -29,8 +30,10 @@ interface ContractRequestTableProps {
   onMarkAsPaid?: (id: string) => void;
   onStatusChange?: (id: string, status: 'pending' | 'ongoing' | 'completed' | 'rejected') => void;
   onPaymentChange?: (id: string, isPaid: boolean) => void;
+  onRatingChange?: (id: string, rating: number) => void;
   showAll: boolean;
   showActions?: boolean;
+  canRate?: boolean; // Whether the current user can rate (admin/owner only)
 }
 
 export function ContractRequestTable({
@@ -39,8 +42,10 @@ export function ContractRequestTable({
   onMarkAsPaid,
   onStatusChange,
   onPaymentChange,
+  onRatingChange,
   showAll,
   showActions = true,
+  canRate = false,
 }: ContractRequestTableProps) {
   const [users, setUsers] = useState<UserDto[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
@@ -138,6 +143,11 @@ export function ContractRequestTable({
     );
   }
 
+  const truncateDescription = (text: string, maxLength: number = 50) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -151,6 +161,7 @@ export function ContractRequestTable({
               <TableHead>Duration</TableHead>
               {showAll && <TableHead>Supplier</TableHead>}
               <TableHead>Comment</TableHead>
+              <TableHead>Rating</TableHead>
               {showActions && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
@@ -161,7 +172,7 @@ export function ContractRequestTable({
                   <div>
                     <div className="font-medium">{request.title}</div>
                     <div className="text-sm text-muted-foreground line-clamp-2">
-                      {request.description}
+                      {truncateDescription(request.description)}
                     </div>
                   </div>
                 </TableCell>
@@ -266,6 +277,21 @@ export function ContractRequestTable({
                   <div className="truncate" title={request.comment}>
                     {request.comment || "No comment"}
                   </div>
+                </TableCell>
+                <TableCell>
+                  {canRate && onRatingChange ? (
+                    <StarRating
+                      rating={request.rating}
+                      onRatingChange={(rating) => onRatingChange(request.id, rating)}
+                      size="sm"
+                    />
+                  ) : (
+                    <StarDisplay
+                      rating={request.rating}
+                      size="sm"
+                      showValue={true}
+                    />
+                  )}
                 </TableCell>
                 {showActions && (
                   <TableCell className="text-right">

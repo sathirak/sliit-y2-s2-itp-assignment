@@ -60,6 +60,17 @@ export class ContractController {
     return this.contractService.findAll(filters, userId, userRole as UserRole);
   }
 
+  @Get('all')
+  @ApiOperation({ summary: 'Get all contracts without pagination (for reports)' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all contracts',
+    type: [ContractDto],
+  })
+  findAllSimple(@Query('userId') userId: string, @Query('userRole') userRole: string) {
+    return this.contractService.findAllSimple(userId, userRole as UserRole);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a contract by ID' })
   @ApiParam({ name: 'id', description: 'Contract ID' })
@@ -176,5 +187,25 @@ export class ContractController {
   @ApiResponse({ status: 403, description: 'Forbidden - Only owners can mark as paid' })
   markContractRequestAsPaid(@Param('id') id: string, @Query('userId') userId: string, @Query('userRole') userRole: string) {
     return this.contractService.markContractRequestAsPaid(id, userId, userRole as UserRole);
+  }
+
+  @Patch('requests/:id/rating')
+  @ApiOperation({ summary: 'Rate a contract request (Owner only)' })
+  @ApiParam({ name: 'id', description: 'Contract request ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Contract request rated successfully',
+    type: ContractRequestDto,
+  })
+  @ApiResponse({ status: 404, description: 'Contract request not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Only owners can rate contract requests' })
+  @ApiResponse({ status: 400, description: 'Bad request - Rating must be between 1 and 5' })
+  updateContractRequestRating(
+    @Param('id') id: string, 
+    @Body('rating') rating: number, 
+    @Query('userId') userId: string, 
+    @Query('userRole') userRole: string
+  ) {
+    return this.contractService.updateContractRequestRating(id, rating, userId, userRole as UserRole);
   }
 }

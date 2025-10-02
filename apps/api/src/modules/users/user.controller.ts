@@ -11,22 +11,22 @@ export class UserController {
 
   @Get()
   async getAllUsers(@CurrentUser() currentUser: UserDto): Promise<UserDto[]> {
-    if (currentUser && currentUser.roleName === 'owner') {
+    if (currentUser && (currentUser.roleName === 'owner' || currentUser.roleName === 'supplier')) {
       return this.userService.getAllUsers();
     } else {
-      throw new ForbiddenException('Only owners can access all users');
+      throw new ForbiddenException('Only owners and suppliers can access all users');
     }
   }
 
   @Get('search')
   async searchUsers(@Query('q') searchQuery: string, @CurrentUser() currentUser: UserDto): Promise<UserDto[]> {
-    if (currentUser && currentUser.roleName === 'owner') {
+    if (currentUser && (currentUser.roleName === 'owner' || currentUser.roleName === 'supplier')) {
       if (!searchQuery) {
         return [];
       }
       return this.userService.searchUsers(searchQuery);
     } else {
-      throw new ForbiddenException('Only owners can search users');
+      throw new ForbiddenException('Only owners and suppliers can search users');
     }
   }
 

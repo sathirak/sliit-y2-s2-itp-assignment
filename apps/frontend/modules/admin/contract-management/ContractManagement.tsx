@@ -11,7 +11,8 @@ import { ContractRequestTable } from "./components/ContractRequestTable";
 import { Button } from "@/modules/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/modules/ui/tabs";
-import { Plus, FileText, Users } from "lucide-react";
+import { Plus, FileText, Users, Download } from "lucide-react";
+import { downloadContractReport } from "@/lib/utils/report.utils";
 
 export function ContractManagement() {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -31,6 +32,7 @@ export function ContractManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
   const [activeTab, setActiveTab] = useState("contracts");
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   // Get current user from auth hook
   const { user, isLoading: authLoading } = useAuth();
@@ -206,6 +208,17 @@ export function ContractManagement() {
     }
   };
 
+  const handleRatingChange = async (id: string, rating: number) => {
+    if (!currentUser) return;
+    
+    try {
+      await contractService.updateContractRequestRating(id, rating, currentUser.id, currentUser.role);
+      await fetchContractRequests();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update contract request rating");
+    }
+  };
+
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setEditingContract(null);
@@ -235,6 +248,20 @@ export function ContractManagement() {
     setFilters(prev => ({ ...prev, page }));
   };
 
+  const handleDownloadReport = async () => {
+    if (!currentUser) return;
+    
+    setDownloadingReport(true);
+    try {
+      const allContracts = await contractService.getAllContracts(currentUser.id, currentUser.role);
+      downloadContractReport(allContracts);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to download report");
+    } finally {
+      setDownloadingReport(false);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -247,10 +274,25 @@ export function ContractManagement() {
             </p>
           </div>
         </div>
-        <Button onClick={handleCreateContract} className="flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Create Contract</span>
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            onClick={handleDownloadReport}
+            disabled={downloadingReport}
+            className="flex items-center space-x-2"
+          >
+            {downloadingReport ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            <span>{downloadingReport ? 'Downloading...' : 'Download Report'}</span>
+          </Button>
+          <Button onClick={handleCreateContract} className="flex items-center space-x-2">
+            <Plus className="h-4 w-4" />
+            <span>Create Contract</span>
+          </Button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -314,7 +356,9 @@ export function ContractManagement() {
                   handleStatusChange(id, status as "pending" | "ongoing" | "completed");
                 }}
                 onPaymentChange={handlePaymentChange}
+                onRatingChange={handleRatingChange}
                 showAll={true}
+                canRate={currentUser.role === UserRole.OWNER}
               />
             </CardContent>
           </Card>
