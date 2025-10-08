@@ -256,6 +256,90 @@ export const generateContractPDF = (contracts: Contract[]): void => {
   doc.save(filename);
 };
 
+// PDF Generation Functions for Products
+export const generateProductPDF = (products: Product[]): void => {
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(20);
+  doc.text('Product Management Report', 14, 22);
+  
+  // Add generation date
+  doc.setFontSize(10);
+  doc.text(`Generated on: ${new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })}`, 14, 30);
+  
+  // Add summary
+  doc.setFontSize(12);
+  doc.text(`Total Products: ${products.length}`, 14, 40);
+  
+  // Add table headers
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  let yPosition = 60;
+  
+  // Headers
+  doc.text('Product Name', 14, yPosition);
+  doc.text('Size', 60, yPosition);
+  doc.text('Color', 80, yPosition);
+  doc.text('Quantity', 100, yPosition);
+  doc.text('Price (Rs.)', 120, yPosition);
+  doc.text('Stock Status', 150, yPosition);
+  doc.text('Created Date', 180, yPosition);
+  
+  yPosition += 10;
+  
+  // Add a line under headers
+  doc.line(14, yPosition - 5, 200, yPosition - 5);
+  
+  // Add product data
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  
+  products.forEach((product, index) => {
+    // Check if we need a new page
+    if (yPosition > 280) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    
+    // Product data
+    doc.text(product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name, 14, yPosition);
+    doc.text(product.size || 'N/A', 60, yPosition);
+    doc.text(product.color || 'N/A', 80, yPosition);
+    doc.text(product.qty.toString(), 100, yPosition);
+    doc.text(formatCurrency(product.price), 120, yPosition);
+    doc.text(product.qty > 0 ? 'In Stock' : 'Out of Stock', 150, yPosition);
+    doc.text(formatDate(product.created_at), 180, yPosition);
+    
+    yPosition += 8;
+    
+    // Add separator line every 5 rows
+    if ((index + 1) % 5 === 0) {
+      doc.line(14, yPosition - 2, 200, yPosition - 2);
+      yPosition += 3;
+    }
+  });
+  
+  // Add footer
+  const pageCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 30, doc.internal.pageSize.height - 10);
+  }
+  
+  // Download the PDF
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `products-report-${timestamp}.pdf`;
+  doc.save(filename);
+};
+
 // Helper functions for formatting
 const formatCurrency = (amount: string): string => {
   const numAmount = parseFloat(amount);

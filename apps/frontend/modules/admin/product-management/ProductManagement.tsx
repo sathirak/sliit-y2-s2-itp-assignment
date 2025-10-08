@@ -9,7 +9,7 @@ import { ProductDialog } from "./components/ProductDialog";
 import { Button } from "@/modules/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { Plus, Package, Download } from "lucide-react";
-import { downloadProductReport } from "@/lib/utils/report.utils";
+import { generateProductPDF } from "@/lib/utils/report.utils";
 
 export function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -107,7 +107,7 @@ export function ProductManagement() {
     setDownloadingReport(true);
     try {
       const allProducts = await productService.getAllProducts();
-      downloadProductReport(allProducts);
+      generateProductPDF(allProducts);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to download report");
     } finally {
@@ -139,7 +139,7 @@ export function ProductManagement() {
             ) : (
               <Download className="h-4 w-4" />
             )}
-            <span>{downloadingReport ? 'Downloading...' : 'Download Report'}</span>
+            <span>{downloadingReport ? 'Generating PDF...' : 'Download PDF Report'}</span>
           </Button>
           <Button onClick={handleCreateProduct} className="flex items-center space-x-2">
             <Plus className="h-4 w-4" />
