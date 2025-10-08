@@ -314,6 +314,24 @@ export class ContractService {
       throw new ForbiddenException('Rating must be between 1 and 5');
     }
 
+    // First, check if the contract request exists and get its current status
+    const existingRequest = await this.db.query.contractRequests.findFirst({
+      where: and(
+        eq(contractRequests.id, id), 
+        eq(contractRequests.deleted, false), 
+        eq(contractRequests.ownerId, userId)
+      )
+    });
+
+    if (!existingRequest) {
+      throw new NotFoundException(`Contract request with ID ${id} not found`);
+    }
+
+    // Prevent rating rejected contracts
+    if (existingRequest.status === 'rejected') {
+      throw new ForbiddenException('Cannot rate rejected contract requests');
+    }
+
     const [contractRequest] = await this.db.update(contractRequests)
       .set({ 
         rating,
@@ -321,10 +339,6 @@ export class ContractService {
       })
       .where(and(eq(contractRequests.id, id), eq(contractRequests.deleted, false), eq(contractRequests.ownerId, userId)))
       .returning();
-
-    if (!contractRequest) {
-      throw new NotFoundException(`Contract request with ID ${id} not found`);
-    }
 
     return contractRequest;
   }

@@ -279,18 +279,25 @@ export function ContractRequestTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  {canRate && onRatingChange ? (
+                  {canRate && onRatingChange && request.status !== 'rejected' ? (
                     <StarRating
                       rating={request.rating}
                       onRatingChange={(rating) => onRatingChange(request.id, rating)}
                       size="sm"
                     />
                   ) : (
-                    <StarDisplay
-                      rating={request.rating}
-                      size="sm"
-                      showValue={true}
-                    />
+                    <div className="flex items-center space-x-1">
+                      <StarDisplay
+                        rating={request.rating}
+                        size="sm"
+                        showValue={true}
+                      />
+                      {request.status === 'rejected' && canRate && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Cannot rate rejected)
+                        </span>
+                      )}
+                    </div>
                   )}
                 </TableCell>
                 {showActions && (

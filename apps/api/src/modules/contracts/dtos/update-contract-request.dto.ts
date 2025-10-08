@@ -45,7 +45,7 @@ export class UpdateContractRequestDto {
   userRole?: string;
 
   @ApiPropertyOptional({
-    description: 'Rating for the contract request (1-5 stars)',
+    description: 'Rating for the contract request (1-5 stars). Cannot rate rejected contracts.',
     example: 5,
     minimum: 1,
     maximum: 5,

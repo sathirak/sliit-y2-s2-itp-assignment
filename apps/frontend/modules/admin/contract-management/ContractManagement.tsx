@@ -12,7 +12,7 @@ import { Button } from "@/modules/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/modules/ui/tabs";
 import { Plus, FileText, Users, Download } from "lucide-react";
-import { downloadContractReport } from "@/lib/utils/report.utils";
+import { generateContractPDF } from "@/lib/utils/report.utils";
 
 export function ContractManagement() {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -254,7 +254,7 @@ export function ContractManagement() {
     setDownloadingReport(true);
     try {
       const allContracts = await contractService.getAllContracts(currentUser.id, currentUser.role);
-      downloadContractReport(allContracts);
+      generateContractPDF(allContracts);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to download report");
     } finally {
@@ -286,7 +286,7 @@ export function ContractManagement() {
             ) : (
               <Download className="h-4 w-4" />
             )}
-            <span>{downloadingReport ? 'Downloading...' : 'Download Report'}</span>
+            <span>{downloadingReport ? 'Generating PDF...' : 'Download PDF Report'}</span>
           </Button>
           <Button onClick={handleCreateContract} className="flex items-center space-x-2">
             <Plus className="h-4 w-4" />

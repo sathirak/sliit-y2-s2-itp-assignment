@@ -1,5 +1,6 @@
 import { Product } from '../dtos/product';
 import { Contract } from '../services/dtos/contract';
+import jsPDF from 'jspdf';
 
 export interface ReportColumn {
   key: string;
@@ -173,4 +174,102 @@ export const downloadContractReport = (contracts: Contract[]): void => {
   const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
   const filename = `contracts-report-${timestamp}.csv`;
   downloadCSV(csvContent, filename);
+};
+
+// PDF Generation Functions
+export const generateContractPDF = (contracts: Contract[]): void => {
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(20);
+  doc.text('Contract Management Report', 14, 22);
+  
+  // Add generation date
+  doc.setFontSize(10);
+  doc.text(`Generated on: ${new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })}`, 14, 30);
+  
+  // Add summary
+  doc.setFontSize(12);
+  doc.text(`Total Contracts: ${contracts.length}`, 14, 40);
+  
+  // Add table headers
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  let yPosition = 60;
+  
+  // Headers
+  doc.text('Title', 14, yPosition);
+  doc.text('Amount (Rs.)', 80, yPosition);
+  doc.text('Start Date', 120, yPosition);
+  doc.text('End Date', 150, yPosition);
+  doc.text('Created Date', 180, yPosition);
+  
+  yPosition += 10;
+  
+  // Add a line under headers
+  doc.line(14, yPosition - 5, 200, yPosition - 5);
+  
+  // Add contract data
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  
+  contracts.forEach((contract, index) => {
+    // Check if we need a new page
+    if (yPosition > 280) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    
+    // Contract data
+    doc.text(contract.title.length > 30 ? contract.title.substring(0, 30) + '...' : contract.title, 14, yPosition);
+    doc.text(formatCurrency(contract.amount), 80, yPosition);
+    doc.text(formatDate(contract.startDate), 120, yPosition);
+    doc.text(formatDate(contract.endDate), 150, yPosition);
+    doc.text(formatDate(contract.createdAt), 180, yPosition);
+    
+    yPosition += 8;
+    
+    // Add separator line every 5 rows
+    if ((index + 1) % 5 === 0) {
+      doc.line(14, yPosition - 2, 200, yPosition - 2);
+      yPosition += 3;
+    }
+  });
+  
+  // Add footer
+  const pageCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 30, doc.internal.pageSize.height - 10);
+  }
+  
+  // Download the PDF
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `contracts-report-${timestamp}.pdf`;
+  doc.save(filename);
+};
+
+// Helper functions for formatting
+const formatCurrency = (amount: string): string => {
+  const numAmount = parseFloat(amount);
+  return numAmount.toLocaleString('en-US', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  });
+};
+
+const formatDate = (date: string | Date): string => {
+  const dateObj = new Date(date);
+  return dateObj.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 };

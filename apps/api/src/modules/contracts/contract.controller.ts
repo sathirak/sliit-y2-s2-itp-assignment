@@ -190,7 +190,7 @@ export class ContractController {
   }
 
   @Patch('requests/:id/rating')
-  @ApiOperation({ summary: 'Rate a contract request (Owner only)' })
+  @ApiOperation({ summary: 'Rate a contract request (Owner only, cannot rate rejected contracts)' })
   @ApiParam({ name: 'id', description: 'Contract request ID' })
   @ApiResponse({
     status: 200,
@@ -198,7 +198,7 @@ export class ContractController {
     type: ContractRequestDto,
   })
   @ApiResponse({ status: 404, description: 'Contract request not found' })
-  @ApiResponse({ status: 403, description: 'Forbidden - Only owners can rate contract requests' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Only owners can rate contract requests, or cannot rate rejected contracts' })
   @ApiResponse({ status: 400, description: 'Bad request - Rating must be between 1 and 5' })
   updateContractRequestRating(
     @Param('id') id: string, 
