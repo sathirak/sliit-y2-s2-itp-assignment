@@ -66,6 +66,10 @@ class ContractService {
     await apiPrivateClient.delete(`contracts/${id}?userId=${userId}&userRole=${userRole}`);
   }
 
+  async getAllContracts(userId: string, userRole: UserRole): Promise<Contract[]> {
+    return apiPrivateClient.get(`contracts/all?userId=${userId}&userRole=${userRole}`).json<Contract[]>();
+  }
+
   // Contract Request operations - Main workflow
   async getAllContractRequests(userId: string, userRole: UserRole): Promise<ContractRequest[]> {
     return apiPrivateClient.get(`contracts/requests/all?userId=${userId}&userRole=${userRole}`).json<ContractRequest[]>();
@@ -93,6 +97,12 @@ class ContractService {
 
   async markContractRequestAsPaid(id: string, userId: string, userRole: UserRole): Promise<ContractRequest> {
     return apiPrivateClient.patch(`contracts/requests/${id}/mark-paid?userId=${userId}&userRole=${userRole}`).json<ContractRequest>();
+  }
+
+  async updateContractRequestRating(id: string, rating: number, userId: string, userRole: UserRole): Promise<ContractRequest> {
+    return apiPrivateClient.patch(`contracts/requests/${id}/rating?userId=${userId}&userRole=${userRole}`, {
+      json: { rating }
+    }).json<ContractRequest>();
   }
 }
 

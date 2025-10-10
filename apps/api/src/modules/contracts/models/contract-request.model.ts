@@ -1,4 +1,4 @@
-import { boolean, pgTable, text, timestamp, uuid, decimal, date } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp, uuid, decimal, date, integer } from 'drizzle-orm/pg-core';
 import { usersTable } from '../../users/models/user.model';
 import { relations } from 'drizzle-orm';
 
@@ -16,6 +16,7 @@ export const contractRequests = pgTable('contract_request', {
   supplierId: uuid('supplier_id').notNull().references(() => usersTable.id),
   ownerApproved: boolean('owner_approved').notNull().default(false),
   ownerApprovedAt: timestamp('owner_approved_at', { withTimezone: true }),
+  rating: integer('rating'), // 1-5 star rating from admin
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),

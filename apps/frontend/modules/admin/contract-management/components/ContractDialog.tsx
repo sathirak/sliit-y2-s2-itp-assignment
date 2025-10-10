@@ -93,7 +93,8 @@ export function ContractDialog({
         };
         await contractService.updateContract(contract.id, updateData, userId, userRole);
       } else {
-        await contractService.createContract(formData, userId, userRole);
+        const createData: CreateContractDto = { ...formData, userId, userRole };
+        await contractService.createContract(createData, userId, userRole);
       }
       onSaved();
     } catch (err) {

@@ -24,6 +24,7 @@ export interface ContractRequest {
   supplierId: string;
   ownerApproved: boolean;
   ownerApprovedAt: Date | null;
+  rating?: number; // 1-5 star rating from admin
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,6 +56,7 @@ export interface UpdateContractRequestDto {
   status?: 'pending' | 'ongoing' | 'completed' | 'rejected';
   comment?: string;
   isPaid?: boolean;
+  rating?: number; // 1-5 star rating from admin
 }
 
 export interface ContractFilterDto {

@@ -304,4 +304,64 @@ export class ContractService {
 
     return contractRequest;
   }
+
+  async updateContractRequestRating(id: string, rating: number, userId: string, userRole: UserRole) {
+    if (userRole !== UserRole.OWNER) {
+      throw new ForbiddenException('Only owners can rate contract requests');
+    }
+
+    if (rating < 1 || rating > 5) {
+      throw new ForbiddenException('Rating must be between 1 and 5');
+    }
+
+    // First, check if the contract request exists and get its current status
+    const existingRequest = await this.db.query.contractRequests.findFirst({
+      where: and(
+        eq(contractRequests.id, id), 
+        eq(contractRequests.deleted, false), 
+        eq(contractRequests.ownerId, userId)
+      )
+    });
+
+    if (!existingRequest) {
+      throw new NotFoundException(`Contract request with ID ${id} not found`);
+    }
+
+    // Prevent rating rejected contracts
+    if (existingRequest.status === 'rejected') {
+      throw new ForbiddenException('Cannot rate rejected contract requests');
+    }
+
+    const [contractRequest] = await this.db.update(contractRequests)
+      .set({ 
+        rating,
+        updatedAt: new Date() 
+      })
+      .where(and(eq(contractRequests.id, id), eq(contractRequests.deleted, false), eq(contractRequests.ownerId, userId)))
+      .returning();
+
+    return contractRequest;
+  }
+
+  // Helper method to get all contracts without pagination (for reports)
+  async findAllSimple(userId: string, userRole: UserRole) {
+    // Build where clause with role-based filtering
+    const additionalFilters: any[] = [eq(contracts.deleted, false)];
+
+    // Role-based access control
+    if (userRole === UserRole.OWNER) {
+      // Owners can only see contracts where they are the owner
+      additionalFilters.push(eq(contracts.ownerId, userId));
+    }
+    // Suppliers can see all contracts (as opportunities to bid on)
+    // No additional filters needed for suppliers - they see all available contracts
+
+    const whereClause = and(...additionalFilters);
+
+    return await this.db
+      .select()
+      .from(contracts)
+      .where(whereClause)
+      .orderBy(sql`${contracts.createdAt} DESC`);
+  }
 }

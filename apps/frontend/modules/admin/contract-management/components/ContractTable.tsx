@@ -65,6 +65,11 @@ export function ContractTable({
     );
   }
 
+  const truncateDescription = (text: string, maxLength: number = 50) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -84,7 +89,7 @@ export function ContractTable({
                   <div>
                     <div className="font-medium">{contract.title}</div>
                     <div className="text-sm text-muted-foreground line-clamp-2">
-                      {contract.description}
+                    {truncateDescription(contract.description)}
                     </div>
                   </div>
                 </TableCell>
