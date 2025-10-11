@@ -15,7 +15,8 @@ import {
   CreditCard,
   TrendingUp,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Printer
 } from 'lucide-react';
 import { Input } from '@/modules/ui/input';
 import { OrdersTable } from '@/modules/admin/billing/OrdersTable';
@@ -70,6 +71,11 @@ export default function BillingPage() {
     window.location.reload();
   };
 
+  // Handle print functionality
+  const handlePrint = () => {
+    window.print();
+  };
+
   // Row click handlers for detail dialogs
   const handleOrderRowClick = (order: OrderDto) => {
     setSelectedOrderForDetail(order);
@@ -108,10 +114,16 @@ export default function BillingPage() {
             Manage orders, invoices, and payments for your store
           </p>
         </div>
-        <Button onClick={handleRefresh} variant="outline" size="sm">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button onClick={handlePrint} variant="outline" size="sm">
+            <Printer className="w-4 h-4 mr-2" />
+            Print
+          </Button>
+          <Button onClick={handleRefresh} variant="outline" size="sm">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Statistics Cards */}
