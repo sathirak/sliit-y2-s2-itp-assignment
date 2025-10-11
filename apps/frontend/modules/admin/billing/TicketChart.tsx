@@ -1,12 +1,19 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/modules/ui/card";
+import { Button } from "@/modules/ui/button";
 import { useTickets } from "@/lib/hooks/useTickets";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TicketStatus } from "@/lib/dtos/ticket";
+import { Printer } from "lucide-react";
 
 export function TicketChart() {
   const { tickets, isLoading } = useTickets({ status: TicketStatus.CLOSED });
+
+  // Handle print functionality
+  const handlePrint = () => {
+    window.print();
+  };
 
   // Process tickets to group by date
   const processedData = tickets.reduce((acc, ticket) => {
@@ -47,6 +54,15 @@ export function TicketChart() {
             Showing {tickets.length} closed tickets over time
           </p>
         </div>
+        <Button
+          onClick={handlePrint}
+          variant="outline"
+          size="sm"
+          className="flex items-center space-x-2"
+        >
+          <Printer className="h-4 w-4" />
+          <span>Print</span>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="h-[200px]">

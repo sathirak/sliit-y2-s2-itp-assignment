@@ -6,7 +6,7 @@ import { Input } from "@/modules/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { useUsers, useSearchUsers, useUserMutations } from "@/lib/hooks/useUsers";
 import type { UserDto } from "@/lib/dtos/user";
-import { Loader2, UserPlus, Search, Trash2, Edit } from "lucide-react";
+import { Loader2, UserPlus, Search, Trash2, Edit, Printer } from "lucide-react";
 import { AddUserModal, EditUserModal } from "./index";
 import type { CreateUserFormData, EditUserFormData } from "./index";
 import { UserRegistrationChart } from "./UserRegistrationChart";
@@ -27,6 +27,11 @@ export default function Users() {
 	// Determine which users to display
 	const displayUsers = search.trim().length > 0 ? searchResults : allUsers;
 	const isLoading = search.trim().length > 0 ? searchLoading : loadingUsers;
+
+	// Handle print functionality
+	function handlePrint() {
+		window.print();
+	}
 
 	async function handleCreateUser(formData: CreateUserFormData) {
 		setIsSubmitting(true);
@@ -85,13 +90,23 @@ export default function Users() {
 						</p>
 					</div>
 				</div>
-				<Button
-					onClick={() => setShowAdd(true)}
-					className="flex items-center space-x-2"
-				>
-					<UserPlus className="h-4 w-4" />
-					<span>Add User</span>
-				</Button>
+				<div className="flex items-center space-x-2">
+					<Button
+						onClick={() => setShowAdd(true)}
+						className="flex items-center space-x-2"
+					>
+						<UserPlus className="h-4 w-4" />
+						<span>Add User</span>
+					</Button>
+					<Button
+						onClick={handlePrint}
+						variant="outline"
+						className="flex items-center space-x-2"
+					>
+						<Printer className="h-4 w-4" />
+						<span>Print</span>
+					</Button>
+				</div>
 			</div>
 
 			<AddUserModal

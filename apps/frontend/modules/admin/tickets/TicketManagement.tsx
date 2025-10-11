@@ -9,7 +9,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/modules/ui/tabs";
 import { Badge } from "@/modules/ui/badge";
-import { MessageSquare, Plus, Search, Edit, Trash2 } from "lucide-react";
+import { MessageSquare, Plus, Search, Edit, Trash2, Printer } from "lucide-react";
 import { TicketDialog } from '@/modules/admin/tickets/components/TicketDialog';
 
 export function TicketManagement() {
@@ -27,6 +27,11 @@ export function TicketManagement() {
 
   const { tickets, isLoading, isError, error: swrError } = useTickets(filters);
   const { updateTicket, deleteTicket } = useTicketMutations();
+
+  // Handle print functionality
+  const handlePrint = () => {
+    window.print();
+  };
 
   // Count tickets by status for tab badges
   const { tickets: allTickets } = useTickets();
@@ -101,6 +106,14 @@ export function TicketManagement() {
             </p>
           </div>
         </div>
+        <Button
+          onClick={handlePrint}
+          variant="outline"
+          className="flex items-center space-x-2"
+        >
+          <Printer className="h-4 w-4" />
+          <span>Print</span>
+        </Button>
       </div>
 
       {/* Ticket Chart */}

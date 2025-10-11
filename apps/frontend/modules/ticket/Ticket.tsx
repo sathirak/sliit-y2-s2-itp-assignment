@@ -2,12 +2,18 @@
 import React, { useState } from 'react';
 import { createTicket } from '@/lib/services/ticket';
 import { Button } from '@/modules/ui/button';
+import { Printer } from 'lucide-react';
 
 export default function ContactUs() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Handle print functionality
+  const handlePrint = () => {
+    window.print();
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value });
@@ -34,7 +40,18 @@ export default function ContactUs() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Contact Form */}
         <div className="space-y-8">
-          <h2 className="text-3xl font-semibold text-gray-900">Contact Us</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-semibold text-gray-900">Contact Us</h2>
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <Printer className="h-4 w-4" />
+              <span>Print</span>
+            </Button>
+          </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Name Field */}
             <div>
