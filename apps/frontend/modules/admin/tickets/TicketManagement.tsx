@@ -5,6 +5,7 @@ import { Ticket, TicketStatus, TicketFilterDto } from "@/lib/dtos/ticket";
 import { useTickets, useTicketMutations } from "@/lib/hooks/useTickets";
 import { Button } from "@/modules/ui/button";
 import { Input } from "@/modules/ui/input";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/modules/ui/tabs";
 import { Badge } from "@/modules/ui/badge";
@@ -102,6 +103,83 @@ export function TicketManagement() {
         </div>
       </div>
 
+      {/* Ticket Chart */}
+      <div className="mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Ticket Analytics</CardTitle>
+            <CardDescription>Overview of ticket trends and status</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Active Tickets</CardTitle>
+                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{statusCounts.all}</div>
+                  <div className="flex space-x-2 mt-2">
+                    <Badge variant="destructive">{statusCounts[TicketStatus.OPEN]} Open</Badge>
+                    <Badge variant="secondary">{statusCounts[TicketStatus.IN_PROGRESS]} In Progress</Badge>
+                    <Badge>{statusCounts[TicketStatus.CLOSED]} Closed</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="relative">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <div>
+                    <CardTitle className="text-sm font-medium">Ticket Resolution Rate</CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      {((statusCounts[TicketStatus.CLOSED] / (statusCounts.all || 1)) * 100).toFixed(1)}% resolved
+                    </p>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[100px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={[
+                        ...allTickets
+                          .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+                          .reduce((acc, ticket) => {
+                            const date = new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            const existing = acc.find(item => item.date === date);
+                            if (existing) {
+                              existing.total++;
+                              if (ticket.status === TicketStatus.CLOSED) existing.closed++;
+                            } else {
+                              acc.push({ 
+                                date, 
+                                total: 1, 
+                                closed: ticket.status === TicketStatus.CLOSED ? 1 : 0 
+                              });
+                            }
+                            return acc;
+                          }, [] as { date: string; total: number; closed: number }[])
+                      ]}>
+                        <XAxis dataKey="date" stroke="#888888" fontSize={12} tickLine={false} />
+                        <YAxis stroke="#888888" fontSize={12} tickLine={false} allowDecimals={false} />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '6px',
+                          }}
+                        />
+                        <Line type="monotone" dataKey="total" stroke="#94a3b8" strokeWidth={2} dot={false} />
+                        <Line type="monotone" dataKey="closed" stroke="#10b981" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tickets Table Card */}
       <Card>
         <CardHeader>
           <CardTitle>Support Tickets</CardTitle>
