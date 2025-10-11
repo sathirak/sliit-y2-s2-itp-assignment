@@ -156,9 +156,9 @@ export function ChatBubble() {
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
+          className="w-14 h-14 rounded-full bg-black hover:bg-black shadow-lg"
           size="sm"
-        >
+>
           {isOpen ? (
             <X className="w-6 h-6" />
           ) : (
