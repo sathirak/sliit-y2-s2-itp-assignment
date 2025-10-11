@@ -19,8 +19,12 @@ import {
 import { signUp as signUpAction } from "./actions";
 
 const signUpSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  firstName: z.string()
+    .min(1, "First name is required")
+    .regex(/^[a-zA-Z\s]+$/, "First name can only contain letters and spaces"),
+  lastName: z.string()
+    .min(1, "Last name is required")
+    .regex(/^[a-zA-Z\s]+$/, "Last name can only contain letters and spaces"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
