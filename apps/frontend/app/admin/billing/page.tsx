@@ -31,6 +31,7 @@ import { OrderDetailDialog } from '@/modules/admin/billing/OrderDetailDialog';
 import { InvoiceDetailDialog } from '@/modules/admin/billing/InvoiceDetailDialog';
 import { PaymentDetailDialog } from '@/modules/admin/billing/PaymentDetailDialog';
 import { RevenueChart } from '@/modules/admin/billing/RevenueChart';
+import { TicketChart } from '@/modules/admin/billing/TicketChart';
 import type { OrderDto, InvoiceWithRelationsDto, PaymentWithRelationsDto } from '@/lib/dtos/order';
 
 export default function BillingPage() {
@@ -172,8 +173,11 @@ export default function BillingPage() {
         </Card>
       </div>
 
-      {/* Revenue Chart */}
-      <RevenueChart />
+      {/* Charts */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <RevenueChart />
+        <TicketChart />
+      </div>
 
       {/* Main Content */}
       <Card>
