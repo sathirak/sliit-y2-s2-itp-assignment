@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Mail, Globe } from "lucide-react";
+import Link from "next/link";
 
 export const Footer = () => {
   return (
@@ -22,7 +23,7 @@ export const Footer = () => {
         <div className="flex-1">
           <div className="font-bold text-lg tracking-widest mb-4">CUSTOMER SERVICE</div>
           <ul className="space-y-2 text-gray-700">
-            <li>Contact Us</li>
+            <li><Link href="/ticket" className="hover:underline">Contact Us</Link></li>
             <li>Delivery</li>
             <li>Returns and Exchanges</li>
             <li>Size Guide</li>

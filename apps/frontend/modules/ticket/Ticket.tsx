@@ -42,15 +42,6 @@ export default function ContactUs() {
         <div className="space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-semibold text-gray-900">Contact Us</h2>
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              size="sm"
-              className="flex items-center space-x-2"
-            >
-              <Printer className="h-4 w-4" />
-              <span>Print</span>
-            </Button>
           </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Name Field */}
