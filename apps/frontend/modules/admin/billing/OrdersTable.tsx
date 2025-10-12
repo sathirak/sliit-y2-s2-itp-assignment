@@ -78,12 +78,14 @@ export function OrdersTable({ orders, isLoading, searchTerm, onRowClick }: Order
     (order.customerId && order.customerId.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleEditOrder = (order: OrderDto) => {
+  const handleEditOrder = (order: OrderDto, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click event
     setSelectedOrder(order);
     setIsEditDialogOpen(true);
   };
 
-  const handleDeleteOrder = (order: OrderDto) => {
+  const handleDeleteOrder = (order: OrderDto, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click event
     setOrderToDelete(order);
     setIsDeleteDialogOpen(true);
   };
@@ -167,7 +169,7 @@ export function OrdersTable({ orders, isLoading, searchTerm, onRowClick }: Order
                 <TableCell>
                   {format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
@@ -176,11 +178,11 @@ export function OrdersTable({ orders, isLoading, searchTerm, onRowClick }: Order
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEditOrder(order)}>
+                      <DropdownMenuItem onClick={(e) => handleEditOrder(order, e)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteOrder(order)}>
+                      <DropdownMenuItem onClick={(e) => handleDeleteOrder(order, e)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>

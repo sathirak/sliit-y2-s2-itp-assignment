@@ -68,12 +68,14 @@ export function InvoicesTable({ invoices, isLoading, searchTerm, onRowClick }: I
     invoice.amount.toString().includes(searchTerm)
   );
 
-  const handleEditInvoice = (invoice: InvoiceWithRelationsDto) => {
+  const handleEditInvoice = (invoice: InvoiceWithRelationsDto, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click event
     setSelectedInvoice(invoice);
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdateStatus = (invoice: InvoiceWithRelationsDto) => {
+  const handleUpdateStatus = (invoice: InvoiceWithRelationsDto, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click event
     setSelectedInvoice(invoice);
     setIsStatusDialogOpen(true);
   };
@@ -159,7 +161,7 @@ export function InvoicesTable({ invoices, isLoading, searchTerm, onRowClick }: I
                     <span className="text-gray-400">No due date</span>
                   )}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
@@ -168,11 +170,11 @@ export function InvoicesTable({ invoices, isLoading, searchTerm, onRowClick }: I
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEditInvoice(invoice)}>
+                      <DropdownMenuItem onClick={(e) => handleEditInvoice(invoice, e)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleUpdateStatus(invoice)}>
+                      <DropdownMenuItem onClick={(e) => handleUpdateStatus(invoice, e)}>
                         <Eye className="mr-2 h-4 w-4" />
                         Update Status
                       </DropdownMenuItem>

@@ -58,12 +58,15 @@ export function InvoiceStatusDialog({ open, onOpenChange, invoice, onClose }: In
 
   // Reset form when dialog opens/closes or when invoice changes
   useEffect(() => {
-    if (open && invoice) {
+    if (!open) return;
+    
+    if (invoice) {
       form.reset({
         status: invoice.status,
       });
     }
-  }, [open, invoice, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, invoice?.id, invoice?.status]);
 
   const onSubmit = async (data: StatusFormValues) => {
     if (!invoice) return;

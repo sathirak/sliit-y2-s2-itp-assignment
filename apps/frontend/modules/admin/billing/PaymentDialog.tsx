@@ -73,7 +73,9 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
 
   // Reset form when dialog opens/closes or when payment changes
   useEffect(() => {
-    if (open && payment) {
+    if (!open) return;
+    
+    if (payment) {
       // Viewing existing payment
       form.reset({
         invoiceId: payment.invoiceId,
@@ -81,7 +83,7 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
         method: payment.method as PaymentFormValues['method'],
         status: payment.status as PaymentFormValues['status'],
       });
-    } else if (open && !payment) {
+    } else {
       // Creating new payment
       form.reset({
         invoiceId: '',
@@ -90,7 +92,8 @@ export function PaymentDialog({ open, onOpenChange, payment, invoices, onClose }
         status: 'completed',
       });
     }
-  }, [open, payment, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, payment?.id, payment?.invoiceId, payment?.amount, payment?.method, payment?.status]);
 
   const onSubmit = async (data: PaymentFormValues) => {
     if (payment) {

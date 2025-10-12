@@ -94,7 +94,8 @@ export function PaymentsTable({ payments, isLoading, searchTerm, onRowClick }: P
     payment.amount.toString().includes(searchTerm)
   );
 
-  const handleViewPayment = (payment: PaymentWithRelationsDto) => {
+  const handleViewPayment = (payment: PaymentWithRelationsDto, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click event
     setSelectedPayment(payment);
     setIsViewDialogOpen(true);
   };
@@ -175,7 +176,7 @@ export function PaymentsTable({ payments, isLoading, searchTerm, onRowClick }: P
                 <TableCell>
                   {format(new Date(payment.paidAt), 'MMM dd, yyyy HH:mm')}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
@@ -184,7 +185,7 @@ export function PaymentsTable({ payments, isLoading, searchTerm, onRowClick }: P
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleViewPayment(payment)}>
+                      <DropdownMenuItem onClick={(e) => handleViewPayment(payment, e)}>
                         <Eye className="mr-2 h-4 w-4" />
                         View Details
                       </DropdownMenuItem>

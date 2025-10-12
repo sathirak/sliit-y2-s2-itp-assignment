@@ -52,7 +52,7 @@ interface InvoiceDialogProps {
 
 export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: InvoiceDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { createInvoice } = useInvoiceMutations();
+  const { createInvoice, updateInvoiceStatus } = useInvoiceMutations();
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceFormSchema),
@@ -66,7 +66,9 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
 
   // Reset form when dialog opens/closes or when invoice changes
   useEffect(() => {
-    if (open && invoice) {
+    if (!open) return;
+    
+    if (invoice) {
       // Editing existing invoice - we only allow editing for status updates
       // This dialog is primarily for creating new invoices
       form.reset({
@@ -75,7 +77,7 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
         status: invoice.status,
         dueDate: invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : '',
       });
-    } else if (open && !invoice) {
+    } else {
       // Creating new invoice
       form.reset({
         orderId: '',
@@ -84,26 +86,29 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
         dueDate: '',
       });
     }
-  }, [open, invoice, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, invoice?.id, invoice?.orderId, invoice?.amount, invoice?.status, invoice?.dueDate]);
 
   const onSubmit = async (data: InvoiceFormValues) => {
-    if (invoice) {
-      // This dialog is for creating new invoices, editing should be done via status dialog
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      await createInvoice({
-        orderId: data.orderId,
-        amount: data.amount,
-        status: data.status as InvoiceStatus,
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-      });
+      if (invoice) {
+        // Update existing invoice - currently only status can be updated via API
+        // Note: Amount and due date updates would require a full update endpoint
+        await updateInvoiceStatus(invoice.id, data.status as InvoiceStatus);
+      } else {
+        // Create new invoice
+        await createInvoice({
+          orderId: data.orderId,
+          amount: data.amount,
+          status: data.status as InvoiceStatus,
+          dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+        });
+      }
       
       handleClose();
     } catch (error) {
-      console.error('Failed to create invoice:', error);
+      console.error('Failed to save invoice:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -120,11 +125,11 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {invoice ? 'View Invoice' : 'Create New Invoice'}
+            {invoice ? 'Edit Invoice' : 'Create New Invoice'}
           </DialogTitle>
           <DialogDescription>
             {invoice 
-              ? 'Invoice details are shown below. Use the status dialog to update the invoice status.' 
+              ? 'Update the invoice status below. Order ID and amount cannot be changed.' 
               : 'Create a new invoice by filling out the form below.'
             }
           </DialogDescription>
@@ -188,7 +193,6 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
-                    disabled={!!invoice}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -228,20 +232,18 @@ export function InvoiceDialog({ open, onOpenChange, invoice, orders, onClose }: 
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleClose}>
-                {invoice ? 'Close' : 'Cancel'}
+                Cancel
               </Button>
-              {!invoice && (
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    'Create Invoice'
-                  )}
-                </Button>
-              )}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {invoice ? 'Updating...' : 'Creating...'}
+                  </>
+                ) : (
+                  invoice ? 'Update Invoice' : 'Create Invoice'
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

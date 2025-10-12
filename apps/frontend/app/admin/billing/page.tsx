@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/ui/tabs';
 import { Button } from '@/modules/ui/button';
@@ -41,13 +41,10 @@ export default function BillingPage() {
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
-  // Detail dialog states
+  // Detail dialog states - use null check to determine if dialog should be open
   const [selectedOrderForDetail, setSelectedOrderForDetail] = useState<OrderDto | null>(null);
   const [selectedInvoiceForDetail, setSelectedInvoiceForDetail] = useState<InvoiceWithRelationsDto | null>(null);
   const [selectedPaymentForDetail, setSelectedPaymentForDetail] = useState<PaymentWithRelationsDto | null>(null);
-  const [isOrderDetailDialogOpen, setIsOrderDetailDialogOpen] = useState(false);
-  const [isInvoiceDetailDialogOpen, setIsInvoiceDetailDialogOpen] = useState(false);
-  const [isPaymentDetailDialogOpen, setIsPaymentDetailDialogOpen] = useState(false);
 
   const { orders, isLoading: ordersLoading } = useOrders();
   const { invoices, isLoading: invoicesLoading } = useInvoices();
@@ -75,21 +72,18 @@ export default function BillingPage() {
     window.print();
   };
 
-  // Row click handlers for detail dialogs
-  const handleOrderRowClick = (order: OrderDto) => {
+  // Row click handlers for detail dialogs - simplified without separate open state
+  const handleOrderRowClick = useCallback((order: OrderDto) => {
     setSelectedOrderForDetail(order);
-    setIsOrderDetailDialogOpen(true);
-  };
+  }, []);
 
-  const handleInvoiceRowClick = (invoice: InvoiceWithRelationsDto) => {
+  const handleInvoiceRowClick = useCallback((invoice: InvoiceWithRelationsDto) => {
     setSelectedInvoiceForDetail(invoice);
-    setIsInvoiceDetailDialogOpen(true);
-  };
+  }, []);
 
-  const handlePaymentRowClick = (payment: PaymentWithRelationsDto) => {
+  const handlePaymentRowClick = useCallback((payment: PaymentWithRelationsDto) => {
     setSelectedPaymentForDetail(payment);
-    setIsPaymentDetailDialogOpen(true);
-  };
+  }, []);
 
   const getTabButtonText = (tab: string, count: number) => {
     switch (tab) {
@@ -290,21 +284,21 @@ export default function BillingPage() {
         invoices={invoices}
       />
 
-      {/* Detail Dialogs */}
+      {/* Detail Dialogs - controlled by selectedItem state */}
       <OrderDetailDialog
         order={selectedOrderForDetail}
-        open={isOrderDetailDialogOpen}
-        onOpenChange={setIsOrderDetailDialogOpen}
+        open={!!selectedOrderForDetail}
+        onOpenChange={(open) => !open && setSelectedOrderForDetail(null)}
       />
       <InvoiceDetailDialog
         invoice={selectedInvoiceForDetail}
-        open={isInvoiceDetailDialogOpen}
-        onOpenChange={setIsInvoiceDetailDialogOpen}
+        open={!!selectedInvoiceForDetail}
+        onOpenChange={(open) => !open && setSelectedInvoiceForDetail(null)}
       />
       <PaymentDetailDialog
         payment={selectedPaymentForDetail}
-        open={isPaymentDetailDialogOpen}
-        onOpenChange={setIsPaymentDetailDialogOpen}
+        open={!!selectedPaymentForDetail}
+        onOpenChange={(open) => !open && setSelectedPaymentForDetail(null)}
       />
     </div>
   );

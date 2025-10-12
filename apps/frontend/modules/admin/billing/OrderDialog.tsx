@@ -71,7 +71,9 @@ export function OrderDialog({ open, onOpenChange, order, onClose }: OrderDialogP
 
   // Reset form when dialog opens/closes or when order changes
   useEffect(() => {
-    if (open && order && !orderProductsLoading) {
+    if (!open) return;
+    
+    if (order && !orderProductsLoading) {
       // Editing existing order - populate with existing order products
       const productsData = existingOrderProducts.map(op => ({
         productId: op.productId,
@@ -84,7 +86,7 @@ export function OrderDialog({ open, onOpenChange, order, onClose }: OrderDialogP
         customerId: order.customerId || '',
         products: productsData,
       });
-    } else if (open && !order) {
+    } else if (!order) {
       // Creating new order
       form.reset({
         status: 'pending',
@@ -92,7 +94,8 @@ export function OrderDialog({ open, onOpenChange, order, onClose }: OrderDialogP
         products: [],
       });
     }
-  }, [open, order, form, existingOrderProducts, orderProductsLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, order?.id, order?.status, order?.customerId, orderProductsLoading]);
 
   const onSubmit = async (data: OrderFormValues) => {
     setIsSubmitting(true);
