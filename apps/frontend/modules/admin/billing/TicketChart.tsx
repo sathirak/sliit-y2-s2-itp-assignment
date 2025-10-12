@@ -49,7 +49,7 @@ export function TicketChart() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle>Support Ticket Trends</CardTitle>
+          <CardTitle></CardTitle>
           <p className="text-sm text-muted-foreground">
             Showing {tickets.length} closed tickets over time
           </p>

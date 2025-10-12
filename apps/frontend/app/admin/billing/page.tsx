@@ -5,10 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/mod
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/ui/tabs';
 import { Button } from '@/modules/ui/button';
 import { Badge } from '@/modules/ui/badge';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
+import {
+  Plus,
+  Search,
+  Filter,
   RefreshCw,
   ShoppingCart,
   FileText,
@@ -32,7 +32,6 @@ import { OrderDetailDialog } from '@/modules/admin/billing/OrderDetailDialog';
 import { InvoiceDetailDialog } from '@/modules/admin/billing/InvoiceDetailDialog';
 import { PaymentDetailDialog } from '@/modules/admin/billing/PaymentDetailDialog';
 import { RevenueChart } from '@/modules/admin/billing/RevenueChart';
-import { TicketChart } from '@/modules/admin/billing/TicketChart';
 import type { OrderDto, InvoiceWithRelationsDto, PaymentWithRelationsDto } from '@/lib/dtos/order';
 
 export default function BillingPage() {
@@ -41,7 +40,7 @@ export default function BillingPage() {
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  
+
   // Detail dialog states
   const [selectedOrderForDetail, setSelectedOrderForDetail] = useState<OrderDto | null>(null);
   const [selectedInvoiceForDetail, setSelectedInvoiceForDetail] = useState<InvoiceWithRelationsDto | null>(null);
@@ -186,10 +185,7 @@ export default function BillingPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <RevenueChart />
-        <TicketChart />
-      </div>
+      <RevenueChart />
 
       {/* Main Content */}
       <Card>
@@ -226,7 +222,7 @@ export default function BillingPage() {
                     className="pl-8 w-64"
                   />
                 </div>
-                
+
                 {activeTab === 'orders' && (
                   <Button onClick={() => setIsOrderDialogOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
@@ -249,27 +245,27 @@ export default function BillingPage() {
             </div>
 
             <TabsContent value="orders" className="space-y-4">
-              <OrdersTable 
-                orders={orders} 
-                isLoading={ordersLoading} 
+              <OrdersTable
+                orders={orders}
+                isLoading={ordersLoading}
                 searchTerm={searchTerm}
                 onRowClick={handleOrderRowClick}
               />
             </TabsContent>
 
             <TabsContent value="invoices" className="space-y-4">
-              <InvoicesTable 
-                invoices={invoices} 
-                isLoading={invoicesLoading} 
+              <InvoicesTable
+                invoices={invoices}
+                isLoading={invoicesLoading}
                 searchTerm={searchTerm}
                 onRowClick={handleInvoiceRowClick}
               />
             </TabsContent>
 
             <TabsContent value="payments" className="space-y-4">
-              <PaymentsTable 
-                payments={payments} 
-                isLoading={paymentsLoading} 
+              <PaymentsTable
+                payments={payments}
+                isLoading={paymentsLoading}
                 searchTerm={searchTerm}
                 onRowClick={handlePaymentRowClick}
               />
@@ -279,17 +275,17 @@ export default function BillingPage() {
       </Card>
 
       {/* Dialogs */}
-      <OrderDialog 
-        open={isOrderDialogOpen} 
+      <OrderDialog
+        open={isOrderDialogOpen}
         onOpenChange={setIsOrderDialogOpen}
       />
-      <InvoiceDialog 
-        open={isInvoiceDialogOpen} 
+      <InvoiceDialog
+        open={isInvoiceDialogOpen}
         onOpenChange={setIsInvoiceDialogOpen}
         orders={orders}
       />
-      <PaymentDialog 
-        open={isPaymentDialogOpen} 
+      <PaymentDialog
+        open={isPaymentDialogOpen}
         onOpenChange={setIsPaymentDialogOpen}
         invoices={invoices}
       />
